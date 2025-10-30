@@ -10,7 +10,7 @@ public class toAttack1 : StateMachineBehaviour
         // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        attackDelay = Random.Range(4f, 6f);
+        attackDelay = Random.Range(1.5f, 3f);
         timer = 0f;
     }
 

@@ -5,23 +5,18 @@ public class BossMeteorAttack : MonoBehaviour
 {
     [Header("Meteor Settings")]
     public GameObject meteorPrefab;
-    public int meteorCount = 5;           // Number of meteors to spawn
-    public float spawnRadius = 10f;       // Around player
-    public float spawnHeight = 25f;       // How high meteors spawn above ground
-    public float spawnInterval = 0.2f;    // Time between each meteor spawn
+    public GameObject warningMarkerPrefab;
+    public int meteorCount = 5;
+    public float spawnRadius = 10f;
+    public float spawnHeight = 20f;
+    public float spawnInterval = 0f;
+    public float warningDelay = 0.05f; // Time between marker and meteor impact
 
     [Header("References")]
-    public Transform player;              // Assign in Inspector or dynamically
+    public Transform player;
 
-    // Called by animation event
     public void TriggerMeteorAttack()
     {
-        if (meteorPrefab == null || player == null)
-        {
-            Debug.LogWarning("MeteorAttack: Missing meteorPrefab or player reference!");
-            return;
-        }
-
         StartCoroutine(SpawnMeteors());
     }
 
@@ -29,16 +24,39 @@ public class BossMeteorAttack : MonoBehaviour
     {
         for (int i = 0; i < meteorCount; i++)
         {
-            // Random position near the player
-            Vector3 randomOffset = Random.insideUnitCircle * spawnRadius;
-            Vector3 spawnPos = new Vector3(
-                player.position.x + randomOffset.x,
-                player.position.y + spawnHeight,
-                player.position.z + randomOffset.y
+            // Pick random position near player
+            Vector2 offset = Random.insideUnitCircle * spawnRadius;
+            Vector3 groundPos = new Vector3(
+                player.position.x + offset.x,
+                player.position.y - 1,
+                player.position.z + offset.y
             );
 
-            // Instantiate meteor
-            Instantiate(meteorPrefab, spawnPos, Quaternion.identity);
+            if (i%8 == 0)
+            {
+                groundPos = new Vector3(
+                player.position.x, 
+                player.position.y - 1,
+                player.position.z 
+            );
+            }
+
+            // Spawn warning marker
+            GameObject marker = Instantiate(warningMarkerPrefab, groundPos, Quaternion.identity);
+
+            // Wait before dropping meteor
+            yield return new WaitForSeconds(warningDelay);
+
+            // Spawn meteor above the marker
+            Vector3 spawnPos = groundPos + Vector3.up * spawnHeight;
+            GameObject meteor = Instantiate(meteorPrefab, spawnPos, Quaternion.identity);
+
+            // Let the meteor know its marker (so it can destroy it on impact)
+            Meteor meteorScript = meteor.GetComponent<Meteor>();
+            if (meteorScript != null)
+                meteorScript.warningMarker = marker;
+
+            spawnInterval = Random.Range(0f, 0.5f);
 
             yield return new WaitForSeconds(spawnInterval);
         }

@@ -1,32 +1,38 @@
+using System.Diagnostics;
 using UnityEngine;
 
 public class Meteor : MonoBehaviour
 {
-    public float fallSpeed = 40f;
-    public GameObject impactEffect;  // Optional explosion prefab
-    public float destroyDelay = 0.5f;  // Destroy delay after impact
+    public float fallSpeed = 60f;
+    public GameObject impactEffect;
+    public float destroyDelay = 0.5f;
+
+    [HideInInspector] public GameObject warningMarker; // assigned by spawner
 
     private bool hasLanded = false;
 
+    void Start()
+    {
+        GetComponent<Rigidbody>().AddForce(Vector3.down * 1200f);
+    }
     void Update()
     {
-        if (!hasLanded)
-        {
-            transform.position += Vector3.down * fallSpeed * Time.deltaTime;
-        }
+      
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (hasLanded) return;
         hasLanded = true;
 
-        // Spawn impact effect
+        UnityEngine.Debug.Log("Hit: " + collision.gameObject.name);
+        // Spawn explosion effect
         if (impactEffect != null)
             Instantiate(impactEffect, transform.position, Quaternion.identity);
 
-        // Optional: Damage logic here
+        // Destroy marker
+        if (warningMarker != null)
+            Destroy(warningMarker);
 
-        Destroy(gameObject, destroyDelay);
+        Destroy(gameObject);
     }
 }
