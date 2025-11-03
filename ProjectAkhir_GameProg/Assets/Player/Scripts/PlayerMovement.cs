@@ -1,0 +1,66 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
+
+public class PlayerMovement : MonoBehaviour
+{
+    public float moveSpeed = 100f;
+    public float attackSlowDownFactor = 0.4f;
+    public float camHeight;
+    public float cameraRadius = 10f;
+    public float mouseSensitivity = 0.1f;
+    private CharacterController controller;
+    private Animator animator;
+    public Transform sprites;
+
+    PlayerInputActions inputActions;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        animator = GetComponentInChildren<Animator>();
+        controller = GetComponent<CharacterController>();
+
+        inputActions = new PlayerInputActions();
+        inputActions.Player.Enable();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        Movement();
+        RotateCam();
+    }
+
+    private void RotateCam()
+    {
+        float mouseDeltaX = inputActions.Player.MouseLook.ReadValue<Vector2>().x;
+        transform.Rotate(transform.up, mouseDeltaX * mouseSensitivity);
+    }
+
+    private void Movement()
+    {
+        float finalMoveSpeed = moveSpeed;
+        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack 1") || animator.GetCurrentAnimatorStateInfo(0).IsName("Attack 2"))
+        {
+            finalMoveSpeed *= attackSlowDownFactor;
+        }
+
+        Vector2 inputVector = inputActions.Player.Movement.ReadValue<Vector2>().normalized; // 8-direction movement
+        Vector3 moveVector = transform.right * inputVector.x + transform.forward * inputVector.y;
+        controller.Move(finalMoveSpeed * Time.deltaTime * moveVector);
+
+        animator.SetBool("Walking", inputVector.magnitude > 0.1f);
+
+        // Handle flipping sprite
+        if (inputVector.x != 0 && inputVector.x > 0.1f)
+        {
+            sprites.localScale = new Vector3(1, 1, 1);
+        }
+        else if (inputVector.x != 0 && inputVector.x < -0.1f)
+        {
+            sprites.localScale = new Vector3(-1, 1, 1);
+        }
+    }
+}
