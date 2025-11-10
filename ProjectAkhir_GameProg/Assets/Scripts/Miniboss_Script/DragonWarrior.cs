@@ -10,9 +10,21 @@ public class DragonWarrior : MonoBehaviour
 
     [Header("Enemy Settings")]
     public float moveSpeed = 2f;
-    public float followRange = 8f;      // Distance before following starts
-    public float attackRange = 3f;      // Distance to start attacking
+    public float followRange = 20f;      // Distance before following starts
+    public float attackRange = 5f;      // Distance to start attacking
     public float attackCooldown = 2f;
+
+    [Header("Kick Attack Settings")]
+    public float kickRange = 1.5f;    // Distance for kick
+    public float kickForce = 5f;      // Optional push force on player
+    public int kickDamage = 20;       // Damage dealt by kick
+    public float kickCooldown = 0.8f; // Small cooldown between kicks
+    private float lastKickTime = 0f;  // Track last kick
+
+    [Header("Kick Effects")]
+    public Transform kickWindPoint;   // Drag the KickWindPoint here
+    public GameObject kickWindPrefab; // Drag the animated wind prefab here
+
 
     private float lastAttackTime = 0f;
     private bool isAttacking = false;
@@ -62,19 +74,37 @@ public class DragonWarrior : MonoBehaviour
 
     private void AttackPlayer()
     {
+        Vector3 enemyFlat = new Vector3(transform.position.x, 0, transform.position.z);
+        Vector3 playerFlat = new Vector3(player.position.x, 0, player.position.z);
+        float distance = Vector3.Distance(enemyFlat, playerFlat);
+
+
+        // 👣 If player is very close → do kick attack
+        if (distance <= kickRange)
+        {
+            Debug.Log("inside kick range");
+            if (Time.time - lastKickTime >= kickCooldown)
+            {
+                Debug.Log("kick");
+                lastKickTime = Time.time;
+                StartCoroutine(PerformKickAttack());
+            }
+            return; // Skip other attacks while kicking
+        }
+
+        // 🔥 Otherwise randomly do attack1 or 2
         if (Time.time - lastAttackTime < attackCooldown) return;
 
         lastAttackTime = Time.time;
         isAttacking = true;
 
-        // Randomly choose between 1 or 2
-        int attackType = Random.Range(1, 2);
-
+        int attackType = Random.Range(1, 2); // 1 or 2
         if (attackType == 1)
             StartCoroutine(PerformAttack1());
         else
             StartCoroutine(PerformAttack2());
     }
+
 
     private System.Collections.IEnumerator PerformAttack1()
     {
@@ -98,10 +128,53 @@ public class DragonWarrior : MonoBehaviour
 
     private System.Collections.IEnumerator PerformAttack2()
     {
-        animator.Play("strike_DragonWarrior");
-        yield return new WaitForSeconds(1.0f); // Duration of slash
+        animator.Play("strike_DragonWarrior"); // or some other animation
+        yield return new WaitForSeconds(1.0f);
         isAttacking = false;
     }
+
+
+    private System.Collections.IEnumerator PerformKickAttack()
+    {
+        // Force restart animation
+        animator.Play("flyKick_DragonWarrior", -1, 0f);
+
+        yield return new WaitForSeconds(0.2f);
+
+        // Spawn wind effect at feet
+        if (kickWindPrefab != null && kickWindPoint != null)
+        {
+            GameObject wind = Instantiate(kickWindPrefab, kickWindPoint.position, Quaternion.identity);
+
+            // Flip wind if dragon faces left
+            if (!facingRight)
+                wind.transform.localScale = new Vector3(-1, 1, 1);
+
+            // Destroy automatically after animation
+            // Make sure your prefab has AutoDestroyAfterAnim script
+        }
+
+        // Wait until the kick connects
+        yield return new WaitForSeconds(0.4f);
+
+        // Apply damage / push to player
+        float distance = Vector2.Distance(transform.position, player.position);
+        if (distance <= kickRange)
+        {
+            Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                Vector2 pushDir = (player.position - transform.position).normalized;
+                rb.AddForce(pushDir * kickForce, ForceMode2D.Impulse);
+            }
+        }
+
+        // Wait for rest of animation
+        yield return new WaitForSeconds(0.5f);
+        isAttacking = false;
+    }
+
+
 
     private void FlipTowardsPlayer()
     {

@@ -339,6 +339,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 441415510}
   m_CullTransparentMesh: 1
+--- !u!1 &527304126
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 527304127}
+  m_Layer: 3
+  m_Name: WP
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &527304127
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 527304126}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.399, y: -0.485, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1387190593}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &554332403
 GameObject:
   m_ObjectHideFlags: 0
@@ -846,9 +877,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37c428c3b32bdc14eaf2597f8842d6ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy: {fileID: 1387190593}
-  offset: {x: 0, y: 2, z: 0}
-  mainCamera: {fileID: 0}
 --- !u!1 &1027346352
 GameObject:
   m_ObjectHideFlags: 0
@@ -1372,6 +1400,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 916539403}
+  - {fileID: 527304127}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1389,12 +1418,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1822588357}
   animator: {fileID: 1387190591}
-  fireballPrefab: {fileID: 192750661567303425, guid: 6342c502fd8fd604685406d37349fa5e, type: 3}
+  fireballPrefab: {fileID: 7119721684455720724, guid: 6342c502fd8fd604685406d37349fa5e, type: 3}
   firePoint: {fileID: 1387190593}
   moveSpeed: 2
-  followRange: 8
-  attackRange: 3
+  followRange: 20
+  attackRange: 8
   attackCooldown: 2
+  kickRange: 2
+  kickForce: 5
+  kickDamage: 20
+  kickCooldown: 1.5
+  kickWindPoint: {fileID: 527304127}
+  kickWindPrefab: {fileID: 3082942743414130537, guid: a2aede3695069da4f96589090a66c4e9, type: 3}
 --- !u!143 &1387190595
 CharacterController:
   m_ObjectHideFlags: 0

@@ -4,18 +4,26 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class Fireball : MonoBehaviour
 {
+    [Header("Movement")]
     public float speed = 6f;
     public float maxLifetime = 6f;
     public float height = 1.0f;
-
     public int damage = 1;
+
+    [Header("Visual")]
+    public Transform sprite;      // Assign child object containing the fireball sprite
+    public Camera mainCamera;
 
     Rigidbody rb;
     Animator animator;
     Collider col;
     bool hasExploded = false;
 
-    public Camera mainCamera;
+    private Vector3 lastDirection = Vector3.zero;
+    public float directionThreshold = 0.01f; // minimum change to update rotation
+
+    private Vector3 target;
+
 
     void Awake()
     {
@@ -26,6 +34,7 @@ public class Fireball : MonoBehaviour
 
     void Start()
     {
+        // Set initial height
         Vector3 pos = transform.position;
         pos.y = height;
         transform.position = pos;
@@ -39,59 +48,73 @@ public class Fireball : MonoBehaviour
     public void Launch(Vector3 targetPosition)
     {
         Vector3 direction = targetPosition - transform.position;
+        target=targetPosition;
         direction.y = 0f;
-        if (direction.magnitude < 0.01f) return;
-        direction.Normalize();
+        if (direction.sqrMagnitude < 0.0001f) return;
 
+        direction.Normalize();
         rb.isKinematic = false;
         rb.velocity = direction * speed;
 
-        // rotate fireball to face shooting direction
-        float angle = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0f, 0f, angle);
-
-        animator.Play("Fireball_Fly");
+        // Rotate the WHOLE fireball (not just the sprite) toward flight direction
+        transform.forward = direction;
     }
+
 
     void LateUpdate()
     {
-        // keep Y fixed
+        // Keep fireball at fixed height
         Vector3 pos = transform.position;
         pos.y = height;
         transform.position = pos;
 
-        // make fireball face camera (2D-style)
-        if (mainCamera != null)
+        if (mainCamera != null && sprite != null)
         {
-            Vector3 toCamera = mainCamera.transform.position - transform.position;
-            toCamera.y = 0f; // lock upright
-            if (toCamera.sqrMagnitude > 0.001f)
-            {
-                Quaternion camRotation = Quaternion.LookRotation(-toCamera);
-                // only apply rotation around Y axis so shooting direction stays
-                transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, camRotation.eulerAngles.y, transform.rotation.eulerAngles.z);
-            }
+            // --- Face the camera horizontally (Y billboard) ---
+            Vector3 toCam = mainCamera.transform.position - sprite.position;
+            toCam.y = 0f;
+            Quaternion faceCamY = Quaternion.LookRotation(-toCam, Vector3.up);
+            sprite.rotation = faceCamY;
+
+            // --- Adjust Z rotation based on shooting direction ---
+            // Project fireball forward vector onto the camera's plane
+            Vector3 ballPos = transform.position;    // enemy's position
+            Vector3 dirBallToPlayer = (target - ballPos).normalized;
+
+            Vector3 fireDir = target - dirBallToPlayer*1000f;
+            Debug.Log(fireDir);
+            Vector3 camRight = mainCamera.transform.right;
+            Vector3 camUp = mainCamera.transform.up;
+
+            // Compute angle between fireball's direction and camera's right vector
+            float zAngle = Mathf.Atan2(
+                Vector3.Dot(fireDir, camUp),
+                Vector3.Dot(fireDir, camRight)
+            ) * Mathf.Rad2Deg;
+
+            // Apply the rotation around local Z (so head points toward direction of shot)
+            sprite.Rotate(0f, 0f, -zAngle);
         }
     }
+
+
+
 
     void OnTriggerEnter(Collider other)
     {
         if (hasExploded) return;
 
-        // Only explode if it hits the player
         if (other.CompareTag("Player"))
         {
-            // You can also deal damage here, e.g.,
+            // Deal damage here
             // other.GetComponent<PlayerHealth>()?.TakeDamage(damage);
             Destroy(gameObject);
         }
-        // Optionally, still explode on walls/obstacles
         else if (!other.isTrigger)
         {
             Explode();
         }
     }
-
 
     public void Explode()
     {
