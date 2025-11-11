@@ -9,12 +9,16 @@ public class EnemyHealth : MonoBehaviour
 
     private DragonWarrior enemyScript;
     public EnemyHealthBar healthBar; // reference to your new UI health bar script
+    [SerializeField] private PlayerCombat playerCombat;
+    private float playerDamage;
 
     void Start()
     {
         currentHealth = maxHealth;
         animator = GetComponent<Animator>();
         enemyScript = GetComponent<DragonWarrior>();
+
+        playerDamage = playerCombat.attackDamage;
 
         if (healthBar != null)
             healthBar.SetMaxHealth(maxHealth);
@@ -49,5 +53,13 @@ public class EnemyHealth : MonoBehaviour
             animator.Play("die_DragonWarrior", 0, 0);
 
         Destroy(gameObject, 1.1f);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Sword"))
+        {
+            TakeDamage(playerDamage);
+        }
     }
 }

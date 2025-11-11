@@ -5,6 +5,11 @@ using UnityEngine.InputSystem;
 
 public class PlayerCombat : MonoBehaviour
 {
+    public float initHP = 100.0f;
+    [System.NonSerialized] public float HP;
+    [System.NonSerialized] public bool isDead;
+    [SerializeField] private GameObject deathParticles;
+
     public List<AttackSO> combo;
     float lastClickedTime;
     float lastComboEnd;
@@ -16,6 +21,7 @@ public class PlayerCombat : MonoBehaviour
 
     public Animator anim;
     public Transform attackPoint;       // Empty object in front of the sword
+    [SerializeField] private Collider swordCollider;
     public float attackRange = 1.5f;    // How far the slash reaches
     public float attackDamage = 25f;    // Damage per hit
 
@@ -30,12 +36,25 @@ public class PlayerCombat : MonoBehaviour
         inputs.Player.Attack.performed += Attack;
 
         inCombo = false;
+
+        HP = initHP;
+        isDead = false;
     }
 
     void Update()
     {
         ExitAttack();
         // Optional: Flip facing based on input
+
+        swordCollider.enabled = inCombo;
+
+        // Debug purposes only! 
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            TakeDamage(40.0f);
+        }
+
+        
     }
 
     void Attack(InputAction.CallbackContext context)
@@ -45,14 +64,14 @@ public class PlayerCombat : MonoBehaviour
 
         if (Time.time - lastClickedTime >= timeBetweenAttacks)
         {
-            Debug.Log("Attack Pattern " + comboCounter);
+            // Debug.Log("Attack Pattern " + comboCounter);
 
             // Play the correct attack animation
             anim.runtimeAnimatorController = combo[comboCounter].animatorOV;
             anim.Play("Attack", 0, 0);
 
             // Deal damage in front of player
-            DealDamage();
+            // DealDamage();
 
             comboCounter++;
             lastClickedTime = Time.time;
@@ -113,5 +132,29 @@ public class PlayerCombat : MonoBehaviour
         if (attackPoint == null) return;
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+    }
+
+    public void TakeDamage(float damage)
+    {
+        HP -= damage;
+
+        if (HP <= 0)
+        {
+            // Player Die
+            isDead = true;
+            anim.SetLayerWeight(1, 0);
+            StartCoroutine(DieCoroutine());
+        } else
+        {
+            anim.SetTrigger("Hurt");
+        }
+    }
+
+    private IEnumerator DieCoroutine()
+    {
+        anim.SetTrigger("Die");
+        yield return new WaitForSeconds(2.0f);
+        Instantiate(deathParticles, transform.position, Quaternion.Euler(0, 0, 0));
+        Destroy(gameObject);
     }
 }
