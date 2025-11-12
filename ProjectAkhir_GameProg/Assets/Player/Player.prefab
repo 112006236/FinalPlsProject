@@ -50,6 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+  gravity: -10
   attackSlowDownFactor: 0.4
   camHeight: 0
   cameraRadius: 10
@@ -97,7 +98,7 @@ MonoBehaviour:
   attackPoint: {fileID: 5766828218146382646}
   swordCollider: {fileID: 6622417330449905053}
   attackRange: 1.5
-  attackDamage: 25
+  attackDamage: 5
 --- !u!1 &5766828216941255849
 GameObject:
   m_ObjectHideFlags: 0

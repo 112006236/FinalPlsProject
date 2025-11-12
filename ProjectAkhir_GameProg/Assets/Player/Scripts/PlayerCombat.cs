@@ -81,31 +81,36 @@ public class PlayerCombat : MonoBehaviour
         }
         else
         {
-            Debug.Log("Waiting attack cooldown...");
+            // Debug.Log("Waiting attack cooldown...");
         }
     }
 
     void DealDamage()
     {
-        float radius = 1.5f; // attack range
+        float radius = attackRange;
         Vector3 origin = attackPoint.position;
-        Vector3 direction = transform.forward; // if your player uses Z-forward, or use right for side-scroller
 
-        // Detect all colliders in the sphere
         Collider[] enemiesHit = Physics.OverlapSphere(origin, radius, LayerMask.GetMask("Enemy"));
 
         foreach (Collider enemy in enemiesHit)
         {
-            // Optional: check if in front (dot product)
             Vector3 toEnemy = enemy.transform.position - transform.position;
-            if (Vector3.Dot(toEnemy.normalized, transform.forward) > 0) 
+            if (Vector3.Dot(toEnemy.normalized, transform.forward) > 0)
             {
-                EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
-                if (enemyHealth != null)
-                {
-                    enemyHealth.TakeDamage(attackDamage);
-                    Debug.Log("Hit " + enemy.name);
-                }
+                // Check for different health scripts
+                GolemHealth golemHealth = enemy.GetComponent<GolemHealth>();
+                TreeHealth treeHealth = enemy.GetComponent<TreeHealth>();
+                BatHealth batHealth = enemy.GetComponent<BatHealth>();
+                MushroomHealth mushroomHealth = enemy.GetComponent<MushroomHealth>();
+                SkeletonHealth skeletonHealth = enemy.GetComponent<SkeletonHealth>();
+
+                if (golemHealth != null) golemHealth.TakeDamage(attackDamage);
+                if (treeHealth != null) treeHealth.TakeDamage(attackDamage);
+                if (batHealth != null) batHealth.TakeDamage(attackDamage);
+                if (mushroomHealth != null) mushroomHealth.TakeDamage(attackDamage);
+                if (skeletonHealth != null) skeletonHealth.TakeDamage(attackDamage);
+
+                // Debug.Log("Hit " + enemy.name);
             }
         }
     }
@@ -121,7 +126,7 @@ public class PlayerCombat : MonoBehaviour
 
     void ExitCombo()
     {
-        Debug.Log("ExitCombo");
+        // Debug.Log("ExitCombo");
         comboCounter = 0;
         lastComboEnd = Time.time;
         inCombo = false;
@@ -149,6 +154,8 @@ public class PlayerCombat : MonoBehaviour
             anim.SetTrigger("Hurt");
         }
     }
+
+    
 
     private IEnumerator DieCoroutine()
     {

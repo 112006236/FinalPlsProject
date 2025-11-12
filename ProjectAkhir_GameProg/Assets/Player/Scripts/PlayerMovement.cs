@@ -6,6 +6,7 @@ using UnityEngine.Scripting.APIUpdating;
 public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 100f;
+    public float gravity = -10f;
     public float attackSlowDownFactor = 0.4f;
     public float camHeight;
     public float cameraRadius = 10f;
@@ -34,6 +35,8 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (combat.isDead) gravity = 0f;
+
         if (!combat.isDead)
         {
             Movement();
@@ -49,6 +52,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Movement()
     {
+        // Gravity
+        
+
         float finalMoveSpeed = moveSpeed;
         if (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack 1") || animator.GetCurrentAnimatorStateInfo(0).IsName("Attack 2"))
         {
@@ -57,6 +63,9 @@ public class PlayerMovement : MonoBehaviour
 
         Vector2 inputVector = inputActions.Player.Movement.ReadValue<Vector2>().normalized; // 8-direction movement
         Vector3 moveVector = transform.right * inputVector.x + transform.forward * inputVector.y;
+        
+        moveVector.y = gravity;
+
         controller.Move(finalMoveSpeed * Time.deltaTime * moveVector);
 
         animator.SetBool("Walking", inputVector.magnitude > 0.1f);
