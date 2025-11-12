@@ -7,66 +7,62 @@ public class EnemySpawner : MonoBehaviour
     [System.Serializable]
     public class EnemyGroup
     {
-        [SerializeField] private GameObject enemyPrefab;
-        [SerializeField] private int count;
-        [SerializeField] private float spawnInterval;
-        [SerializeField] private float startSpawningTime;
-        [SerializeField] public int spawnPointIndex;
+        public GameObject enemyPrefab;
+        public int count = 5;
+        public float spawnInterval = 1f;
+        public int spawnPointIndex = 0;
+    }
 
-        private float lastSpawnTime;
-        private Vector3 spawnPoint;
+    [Header("Enemy Settings")]
+    [SerializeField] private List<EnemyGroup> enemyGroups = new List<EnemyGroup>();
+    [SerializeField] private List<Transform> spawnPoints = new List<Transform>();
 
-        public void SetSpawnPoint(Vector3 sp)
+    private bool playerInside = false;
+    private bool isSpawning = false;
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player") && !isSpawning)
         {
-            spawnPoint = sp;
+            Debug.Log($"Player entered enemy area: {gameObject.name}");
+            playerInside = true;
+            StartCoroutine(SpawnEnemies());
         }
+    }
 
-        public bool Spawn()
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
         {
-            // Only spawn if there are enemies left
-            if (count > 0 && Time.time > startSpawningTime && Time.time - lastSpawnTime > spawnInterval)
+            Debug.Log($"Player left enemy area: {gameObject.name}");
+            playerInside = false;
+        }
+    }
+
+    private IEnumerator SpawnEnemies()
+    {
+        isSpawning = true;
+
+        foreach (var group in enemyGroups)
+        {
+            Transform spawnPoint = spawnPoints[group.spawnPointIndex];
+
+            for (int i = 0; i < group.count; i++)
             {
-                count--;
-                lastSpawnTime = Time.time;
+                if (!playerInside)
+                {
+                    Debug.Log("Player left area — stopping enemy spawn.");
+                    isSpawning = false;
+                    yield break;
+                }
 
-                // Instantiate enemy, no GameManager reference
-                Object.Instantiate(enemyPrefab, spawnPoint, Quaternion.identity);
-
-                return true;
+                Instantiate(group.enemyPrefab, spawnPoint.position, Quaternion.identity);
+                Debug.Log($"Spawned enemy {i + 1}/{group.count} from {group.enemyPrefab.name}");
+                yield return new WaitForSeconds(group.spawnInterval);
             }
-
-            return false;
         }
 
-        public int RemainingToSpawn => count;
-    }
-
-    [SerializeField] private List<EnemyGroup> enemyWave;
-    [SerializeField] private List<Transform> spawnPoints;
-
-    private void Start()
-    {
-        foreach (EnemyGroup group in enemyWave)
-        {
-            group.SetSpawnPoint(spawnPoints[group.spawnPointIndex].position);
-        }
-    }
-
-    private void Update()
-    {
-        foreach (EnemyGroup group in enemyWave)
-        {
-            group.Spawn();
-        }
-    }
-
-    public int TotalEnemiesLeftToSpawn()
-    {
-        int total = 0;
-        foreach (var group in enemyWave)
-        {
-            total += group.RemainingToSpawn;
-        }
-        return total;
+        Debug.Log($"All enemies spawned for area: {gameObject.name}");
+        isSpawning = false;
     }
 }
