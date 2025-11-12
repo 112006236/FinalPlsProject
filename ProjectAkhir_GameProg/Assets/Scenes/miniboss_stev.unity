@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -123,6 +123,25 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &15468995 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5766828217849564431, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+  m_PrefabInstance: {fileID: 205770083}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &15468998
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 15468995}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.3
+  m_Height: 1.2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.6, z: 0}
 --- !u!1001 &205770083
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -130,6 +149,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5766828216632494508, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5766828216632494510, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
       propertyPath: m_Name
       value: Player
@@ -177,6 +200,22 @@ PrefabInstance:
     - target: {fileID: 5766828216632494511, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5766828217455184779, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 5766828217849564431, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 6622417330449905053, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6622417330449905053, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
@@ -256,6 +295,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 441415510}
   m_CullTransparentMesh: 1
+--- !u!1 &486485782 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5766828217455184779, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+  m_PrefabInstance: {fileID: 205770083}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &486485785
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 486485782}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.3
+  m_Height: 1.2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.6, z: 0}
 --- !u!1 &527304126
 GameObject:
   m_ObjectHideFlags: 0
@@ -952,10 +1010,10 @@ GameObject:
   - component: {fileID: 1387190592}
   - component: {fileID: 1387190591}
   - component: {fileID: 1387190594}
-  - component: {fileID: 1387190595}
   - component: {fileID: 1387190596}
   - component: {fileID: 1387190597}
   - component: {fileID: 1387190598}
+  - component: {fileID: 1387190599}
   m_Layer: 3
   m_Name: DragonWarrior_MiniBoss
   m_TagString: Enemy
@@ -1066,36 +1124,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 584684016}
   animator: {fileID: 1387190591}
-  fireballPrefab: {fileID: 7119721684455720724, guid: 6342c502fd8fd604685406d37349fa5e, type: 3}
+  fireballPrefab: {fileID: 7917078961079286059, guid: 2039a24555d257640afb3368fa2532f0, type: 3}
   firePoint: {fileID: 1387190593}
-  moveSpeed: 2
+  moveSpeed: 3
   followRange: 20
-  attackRange: 8
+  attackRange: 5
   attackCooldown: 2
-  kickRange: 2
+  kickRange: 1.5
   kickForce: 5
   kickDamage: 20
-  kickCooldown: 1.5
+  kickCooldown: 0.8
   kickWindPoint: {fileID: 527304127}
   kickWindPrefab: {fileID: 3082942743414130537, guid: a2aede3695069da4f96589090a66c4e9, type: 3}
---- !u!143 &1387190595
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1387190590}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Height: 1.36
-  m_Radius: 0.71
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!136 &1387190596
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1140,6 +1180,22 @@ MonoBehaviour:
   isDead: 0
   healthBar: {fileID: 916539408}
   playerCombat: {fileID: 584684013}
+--- !u!54 &1387190599
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1387190590}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0.5
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 80
+  m_CollisionDetection: 0
 --- !u!1 &1998024110
 GameObject:
   m_ObjectHideFlags: 0

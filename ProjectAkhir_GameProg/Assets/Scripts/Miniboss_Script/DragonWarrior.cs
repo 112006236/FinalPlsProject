@@ -1,34 +1,44 @@
 using UnityEngine;
+using System.Collections;
 
 public class DragonWarrior : MonoBehaviour
 {
     [Header("References")]
     public Transform player;
     public Animator animator;
-    public GameObject fireballPrefab;   // For Attack1
-    public Transform firePoint;         // Fire spawn position
+    public GameObject fireballPrefab;
+    public Transform firePoint;
 
     [Header("Enemy Settings")]
     public float moveSpeed = 2f;
-    public float followRange = 20f;      // Distance before following starts
-    public float attackRange = 5f;      // Distance to start attacking
+    public float followRange = 20f;
+    public float attackRange = 5f;
     public float attackCooldown = 2f;
 
     [Header("Kick Attack Settings")]
-    public float kickRange = 1.5f;    // Distance for kick
-    public float kickForce = 5f;      // Optional push force on player
-    public int kickDamage = 20;       // Damage dealt by kick
-    public float kickCooldown = 0.8f; // Small cooldown between kicks
-    private float lastKickTime = 0f;  // Track last kick
+    public float kickRange = 1.5f;
+    public float kickForce = 5f;
+    public int kickDamage = 20;
+    public float kickCooldown = 0.8f;
+    private float lastKickTime = 0f;
 
     [Header("Kick Effects")]
-    public Transform kickWindPoint;   // Drag the KickWindPoint here
-    public GameObject kickWindPrefab; // Drag the animated wind prefab here
+    public Transform kickWindPoint;
+    public GameObject kickWindPrefab;
 
+    [Header("Attack Ranges")]
+    public float fireballRange = 10f;
+    public float jumpApproachDistance = 2.5f;
+    public int maxConsecutiveJumps = 3;
+    public float jumpCooldown = 3f;
 
     private float lastAttackTime = 0f;
     private bool isAttacking = false;
+    private bool isJumping = false;
     private bool facingRight = true;
+
+    private int jumpCount = 0;
+    private float lastJumpTime = -100f;
 
     private void Update()
     {
@@ -36,19 +46,19 @@ public class DragonWarrior : MonoBehaviour
 
         float distance = Vector2.Distance(transform.position, player.position);
 
-        // 1️⃣ If player is outside follow range → idle
+        // 1️⃣ Idle if out of follow range
         if (distance > followRange)
         {
             animator.Play("idle_DragonWarrior");
             return;
         }
 
-        // 2️⃣ If player is within follow range but outside attack range → walk
-        if (distance > attackRange && !isAttacking)
+        // 2️⃣ Walk if outside attack range and not attacking
+        if (distance > attackRange && !isAttacking && !isJumping)
         {
             FollowPlayer();
         }
-        // 3️⃣ If within attack range → attack
+        // 3️⃣ Attack if within range
         else if (distance <= attackRange)
         {
             AttackPlayer();
@@ -62,102 +72,153 @@ public class DragonWarrior : MonoBehaviour
     {
         animator.Play("walk_DragonWarrior");
 
-        Vector3 direction = (player.position - transform.position);
-        direction.y = 0f; // ignore vertical difference
+        Vector3 direction = player.position - transform.position;
+        direction.y = 0f;
 
         Vector3 movePos = Vector3.MoveTowards(transform.position, transform.position + direction.normalized, moveSpeed * Time.deltaTime);
         movePos.y = transform.position.y; // keep original Y
         transform.position = movePos;
     }
 
-
-
     private void AttackPlayer()
     {
+        if (isAttacking || isJumping) return;
+
         Vector3 enemyFlat = new Vector3(transform.position.x, 0, transform.position.z);
         Vector3 playerFlat = new Vector3(player.position.x, 0, player.position.z);
         float distance = Vector3.Distance(enemyFlat, playerFlat);
 
-
-        // 👣 If player is very close → do kick attack
-        if (distance <= kickRange)
+        // 👣 Kick if very close
+        if (distance <= kickRange && Time.time - lastKickTime >= kickCooldown)
         {
-            Debug.Log("inside kick range");
-            if (Time.time - lastKickTime >= kickCooldown)
-            {
-                Debug.Log("kick");
-                lastKickTime = Time.time;
-                StartCoroutine(PerformKickAttack());
-            }
-            return; // Skip other attacks while kicking
+            lastKickTime = Time.time;
+            StartCoroutine(PerformKickAttack());
+            return;
         }
 
-        // 🔥 Otherwise randomly do attack1 or 2
-        if (Time.time - lastAttackTime < attackCooldown) return;
+        // 🔥 Determine attack type
+        int attackType = Random.Range(1, 3); // 1 = fireball, 2 = jumpAtk
 
-        lastAttackTime = Time.time;
-        isAttacking = true;
-
-        int attackType = Random.Range(1, 2); // 1 or 2
         if (attackType == 1)
-            StartCoroutine(PerformAttack1());
-        else
-            StartCoroutine(PerformAttack2());
+        {
+            // Fireball attack
+            if (distance > fireballRange)
+            {
+                // Move closer to fireball range
+                Vector3 targetPos = player.position - (player.position - transform.position).normalized * fireballRange;
+                StartCoroutine(MoveToPosition(targetPos, () => StartCoroutine(PerformAttack1())));
+            }
+            else
+            {
+                // Already in range
+                StartCoroutine(PerformAttack1());
+            }
+        }
+        else if (attackType == 2)
+        {
+            // Jump attack if allowed
+            if (distance > kickRange && (jumpCount < maxConsecutiveJumps || Time.time - lastJumpTime >= jumpCooldown))
+            {
+                StartCoroutine(JumpTowardsKickDistance());
+            }
+            else
+            {
+                // Fallback to fireball
+                StartCoroutine(PerformAttack1());
+            }
+        }
     }
 
-
-    private System.Collections.IEnumerator PerformAttack1()
+    private IEnumerator MoveToPosition(Vector3 targetPos, System.Action onReached)
     {
-        animator.Play("attack_DragonWarrior");
-        // Wait until the frame where the fire should spawn (adjust delay)
+        isAttacking = true;
+
+        while (Vector3.Distance(transform.position, targetPos) > 0.1f)
+        {
+            Vector3 movePos = Vector3.MoveTowards(transform.position, targetPos, moveSpeed * Time.deltaTime);
+            movePos.y = transform.position.y;
+            transform.position = movePos;
+            FlipTowardsPlayer();
+            yield return null;
+        }
+
+        onReached?.Invoke();
+        isAttacking = false;
+    }
+
+    private IEnumerator JumpTowardsKickDistance()
+    {
+        isAttacking = true;
+        isJumping = true;
+        jumpCount++;
+        lastJumpTime = Time.time;
+
+        animator.Play("jumpAtk_DragonWarrior", -1, 0f);
+        yield return new WaitForSeconds(0.2f);
+
+        // Lock jump target
+        Vector3 jumpTarget = player.position - (player.position - transform.position).normalized * kickRange;
+        Vector3 startPos = transform.position;
+        float jumpDuration = 0.5f;
+        float elapsed = 0f;
+
+        while (elapsed < jumpDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / jumpDuration;
+            transform.position = Vector3.Lerp(startPos, jumpTarget, t) + new Vector3(0, Mathf.Sin(t * Mathf.PI) * 1f, 0);
+            FlipTowardsPlayer();
+            yield return null;
+        }
+
+        // Apply kick if in range
+        float distance = Vector2.Distance(transform.position, player.position);
+        if (distance <= kickRange)
+            yield return StartCoroutine(PerformKickAttack());
+
+        isJumping = false;
+        isAttacking = false;
+    }
+
+    private IEnumerator PerformAttack1()
+    {
+        isAttacking = true;
+
+        animator.Play("attack_DragonWarrior", -1, 0f);
+        animator.Update(0f);
+
         yield return new WaitForSeconds(0.45f);
 
-        // instantiate and launch
-        GameObject go = Instantiate(fireballPrefab, firePoint.position, Quaternion.identity);
-        Fireball fb = go.GetComponent<Fireball>();
-        if (fb != null)
+        if (fireballPrefab != null && firePoint != null)
         {
-            Vector3 dir = player.position; // 3D target
-            fb.Launch(dir);
+            GameObject go = Instantiate(fireballPrefab, firePoint.position, Quaternion.identity);
+            Fireball fb = go.GetComponent<Fireball>();
+            if (fb != null)
+            {
+                fb.Launch(player.position);
+            }
         }
-        // optionally wait for rest of animation
+
         yield return new WaitForSeconds(0.4f);
         isAttacking = false;
     }
 
-
-    private System.Collections.IEnumerator PerformAttack2()
+    private IEnumerator PerformKickAttack()
     {
-        animator.Play("strike_DragonWarrior"); // or some other animation
-        yield return new WaitForSeconds(1.0f);
-        isAttacking = false;
-    }
+        isAttacking = true;
 
-
-    private System.Collections.IEnumerator PerformKickAttack()
-    {
-        // Force restart animation
         animator.Play("flyKick_DragonWarrior", -1, 0f);
-
         yield return new WaitForSeconds(0.2f);
 
-        // Spawn wind effect at feet
         if (kickWindPrefab != null && kickWindPoint != null)
         {
             GameObject wind = Instantiate(kickWindPrefab, kickWindPoint.position, Quaternion.identity);
-
-            // Flip wind if dragon faces left
             if (!facingRight)
                 wind.transform.localScale = new Vector3(-1, 1, 1);
-
-            // Destroy automatically after animation
-            // Make sure your prefab has AutoDestroyAfterAnim script
         }
 
-        // Wait until the kick connects
         yield return new WaitForSeconds(0.4f);
 
-        // Apply damage / push to player
         float distance = Vector2.Distance(transform.position, player.position);
         if (distance <= kickRange)
         {
@@ -169,12 +230,9 @@ public class DragonWarrior : MonoBehaviour
             }
         }
 
-        // Wait for rest of animation
         yield return new WaitForSeconds(0.5f);
         isAttacking = false;
     }
-
-
 
     private void FlipTowardsPlayer()
     {
