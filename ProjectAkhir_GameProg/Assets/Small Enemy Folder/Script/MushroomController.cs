@@ -3,17 +3,18 @@ using System.Collections;
 
 public class MushroomController : MonoBehaviour
 {
-    [Header("References")]
     public Transform player;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
     private MushroomHealth mushroomHealth;
     private Coroutine currentAttackCoroutine;
 
-    [Header("Stats")]
     public float moveSpeed = 2f;
     public float followRange = 5f;
     public float attackRange = 2f;
+
+    public float attackDamage = 5f;
+    public float damageTime = 0.9f;
 
     private bool isAttacking = false;
 
@@ -30,31 +31,25 @@ public class MushroomController : MonoBehaviour
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
-        // --- Attack Logic ---
         if (distanceToPlayer <= attackRange)
         {
             if (!isAttacking)
             {
-                // Start attack only if not attacking
                 animator.ResetTrigger("isAttacking");
                 currentAttackCoroutine = StartCoroutine(AttackRoutine());
             }
         }
         else
         {
-            // Stop attack if player leaves range
             if (isAttacking && currentAttackCoroutine != null)
             {
                 StopCoroutine(currentAttackCoroutine);
                 isAttacking = false;
                 currentAttackCoroutine = null;
-
-                // Reset attack animation properly
                 animator.ResetTrigger("isAttacking");
-                animator.SetBool("isWalking", true); // allow follow animation to play
+                animator.SetBool("isWalking", true);
             }
 
-            // --- Follow if inside followRange ---
             if (distanceToPlayer <= followRange)
             {
                 animator.SetBool("isWalking", true);
@@ -62,12 +57,10 @@ public class MushroomController : MonoBehaviour
             }
             else
             {
-                // Idle if out of follow range
                 animator.SetBool("isWalking", false);
             }
         }
 
-        // Flip sprite
         spriteRenderer.flipX = (player.position.x > transform.position.x);
     }
 
@@ -82,10 +75,27 @@ public class MushroomController : MonoBehaviour
         isAttacking = true;
         animator.SetTrigger("isAttacking");
 
-        // Wait for attack animation duration
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(damageTime);
+        DealDamageToPlayer();
+
+        float remainingTime = animator.GetCurrentAnimatorStateInfo(0).length - damageTime;
+        if (remainingTime > 0f)
+            yield return new WaitForSeconds(remainingTime);
 
         isAttacking = false;
         currentAttackCoroutine = null;
+    }
+
+    private void DealDamageToPlayer()
+    {
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        if (distanceToPlayer <= attackRange)
+        {
+            PlayerCombat playerCombat = player.GetComponent<PlayerCombat>();
+            if (playerCombat != null && !playerCombat.isDead)
+            {
+                playerCombat.TakeDamage(attackDamage);
+            }
+        }
     }
 }

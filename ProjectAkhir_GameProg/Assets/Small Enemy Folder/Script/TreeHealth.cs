@@ -11,13 +11,16 @@ public class TreeHealth : MonoBehaviour
     [Header("References")]
     private Animator animator;
     private TreeController treeController; 
-    public EnemyHealthBar healthBar; // Reference to your UI health bar script
+    public EnemyHealthBar healthBar; 
 
     [Header("Damage Settings")]
     public float hurtDuration = 0.5f; 
 
     [Header("Death Settings")]
-    public float dieDuration = 2f; // Duration of death animation (manually assigned)
+    public float dieDuration = 2f; 
+
+    [Header("Sword Damage")]
+    public float swordDamage = 25f; 
 
     void Start()
     {
@@ -29,10 +32,8 @@ public class TreeHealth : MonoBehaviour
             healthBar.SetMaxHealth(maxHealth);
     }
     
-    // --- Temporary Debug Damage ---
     void Update()
     {
-        // Press 'H' to deal debug damage
         if (Input.GetKeyDown(KeyCode.H))
         {
             Debug.Log("Tree took 5 damage from 'H' key press.");
@@ -62,7 +63,6 @@ public class TreeHealth : MonoBehaviour
 
     private IEnumerator HurtRoutine()
     {
-        // Temporarily disable GolemController logic during hurt
         if (treeController != null)
             treeController.enabled = false;
 
@@ -90,7 +90,6 @@ public class TreeHealth : MonoBehaviour
         if (GetComponent<Collider2D>() != null)
             GetComponent<Collider2D>().enabled = false;
 
-        // Start coroutine to destroy object after manually assigned die duration
         StartCoroutine(DieAndDestroy());
     }
 
@@ -98,5 +97,13 @@ public class TreeHealth : MonoBehaviour
     {
         yield return new WaitForSeconds(dieDuration);
         Destroy(gameObject);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Sword"))
+        {
+            TakeDamage(other.gameObject.GetComponentInParent<PlayerCombat>().attackDamage);
+        }
     }
 }

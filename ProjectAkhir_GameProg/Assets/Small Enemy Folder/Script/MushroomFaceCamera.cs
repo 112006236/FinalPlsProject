@@ -3,7 +3,7 @@ using UnityEngine;
 public class MushroomFaceCamera : MonoBehaviour
 {
     public Camera mainCamera;
-    public bool lockYRotation = true; // lock upright rotation
+    public bool lockYRotation = true; 
 
     void LateUpdate()
     {
@@ -14,11 +14,10 @@ public class MushroomFaceCamera : MonoBehaviour
 
         if (lockYRotation)
         {
-            // ignore vertical difference so sprite stays upright
             direction.y = 0;
         }
 
         if (direction.sqrMagnitude > 0.001f)
-            transform.rotation = Quaternion.LookRotation(-direction); // look at camera
+            transform.rotation = Quaternion.LookRotation(-direction);
     }
 }

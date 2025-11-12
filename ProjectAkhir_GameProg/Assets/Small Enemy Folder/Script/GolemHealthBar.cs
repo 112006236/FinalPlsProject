@@ -4,8 +4,8 @@ using UnityEngine.UI;
 public class GolemHealthBar : MonoBehaviour
 {
     [Header("UI References")]
-    public Image foreground; // the filled image (Foreground)
-    public Gradient healthGradient; // optional color gradient (green → red)
+    public Image foreground; 
+    public Gradient healthGradient; 
 
     private float maxHealth;
 

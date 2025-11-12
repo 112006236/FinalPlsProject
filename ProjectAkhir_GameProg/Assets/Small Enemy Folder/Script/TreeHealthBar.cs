@@ -4,8 +4,8 @@ using UnityEngine.UI;
 public class TreeHealthBar : MonoBehaviour
 {
     [Header("UI References")]
-    public Image foreground; // the filled image (Foreground)
-    public Gradient healthGradient; // optional color gradient (green → red)
+    public Image foreground; 
+    public Gradient healthGradient; 
 
     private float maxHealth;
 
@@ -16,6 +16,7 @@ public class TreeHealthBar : MonoBehaviour
 
     public void SetMaxHealth(float health)
     {
+        maxHealth = health;  
         UpdateHealth(health);
     }
 

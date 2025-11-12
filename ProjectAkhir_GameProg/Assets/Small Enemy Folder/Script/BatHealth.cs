@@ -11,13 +11,13 @@ public class BatHealth : MonoBehaviour
     [Header("References")]
     private Animator animator;
     private BatController batController; 
-    public EnemyHealthBar healthBar; // Reference to your UI health bar script
+    public EnemyHealthBar healthBar; 
 
     [Header("Damage Settings")]
     public float hurtDuration = 0.5f; 
 
     [Header("Death Settings")]
-    public float dieDuration = 2f; // Duration of death animation (manually assigned)
+    public float dieDuration = 2f; 
 
     void Start()
     {
@@ -29,10 +29,8 @@ public class BatHealth : MonoBehaviour
             healthBar.SetMaxHealth(maxHealth);
     }
     
-    // --- Temporary Debug Damage ---
     void Update()
     {
-        // Press 'H' to deal debug damage
         if (Input.GetKeyDown(KeyCode.H))
         {
             Debug.Log("Bat took 5 damage from 'H' key press.");
@@ -62,7 +60,6 @@ public class BatHealth : MonoBehaviour
 
     private IEnumerator HurtRoutine()
     {
-        // Temporarily disable GolemController logic during hurt
         if (batController != null)
             batController.enabled = false;
 
@@ -90,7 +87,6 @@ public class BatHealth : MonoBehaviour
         if (GetComponent<Collider2D>() != null)
             GetComponent<Collider2D>().enabled = false;
 
-        // Start coroutine to destroy object after manually assigned die duration
         StartCoroutine(DieAndDestroy());
     }
 
@@ -98,5 +94,13 @@ public class BatHealth : MonoBehaviour
     {
         yield return new WaitForSeconds(dieDuration);
         Destroy(gameObject);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Sword"))
+        {
+            TakeDamage(other.gameObject.GetComponentInParent<PlayerCombat>().attackDamage);
+        }
     }
 }

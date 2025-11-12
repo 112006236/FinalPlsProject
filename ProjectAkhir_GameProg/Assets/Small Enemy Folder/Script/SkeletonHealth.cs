@@ -11,13 +11,13 @@ public class SkeletonHealth : MonoBehaviour
     [Header("References")]
     private Animator animator;
     private SkeletonController skeletonController; 
-    public EnemyHealthBar healthBar; // Reference to your UI health bar script
+    public EnemyHealthBar healthBar; 
 
     [Header("Damage Settings")]
     public float hurtDuration = 0.5f; 
 
     [Header("Death Settings")]
-    public float dieDuration = 2f; // Duration of death animation (manually assigned)
+    public float dieDuration = 2f; 
 
     void Start()
     {
@@ -29,10 +29,8 @@ public class SkeletonHealth : MonoBehaviour
             healthBar.SetMaxHealth(maxHealth);
     }
     
-    // --- Temporary Debug Damage ---
     void Update()
     {
-        // Press 'H' to deal debug damage
         if (Input.GetKeyDown(KeyCode.H))
         {
             Debug.Log("Skeleton took 5 damage from 'H' key press.");
@@ -89,7 +87,6 @@ public class SkeletonHealth : MonoBehaviour
         if (GetComponent<Collider2D>() != null)
             GetComponent<Collider2D>().enabled = false;
 
-        // Start coroutine to destroy object after manually assigned die duration
         StartCoroutine(DieAndDestroy());
     }
 
@@ -98,4 +95,13 @@ public class SkeletonHealth : MonoBehaviour
         yield return new WaitForSeconds(dieDuration);
         Destroy(gameObject);
     }
+    
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Sword"))
+        {
+            TakeDamage(other.gameObject.GetComponentInParent<PlayerCombat>().attackDamage);
+        }
+    }
+
 }
