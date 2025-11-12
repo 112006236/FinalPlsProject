@@ -16,6 +16,9 @@ public class PlayerMovement : MonoBehaviour
 
     PlayerInputActions inputActions;
 
+    // Get isDead variable from PlayerCombat
+    private PlayerCombat combat;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,13 +27,18 @@ public class PlayerMovement : MonoBehaviour
 
         inputActions = new PlayerInputActions();
         inputActions.Player.Enable();
+
+        combat = GetComponent<PlayerCombat>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        Movement();
-        RotateCam();
+        if (!combat.isDead)
+        {
+            Movement();
+            RotateCam();
+        }
     }
 
     private void RotateCam()
