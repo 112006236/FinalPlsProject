@@ -6,12 +6,16 @@ public class toAttack1 : StateMachineBehaviour
 {
     private float timer;
     private float attackDelay;
+
+    private float goState2;
     
         // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         attackDelay = Random.Range(1.5f, 3f);
         timer = 0f;
+
+        goState2 = Random.Range(15f, 16f);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -20,12 +24,21 @@ public class toAttack1 : StateMachineBehaviour
         
         timer += Time.deltaTime;
 
-        // When time exceeds the random delay, trigger the attack
+        // Attack trigger
         if (timer >= attackDelay)
         {
             animator.SetTrigger("Attack1");
-            timer = 0f; // reset if Idle is entered again later
+            attackDelay = timer + Random.Range(1.5f, 3f); // schedule next attack
         }
+
+        // Transition to walk state after 15s
+        if (timer >= goState2)
+        {
+            animator.SetTrigger("toWalk");
+        }
+
+        
+
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state

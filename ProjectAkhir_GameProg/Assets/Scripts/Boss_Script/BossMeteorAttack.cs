@@ -32,14 +32,16 @@ public class BossMeteorAttack : MonoBehaviour
                 player.position.z + offset.y
             );
 
-            if (i%8 == 0)
+            if (i % 8 == 0)
             {
                 groundPos = new Vector3(
-                player.position.x, 
+                player.position.x,
                 player.position.y - 1,
-                player.position.z 
+                player.position.z
             );
             }
+
+            groundPos.y += 1;
 
             // Spawn warning marker
             GameObject marker = Instantiate(warningMarkerPrefab, groundPos, Quaternion.identity);
