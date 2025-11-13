@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641258, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -228,7 +228,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!136 &805834022
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -321,7 +321,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
-  rotationSpeed: 720
+  attackSlowDownFactor: 0.4
+  camHeight: 0
+  cameraRadius: 10
+  mouseSensitivity: 0.1
+  sprites: {fileID: 0}
 --- !u!54 &805834027
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -691,7 +695,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1749793495}
   m_LocalRotation: {x: -0.16158879, y: 0.010058554, z: -0.0016719097, w: -0.98680556}
-  m_LocalPosition: {x: 4.3931136, y: 4.2194705, z: -18.515759}
+  m_LocalPosition: {x: 4.3931127, y: 4.219471, z: -18.515759}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -889,7 +893,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1955037322}
   m_LocalRotation: {x: -0.16158879, y: 0.010058554, z: -0.0016719097, w: -0.98680556}
-  m_LocalPosition: {x: 4.3931136, y: 4.2194705, z: -18.515759}
+  m_LocalPosition: {x: 4.3931127, y: 4.219471, z: -18.515759}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
