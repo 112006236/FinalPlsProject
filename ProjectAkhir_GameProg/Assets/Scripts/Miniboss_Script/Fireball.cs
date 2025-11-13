@@ -8,7 +8,7 @@ public class Fireball : MonoBehaviour
     public float speed = 6f;
     public float maxLifetime = 6f;
     public float height = 1.0f;
-    public int damage = 1;
+    public int damage = 15;
 
     [Header("Visual")]
     public Transform sprite;      // Child object containing the fireball sprite
@@ -24,7 +24,6 @@ public class Fireball : MonoBehaviour
     [Header("Effects")]
     public GameObject explosionEffectPrefab; 
 
-
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -34,7 +33,6 @@ public class Fireball : MonoBehaviour
 
     void Start()
     {
-        // Keep consistent height
         Vector3 pos = transform.position;
         pos.y = height;
         transform.position = pos;
@@ -60,13 +58,11 @@ public class Fireball : MonoBehaviour
         rb.isKinematic = false;
         rb.velocity = shootDir * speed;
 
-        // Orient the fireball (body) toward the target
         transform.forward = shootDir;
     }
 
     void LateUpdate()
     {
-        // Keep fireball flying at fixed height
         Vector3 pos = transform.position;
         pos.y = height;
         transform.position = pos;
@@ -74,18 +70,15 @@ public class Fireball : MonoBehaviour
         if (sprite == null || mainCamera == null)
             return;
 
-        // --- 1️⃣ Always face the camera (billboard) ---
         sprite.forward = mainCamera.transform.forward;
 
-        // --- 2️⃣ Rotate around Y-axis to face shooting direction ---
         Vector3 horizontalVel = rb.velocity;
         horizontalVel.y = 0f;
 
         if (horizontalVel.sqrMagnitude > 0.0001f)
         {
-            // Calculate Y rotation angle based on direction
             float yAngle = Mathf.Atan2(horizontalVel.x, horizontalVel.z) * Mathf.Rad2Deg;
-            sprite.localRotation = Quaternion.Euler(0f, yAngle+270, 0f);
+            sprite.localRotation = Quaternion.Euler(0f, yAngle + 270f, 0f);
         }
     }
 
@@ -97,13 +90,17 @@ public class Fireball : MonoBehaviour
 
         Debug.Log("Fireball hit: " + other.name);
 
-        // Spawn explosion on the object hit
-        Explode(other);
-
         if (other.CompareTag("Player"))
         {
-            // TODO: damage logic here
+            PlayerCombat playerCombat = other.GetComponent<PlayerCombat>();
+            if (playerCombat != null && !playerCombat.isDead)
+            {
+               // playerCombat.TakeDamage(damage);
+            }
         }
+
+        // Spawn explosion effect
+        Explode(other);
     }
 
     public void Explode(Collider hitObject)
@@ -111,7 +108,6 @@ public class Fireball : MonoBehaviour
         if (hasExploded) return;
         hasExploded = true;
 
-        // Stop movement
         rb.velocity = Vector3.zero;
         rb.isKinematic = true;
         if (col) col.enabled = false;
@@ -119,22 +115,13 @@ public class Fireball : MonoBehaviour
         if (explosionEffectPrefab != null)
         {
             Vector3 spawnPos;
-
-            // If the object has a collider, spawn in its center
             Collider hitCol = hitObject.GetComponent<Collider>();
             if (hitCol != null)
-            {
                 spawnPos = hitCol.bounds.center;
-            }
             else
-            {
-                // fallback: use object's transform position
                 spawnPos = hitObject.transform.position;
-            }
 
             GameObject effect = Instantiate(explosionEffectPrefab, spawnPos, Quaternion.identity);
-
-            // Parent it to the hit object so it follows
             effect.transform.SetParent(hitObject.transform);
 
             ParticleSystem ps = effect.GetComponent<ParticleSystem>();
@@ -149,13 +136,9 @@ public class Fireball : MonoBehaviour
             }
         }
 
-        // Destroy fireball immediately
+        animator.SetTrigger("explode");
         Destroy(gameObject);
-
-        animator.SetTrigger("explode"); // optional
     }
-
-
 
     public void OnExplodeAnimationEnd()
     {

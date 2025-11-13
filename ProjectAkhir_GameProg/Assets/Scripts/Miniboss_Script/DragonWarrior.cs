@@ -29,7 +29,7 @@ public class DragonWarrior : MonoBehaviour
     [Header("Attack Ranges")]
     public float fireballRange = 10f;
     public float jumpApproachDistance = 2.5f;
-    public int maxConsecutiveJumps = 3;
+    public int maxConsecutiveJumps = 2;
     public float jumpCooldown = 3f;
 
     private float lastAttackTime = 0f;
@@ -39,6 +39,7 @@ public class DragonWarrior : MonoBehaviour
 
     private int jumpCount = 0;
     private float lastJumpTime = -100f;
+
 
     private void Update()
     {
@@ -96,7 +97,7 @@ public class DragonWarrior : MonoBehaviour
             return;
         }
 
-        // 🔥 Determine attack type
+        // Determine attack type
         int attackType = Random.Range(1, 3); // 1 = fireball, 2 = jumpAtk
 
         if (attackType == 1)
@@ -104,13 +105,11 @@ public class DragonWarrior : MonoBehaviour
             // Fireball attack
             if (distance > fireballRange)
             {
-                // Move closer to fireball range
                 Vector3 targetPos = player.position - (player.position - transform.position).normalized * fireballRange;
                 StartCoroutine(MoveToPosition(targetPos, () => StartCoroutine(PerformAttack1())));
             }
             else
             {
-                // Already in range
                 StartCoroutine(PerformAttack1());
             }
         }
@@ -123,7 +122,6 @@ public class DragonWarrior : MonoBehaviour
             }
             else
             {
-                // Fallback to fireball
                 StartCoroutine(PerformAttack1());
             }
         }
@@ -154,24 +152,30 @@ public class DragonWarrior : MonoBehaviour
         lastJumpTime = Time.time;
 
         animator.Play("jumpAtk_DragonWarrior", -1, 0f);
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.15f); // shorter delay before moving
 
-        // Lock jump target
         Vector3 jumpTarget = player.position - (player.position - transform.position).normalized * kickRange;
         Vector3 startPos = transform.position;
-        float jumpDuration = 0.5f;
-        float elapsed = 0f;
 
+        // smaller jump arc (height = 0.4f instead of 1f)
+        float jumpDuration = 0.35f; 
+        float jumpHeight = 0.4f;
+
+        float elapsed = 0f;
         while (elapsed < jumpDuration)
         {
             elapsed += Time.deltaTime;
             float t = elapsed / jumpDuration;
-            transform.position = Vector3.Lerp(startPos, jumpTarget, t) + new Vector3(0, Mathf.Sin(t * Mathf.PI) * 1f, 0);
+            transform.position = Vector3.Lerp(startPos, jumpTarget, t) + new Vector3(0, Mathf.Sin(t * Mathf.PI) * jumpHeight, 0);
             FlipTowardsPlayer();
             yield return null;
         }
 
-        // Apply kick if in range
+        // ensure it ends flat on the ground
+        Vector3 flatPos = transform.position;
+        flatPos.y = startPos.y;
+        transform.position = flatPos;
+
         float distance = Vector2.Distance(transform.position, player.position);
         if (distance <= kickRange)
             yield return StartCoroutine(PerformKickAttack());
@@ -180,10 +184,10 @@ public class DragonWarrior : MonoBehaviour
         isAttacking = false;
     }
 
+
     private IEnumerator PerformAttack1()
     {
         isAttacking = true;
-
         animator.Play("attack_DragonWarrior", -1, 0f);
         animator.Update(0f);
 
@@ -206,7 +210,6 @@ public class DragonWarrior : MonoBehaviour
     private IEnumerator PerformKickAttack()
     {
         isAttacking = true;
-
         animator.Play("flyKick_DragonWarrior", -1, 0f);
         yield return new WaitForSeconds(0.2f);
 
@@ -219,14 +222,19 @@ public class DragonWarrior : MonoBehaviour
 
         yield return new WaitForSeconds(0.4f);
 
+        // 💥 Check for hit and deal damage
         float distance = Vector2.Distance(transform.position, player.position);
         if (distance <= kickRange)
         {
-            Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
-            if (rb != null)
+            // Push effect (optional since player uses CharacterController)
+            Vector3 pushDir = (player.position - transform.position).normalized;
+            player.position += pushDir * 0.5f; // small nudge effect
+
+            // ✅ Deal damage
+            PlayerCombat playerCombat = player.GetComponent<PlayerCombat>();
+            if (playerCombat != null && !playerCombat.isDead)
             {
-                Vector2 pushDir = (player.position - transform.position).normalized;
-                rb.AddForce(pushDir * kickForce, ForceMode2D.Impulse);
+                playerCombat.TakeDamage(kickDamage);
             }
         }
 
