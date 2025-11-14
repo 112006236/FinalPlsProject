@@ -466,10 +466,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9b4ed1f3af3c4b4581d132bfd48dd2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
+  player: {fileID: 5766828216632494511, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
   moveSpeed: 2
   followRange: 5
   attackRange: 2
+  attackDamage: 10
+  damageTime: 1.1
 --- !u!114 &3895180748720268122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -555,7 +557,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f858025c96e703e40ac3ed2c82044b8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
+  player: {fileID: 5766828216632494511, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
   speed: 2
   stopDistance: 5
 --- !u!136 &3895180748720268120
