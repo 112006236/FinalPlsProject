@@ -262,10 +262,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c00eb814de413b4589b3b9458515c95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bossAnimator: {fileID: 0}
+  animator: {fileID: 0}
   phase2Time: 15
-  isFlipped: 0
-  player: {fileID: 0}
+  walkSpeed: 2
+  chargeSpeed: 15
+  chargeDistance: 10
+  AttackDistance: 2
+  player: {fileID: 904702032}
 --- !u!1 &791677060
 GameObject:
   m_ObjectHideFlags: 0
