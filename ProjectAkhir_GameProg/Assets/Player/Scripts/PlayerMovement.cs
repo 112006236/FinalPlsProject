@@ -15,6 +15,12 @@ public class PlayerMovement : MonoBehaviour
     private Animator animator;
     public Transform sprites;
 
+    [HideInInspector]
+    public Vector3 lastMoveDirection;
+    [HideInInspector]
+    public bool facingRight;
+    private PlayerDash playerDash;
+
     PlayerInputActions inputActions;
 
     // Get isDead variable from PlayerCombat
@@ -30,17 +36,22 @@ public class PlayerMovement : MonoBehaviour
         inputActions.Player.Enable();
 
         combat = GetComponent<PlayerCombat>();
+        playerDash = GetComponent<PlayerDash>();
+
+        lastMoveDirection = Vector2.zero;
+        facingRight = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (combat.isDead) gravity = 0f;
-
         if (!combat.isDead)
         {
-            Movement();
+            if (!playerDash.isDashing) Movement();
             RotateCam();
+        } else
+        {
+            gravity = 0f;
         }
     }
 
@@ -52,18 +63,24 @@ public class PlayerMovement : MonoBehaviour
 
     private void Movement()
     {
-        // Gravity
-        
-
         float finalMoveSpeed = moveSpeed;
         if (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack 1") || animator.GetCurrentAnimatorStateInfo(0).IsName("Attack 2"))
         {
+            Debug.Log("Slowdown");
             finalMoveSpeed *= attackSlowDownFactor;
         }
 
         Vector2 inputVector = inputActions.Player.Movement.ReadValue<Vector2>().normalized; // 8-direction movement
         Vector3 moveVector = transform.right * inputVector.x + transform.forward * inputVector.y;
+
+        // Update lastMoveDirection for dashing
+        if (inputVector.magnitude > 0.1f)
+        {
+            lastMoveDirection = moveVector;
+            // lastMoveDirection.y = 0;
+        }
         
+        // Gravity
         moveVector.y = gravity;
 
         controller.Move(finalMoveSpeed * Time.deltaTime * moveVector);
@@ -73,10 +90,12 @@ public class PlayerMovement : MonoBehaviour
         // Handle flipping sprite
         if (inputVector.x != 0 && inputVector.x > 0.1f)
         {
+            facingRight = true;
             sprites.localScale = new Vector3(1, 1, 1);
         }
         else if (inputVector.x != 0 && inputVector.x < -0.1f)
         {
+            facingRight = false;
             sprites.localScale = new Vector3(-1, 1, 1);
         }
     }
