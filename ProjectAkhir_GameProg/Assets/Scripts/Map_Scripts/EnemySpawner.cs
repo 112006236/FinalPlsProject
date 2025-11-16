@@ -19,10 +19,11 @@ public class EnemySpawner : MonoBehaviour
 
     private bool playerInside = false;
     private bool isSpawning = false;
+    private bool hasSpawned = false; // ✅ Prevents re-spawning
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && !isSpawning)
+        if (other.CompareTag("Player") && !isSpawning && !hasSpawned)
         {
             Debug.Log($"Player entered enemy area: {gameObject.name}");
             playerInside = true;
@@ -62,7 +63,8 @@ public class EnemySpawner : MonoBehaviour
             }
         }
 
-        Debug.Log($"All enemies spawned for area: {gameObject.name}");
+        Debug.Log($"✅ All enemies spawned for area: {gameObject.name}");
+        hasSpawned = true;  // ✅ Mark as completed
         isSpawning = false;
     }
 }
