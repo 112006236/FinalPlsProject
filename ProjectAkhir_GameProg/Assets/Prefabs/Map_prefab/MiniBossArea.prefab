@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 2822242669963516818}
   - component: {fileID: 2822242669963516819}
   m_Layer: 0
-  m_Name: BossArea
+  m_Name: MiniBossArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

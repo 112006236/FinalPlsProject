@@ -11,6 +11,12 @@ public class EnemySpawner : MonoBehaviour
         public int count = 5;
         public float spawnInterval = 1f;
         public int spawnPointIndex = 0;
+
+        [HideInInspector] public int spawnedCount = 0;
+        [HideInInspector] public int deadCount = 0;
+
+        public GameObject minibossPrefab;
+        [HideInInspector] public bool minibossSpawned = false;
     }
 
     [Header("Enemy Settings")]
@@ -19,11 +25,10 @@ public class EnemySpawner : MonoBehaviour
 
     private bool playerInside = false;
     private bool isSpawning = false;
-    private bool hasSpawned = false; // ✅ Prevents re-spawning
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && !isSpawning && !hasSpawned)
+        if (other.CompareTag("Player") && !isSpawning)
         {
             Debug.Log($"Player entered enemy area: {gameObject.name}");
             playerInside = true;
@@ -44,27 +49,61 @@ public class EnemySpawner : MonoBehaviour
     {
         isSpawning = true;
 
-        foreach (var group in enemyGroups)
+        for (int g = 0; g < enemyGroups.Count; g++)
         {
-            Transform spawnPoint = spawnPoints[group.spawnPointIndex];
+            EnemyGroup group = enemyGroups[g];
 
-            for (int i = 0; i < group.count; i++)
+            int spIndex = Mathf.Clamp(group.spawnPointIndex, 0, Mathf.Max(0, spawnPoints.Count - 1));
+            Transform spawnPoint = spawnPoints.Count > 0 ? spawnPoints[spIndex] : transform;
+
+            while (group.spawnedCount < group.count)
             {
                 if (!playerInside)
                 {
-                    Debug.Log("Player left area — stopping enemy spawn.");
+                    Debug.Log("Player left area — pausing enemy spawn. Progress preserved.");
                     isSpawning = false;
                     yield break;
                 }
 
-                Instantiate(group.enemyPrefab, spawnPoint.position, Quaternion.identity);
-                Debug.Log($"Spawned enemy {i + 1}/{group.count} from {group.enemyPrefab.name}");
+                var instance = Instantiate(group.enemyPrefab, spawnPoint.position, Quaternion.identity);
+
+                var notifier = instance.GetComponent<EnemyDeathNotifier>();
+                if (notifier != null)
+                {
+                    notifier.SetSpawner(this, g);
+                }
+
+                group.spawnedCount++;
+                Debug.Log($"Spawned enemy {group.spawnedCount}/{group.count} from {group.enemyPrefab.name} (group {g})");
+
                 yield return new WaitForSeconds(group.spawnInterval);
             }
         }
 
         Debug.Log($"✅ All enemies spawned for area: {gameObject.name}");
-        hasSpawned = true;  // ✅ Mark as completed
         isSpawning = false;
+    }
+
+    public void NotifyEnemyDeath(int groupIndex, GameObject enemyGo = null)
+    {
+        if (groupIndex < 0 || groupIndex >= enemyGroups.Count) return;
+
+        var group = enemyGroups[groupIndex];
+
+        group.deadCount++;
+        Debug.Log($"Enemy from group {groupIndex} died — {group.deadCount}/{group.count} dead.");
+
+        // Spawn miniboss ONLY when all enemies are dead
+        if (group.deadCount >= group.count &&
+            !group.minibossSpawned &&
+            group.minibossPrefab != null)
+        {
+            Transform spawnPoint = spawnPoints.Count > 0 ? spawnPoints[group.spawnPointIndex] : transform;
+
+            Instantiate(group.minibossPrefab, spawnPoint.position, Quaternion.identity);
+            group.minibossSpawned = true;
+
+            Debug.Log($"🔥 All enemies from group {groupIndex} are dead — MINIBOSS SPAWNED!");
+        }
     }
 }

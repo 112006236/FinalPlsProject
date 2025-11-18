@@ -18,8 +18,12 @@ public class RockBorderSpawner : MonoBehaviour
     [Header("Rock Scale")]
     public float scaleMultiplier = 1f;
 
+    [Header("Border Offset (push rocks outward)")]
+    public float borderPushOut = 0.5f;
+
     private float width;
     private float height;
+    private Bounds groundBounds;
 
     // Track already used positions to prevent duplicates
     private HashSet<Vector2> usedPositions = new HashSet<Vector2>();
@@ -32,9 +36,9 @@ public class RockBorderSpawner : MonoBehaviour
             return;
         }
 
-        Bounds bounds = GetObjectBounds(groundObject);
-        width = bounds.size.x;
-        height = bounds.size.z;
+        groundBounds = GetObjectBounds(groundObject);
+        width = groundBounds.size.x;
+        height = groundBounds.size.z;
 
         GenerateBorder();
     }
@@ -59,56 +63,54 @@ public class RockBorderSpawner : MonoBehaviour
             return;
         }
 
-        float left = -width / 2f;
-        float right = width / 2f;
-        float bottom = -height / 2f;
-        float top = height / 2f;
+        float left = groundBounds.min.x - borderPushOut;
+        float right = groundBounds.max.x + borderPushOut;
+        float bottom = groundBounds.min.z - borderPushOut;
+        float top = groundBounds.max.z + borderPushOut;
 
-        // Clear used positions before spawning
         usedPositions.Clear();
 
-        // X-axis borders (left & right)
+        // X-axis borders (bottom & top)
         for (float x = left; x <= right; x += rockSpacing)
         {
-            Vector2 leftPosKey = new Vector2(x, bottom);
-            Vector2 rightPosKey = new Vector2(x, top);
+            Vector2 bottomKey = new Vector2(x, bottom);
+            Vector2 topKey = new Vector2(x, top);
 
-            if (!usedPositions.Contains(leftPosKey))
+            if (!usedPositions.Contains(bottomKey))
             {
                 SpawnRock(new Vector3(x, 0, bottom));
-                usedPositions.Add(leftPosKey);
+                usedPositions.Add(bottomKey);
             }
 
-            if (!usedPositions.Contains(rightPosKey))
+            if (!usedPositions.Contains(topKey))
             {
                 SpawnRock(new Vector3(x, 0, top));
-                usedPositions.Add(rightPosKey);
+                usedPositions.Add(topKey);
             }
         }
 
-        // Z-axis borders (top & bottom)
+        // Z-axis borders (left & right)
         for (float z = bottom; z <= top; z += rockSpacing)
         {
-            Vector2 bottomPosKey = new Vector2(left, z);
-            Vector2 topPosKey = new Vector2(right, z);
+            Vector2 leftKey = new Vector2(left, z);
+            Vector2 rightKey = new Vector2(right, z);
 
-            if (!usedPositions.Contains(bottomPosKey))
+            if (!usedPositions.Contains(leftKey))
             {
                 SpawnRock(new Vector3(left, 0, z));
-                usedPositions.Add(bottomPosKey);
+                usedPositions.Add(leftKey);
             }
 
-            if (!usedPositions.Contains(topPosKey))
+            if (!usedPositions.Contains(rightKey))
             {
                 SpawnRock(new Vector3(right, 0, z));
-                usedPositions.Add(topPosKey);
+                usedPositions.Add(rightKey);
             }
         }
     }
 
     void SpawnRock(Vector3 pos)
     {
-        // small random placement variation
         pos += new Vector3(
             Random.Range(-randomOffset, randomOffset),
             heightOffset,
@@ -121,7 +123,6 @@ public class RockBorderSpawner : MonoBehaviour
         if (randomRotation)
             rock.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
 
-        // apply scale multiplier
         rock.transform.localScale = rock.transform.localScale * scaleMultiplier;
 
         rock.transform.SetParent(transform);

@@ -453,7 +453,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa78f87a08c703d4da095bd307187b53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
+  player: {fileID: 5766828216632494511, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
   animator: {fileID: 6345112742430492242}
   fireballPrefab: {fileID: 7917078961079286059, guid: 2039a24555d257640afb3368fa2532f0, type: 3}
   firePoint: {fileID: 6345112742430492204}
@@ -514,7 +514,7 @@ MonoBehaviour:
   maxHealth: 100
   isDead: 0
   healthBar: {fileID: 6345112740885976957}
-  playerCombat: {fileID: 0}
+  playerCombat: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
 --- !u!54 &6345112742430492202
 Rigidbody:
   m_ObjectHideFlags: 0
