@@ -23,6 +23,9 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private List<EnemyGroup> enemyGroups = new List<EnemyGroup>();
     [SerializeField] private List<Transform> spawnPoints = new List<Transform>();
 
+    [Header("Effects")]
+    [SerializeField] private GameObject spawnEffectPrefab; // 🔥 NEW
+
     private bool playerInside = false;
     private bool isSpawning = false;
 
@@ -65,8 +68,16 @@ public class EnemySpawner : MonoBehaviour
                     yield break;
                 }
 
+                // Spawn enemy
                 var instance = Instantiate(group.enemyPrefab, spawnPoint.position, Quaternion.identity);
 
+                // 🔥 Spawn effect
+                if (spawnEffectPrefab != null)
+                {
+                    Instantiate(spawnEffectPrefab, spawnPoint.position, Quaternion.identity);
+                }
+
+                // Register death callback
                 var notifier = instance.GetComponent<EnemyDeathNotifier>();
                 if (notifier != null)
                 {

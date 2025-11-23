@@ -28,4 +28,11 @@ public class SkeletonHealthBar : MonoBehaviour
         if (healthGradient != null)
             foreground.color = healthGradient.Evaluate(fill);
     }
+    public class HealthBarFix : MonoBehaviour
+    {
+        void LateUpdate()
+        {
+            transform.localScale = Vector3.one; 
+        }
+    }
 }

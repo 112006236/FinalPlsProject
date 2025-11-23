@@ -9,12 +9,17 @@ public class SkeletonHealth : MonoBehaviour
     [HideInInspector] public bool isDead = false;
 
     [Header("References")]
-    private Animator animator;
     private SkeletonController skeletonController; 
     public EnemyHealthBar healthBar; 
+    private UnityEngine.AI.NavMeshAgent agent;
 
     [Header("Damage Settings")]
     public float hurtDuration = 0.5f; 
+
+    [Header("Knockback Settings")]
+    public float knockbackForce = 3f;
+    public float knockbackDuration = 0.15f;
+    private bool isKnockedback = false;
 
     [Header("Death Settings")]
     public float dieDuration = 2f; 
@@ -22,8 +27,8 @@ public class SkeletonHealth : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
-        animator = GetComponent<Animator>();
         skeletonController = GetComponent<SkeletonController>();
+        agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
 
         if (healthBar != null)
             healthBar.SetMaxHealth(maxHealth);
@@ -55,6 +60,7 @@ public class SkeletonHealth : MonoBehaviour
         else
         {
             StartCoroutine(HurtRoutine());
+            StartCoroutine(ApplyKnockback());
         }
     }
 
@@ -63,13 +69,48 @@ public class SkeletonHealth : MonoBehaviour
         if (skeletonController != null)
             skeletonController.enabled = false;
 
-        if (animator != null)
-            animator.SetTrigger("isHurt"); 
+        if (agent != null)
+            agent.isStopped = true;
 
         yield return new WaitForSeconds(hurtDuration); 
 
-        if (skeletonController != null && !isDead)
-            skeletonController.enabled = true;
+        if (!isDead)
+        {
+            if (skeletonController != null)
+                skeletonController.enabled = true;
+
+            if (agent != null && !isKnockedback)
+                agent.isStopped = false;
+        }
+    }
+
+    private IEnumerator ApplyKnockback()
+    {
+        if (isKnockedback) yield break;
+        isKnockedback = true;
+
+        if (agent != null) 
+            agent.isStopped = true;
+
+        // Get push direction by using player's position
+        GameObject player = GameObject.FindWithTag("Player");
+        if (player != null)
+        {
+            Vector3 dir = (transform.position - player.transform.position).normalized;
+
+            float timer = 0f;
+            while (timer < knockbackDuration)
+            {
+                transform.position += dir * knockbackForce * Time.deltaTime;
+                timer += Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        isKnockedback = false;
+
+        if (!isDead && agent != null && !isKnockedback)
+            agent.isStopped = false;
     }
 
     void Die()
@@ -81,11 +122,11 @@ public class SkeletonHealth : MonoBehaviour
         if (skeletonController != null)
             skeletonController.enabled = false;
 
-        if (animator != null)
-            animator.SetTrigger("isDead"); 
+        if (agent != null)
+            agent.isStopped = true;
 
-        if (GetComponent<Collider2D>() != null)
-            GetComponent<Collider2D>().enabled = false;
+        if (GetComponent<Collider>() != null)
+            GetComponent<Collider>().enabled = false;
 
         StartCoroutine(DieAndDestroy());
     }
@@ -103,5 +144,4 @@ public class SkeletonHealth : MonoBehaviour
             TakeDamage(other.gameObject.GetComponentInParent<PlayerCombat>().attackDamage);
         }
     }
-
 }

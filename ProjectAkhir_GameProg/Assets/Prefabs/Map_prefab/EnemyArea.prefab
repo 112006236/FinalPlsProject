@@ -181,6 +181,7 @@ MonoBehaviour:
     minibossSpawned: 0
   spawnPoints:
   - {fileID: 762642541841303093}
+  spawnEffectPrefab: {fileID: 5642766282230003982, guid: b5c8ca7ed10b61e499cce8ec3b6e2e4c, type: 3}
 --- !u!1 &8555229165918645266
 GameObject:
   m_ObjectHideFlags: 0
@@ -205,7 +206,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8555229165918645266}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.52, z: 0.36299974}
+  m_LocalPosition: {x: 0, y: 0, z: 0.313}
   m_LocalScale: {x: 0.1, y: 2, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
