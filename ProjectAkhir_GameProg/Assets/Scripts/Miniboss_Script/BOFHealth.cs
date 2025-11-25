@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyHealth : MonoBehaviour
+public class BOFHealth : MonoBehaviour
 {
     public float maxHealth = 100f;
     private float currentHealth;
@@ -35,7 +35,7 @@ public class EnemyHealth : MonoBehaviour
             healthBar.UpdateHealth(currentHealth);
 
         if (animator != null && !isDead)
-            animator.Play("hurt_DragonWarrior", 0, 0);
+            animator.Play("BringerOfDeath_hurt", 0, 0);
 
         if (currentHealth <= 0)
             Die();
@@ -50,9 +50,9 @@ public class EnemyHealth : MonoBehaviour
             enemyScript.enabled = false;
 
         if (animator != null)
-            animator.Play("die_DragonWarrior", 0, 0);
+            animator.Play("BringerOfDeath_die", 0, 0);
 
-        Destroy(gameObject, 1.1f);
+        Destroy(gameObject, 1.15f);
     }
 
     private void OnTriggerEnter(Collider other)

@@ -1,0 +1,99 @@
+using UnityEngine;
+using System.Collections;
+
+public class BringerOfDeath : MonoBehaviour
+{
+    [Header("References")]
+    public Transform player;
+    public Animator animator;
+    public Transform sprite; // reference to child sprite object ONLY
+
+    private SpriteRenderer sr;
+
+    [Header("Combat")]
+    public float attackRange = 2f;
+    public int attackDamage = 30;
+    public float attackCooldown = 2f;
+
+    [Header("Movement")]
+    public float followRange = 15f;
+    public float moveSpeed = 1.6f;
+
+    private bool isAttacking = false;
+    private bool facingLeft = true;
+    private float lastAttack = 0f;
+    private BOFHealth health;
+
+    private void Start()
+    {
+        health = GetComponent<BOFHealth>();
+        sr = GetComponent<SpriteRenderer>();
+    }
+
+    private void Update()
+    {
+        if (health == null || player == null) return;
+        if (health.enabled == false) return; // dead
+
+        float dist = Vector2.Distance(transform.position, player.position);
+
+        if (dist > followRange)
+        {
+            animator.Play("BringerOfDeath_idle");
+            return;
+        }
+
+        if (dist > attackRange && !isAttacking)
+            FollowPlayer();
+        else if (dist <= attackRange)
+            TryAttack();
+
+        FlipSprite();
+    }
+
+    // -----------------------------
+    private void FollowPlayer()
+    {
+        animator.Play("BringerOfDeath_walk");
+        Vector3 dir = (player.position - transform.position).normalized;
+        dir.y = 0;
+        transform.position += dir * moveSpeed * Time.deltaTime;
+    }
+
+    // -----------------------------
+    private void TryAttack()
+    {
+        if (isAttacking) return;
+        if (Time.time - lastAttack < attackCooldown) return;
+
+        StartCoroutine(AttackRoutine());
+    }
+
+    private IEnumerator AttackRoutine()
+    {
+        isAttacking = true;
+        lastAttack = Time.time;
+
+        animator.Play("BringerOfDeath_attack", 0, 0);
+
+        yield return new WaitForSeconds(0.45f);
+
+        if (Vector2.Distance(transform.position, player.position) <= attackRange)
+        {
+            PlayerCombat pc = player.GetComponent<PlayerCombat>();
+            if (pc != null && !pc.isDead)
+                pc.TakeDamage(attackDamage);
+        }
+
+        yield return new WaitForSeconds(0.4f);
+        isAttacking = false;
+    }
+
+    // -----------------------------
+    private void FlipSprite()
+    {
+        if (player == null) return;
+        bool shouldFaceLeft = player.position.x < transform.position.x;
+        sr.flipX = !shouldFaceLeft; 
+    }
+}

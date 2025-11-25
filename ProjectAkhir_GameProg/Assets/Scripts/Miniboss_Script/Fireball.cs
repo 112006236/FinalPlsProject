@@ -95,7 +95,7 @@ public class Fireball : MonoBehaviour
             PlayerCombat playerCombat = other.GetComponent<PlayerCombat>();
             if (playerCombat != null && !playerCombat.isDead)
             {
-               // playerCombat.TakeDamage(damage);
+               playerCombat.TakeDamage(damage);
             }
         }
 
