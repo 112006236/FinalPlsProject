@@ -88,12 +88,12 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("Walking", inputVector.magnitude > 0.1f);
 
         // Handle flipping sprite
-        if (inputVector.x != 0 && inputVector.x > 0.1f)
+        if (inputVector.x != 0 && inputVector.x > 0.1f && !combat.inCombo)
         {
             facingRight = true;
             sprites.localScale = new Vector3(1, 1, 1);
         }
-        else if (inputVector.x != 0 && inputVector.x < -0.1f)
+        else if (inputVector.x != 0 && inputVector.x < -0.1f && !combat.inCombo)
         {
             facingRight = false;
             sprites.localScale = new Vector3(-1, 1, 1);

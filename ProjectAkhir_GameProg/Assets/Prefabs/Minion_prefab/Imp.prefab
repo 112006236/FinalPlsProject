@@ -706,6 +706,7 @@ MonoBehaviour:
   isDead: 0
   healthBar: {fileID: 2620518102664303244}
   hurtDuration: 0.5
+  swordImpactVFX: {fileID: 1429954232896169632, guid: 83036083a4ebcd34f98131bd3cf6f4d2, type: 3}
   knockbackForce: 12
   knockbackDuration: 0.3
   dieDuration: 1

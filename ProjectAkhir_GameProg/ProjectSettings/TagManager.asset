@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - Sword
+  - FxTemporaire
   layers:
   - Default
   - TransparentFX
@@ -29,7 +30,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - Post Process
   - 
   - 
   - 

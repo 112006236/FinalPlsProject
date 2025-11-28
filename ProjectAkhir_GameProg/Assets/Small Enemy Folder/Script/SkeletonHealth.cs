@@ -14,7 +14,10 @@ public class SkeletonHealth : MonoBehaviour
     private UnityEngine.AI.NavMeshAgent agent;
 
     [Header("Damage Settings")]
-    public float hurtDuration = 0.5f; 
+    public float hurtDuration = 0.5f;
+
+    [Header("Hurted VFX")]
+    public ParticleSystem swordImpactVFX;
 
     [Header("Knockback Settings")]
     public float knockbackForce = 3f;
@@ -141,6 +144,8 @@ public class SkeletonHealth : MonoBehaviour
     {
         if (other.CompareTag("Sword"))
         {
+            Vector3 impactPoint = other.ClosestPoint(transform.position);
+            Instantiate(swordImpactVFX, impactPoint, Quaternion.Euler(0, 0, 0));
             TakeDamage(other.gameObject.GetComponentInParent<PlayerCombat>().attackDamage);
         }
     }

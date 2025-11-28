@@ -5,11 +5,13 @@ using UnityEngine.InputSystem;
 
 public class PlayerCombat : MonoBehaviour
 {
+    [Header("Player Stats")]
     public float initHP = 100.0f;
     [System.NonSerialized] public float HP;
     [System.NonSerialized] public bool isDead;
     [SerializeField] private GameObject deathParticles;
 
+    [Header("Combo System")]
     public List<AttackSO> combo;
     float lastClickedTime;
     float lastComboEnd;
@@ -19,15 +21,25 @@ public class PlayerCombat : MonoBehaviour
     public float timeBetweenAttacks = 0.2f;
     public float exitComboTime = 0.5f;
 
+    [Header("Animation")]
     public Animator anim;
+    public List<ParticleSystem> slashVFXs;
+    public float slashVFXScale = 2.0f;
     public Transform attackPoint;       // Empty object in front of the sword
     [SerializeField] private Collider swordCollider;
+
+    [Header("Unused (DELETE LATER)")]
     public float attackRange = 1.5f;    // How far the slash reaches
     public float attackDamage = 25f;    // Damage per hit
 
     PlayerInputActions inputs;
-    private bool inCombo;
-    private bool facingRight = true; // Track which way the player is facing
+    [HideInInspector] public bool inCombo;
+    private PlayerMovement playerMovement;
+
+    private void Awake()
+    {
+        playerMovement = GetComponent<PlayerMovement>();
+    }
 
     void Start()
     {
@@ -53,8 +65,6 @@ public class PlayerCombat : MonoBehaviour
         {
             TakeDamage(40.0f);
         }
-
-        
     }
 
     void Attack(InputAction.CallbackContext context)
@@ -70,6 +80,18 @@ public class PlayerCombat : MonoBehaviour
             anim.runtimeAnimatorController = combo[comboCounter].animatorOV;
             anim.Play("Attack", 0, 0);
 
+            // Correct VFX flipping
+            if (playerMovement.facingRight)
+            {
+                slashVFXs[comboCounter].transform.localScale = slashVFXScale * new Vector3(1, 1, 1);
+            }
+            else
+            {
+                slashVFXs[comboCounter].transform.localScale = slashVFXScale * new Vector3(-1, 1, 1);
+            }
+
+            slashVFXs[comboCounter].Play();
+
             // Deal damage in front of player
             // DealDamage();
 
@@ -84,8 +106,6 @@ public class PlayerCombat : MonoBehaviour
             // Debug.Log("Waiting attack cooldown...");
         }
     }
-
-    
 
     void DealDamage()
     {

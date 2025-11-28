@@ -1,11 +1,10 @@
 using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(Rigidbody))]
 public class PlayerDash : MonoBehaviour
 {
     [Header("References")]
-    public Rigidbody rb;
+    // public Rigidbody rb;
     public PlayerMovement playerMovement; // Link to movement 
 
     [Header("Dash Settings")]
