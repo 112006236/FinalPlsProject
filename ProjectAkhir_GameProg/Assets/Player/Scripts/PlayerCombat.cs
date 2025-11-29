@@ -10,6 +10,10 @@ public class PlayerCombat : MonoBehaviour
     [System.NonSerialized] public float HP;
     [System.NonSerialized] public bool isDead;
     [SerializeField] private GameObject deathParticles;
+    [SerializeField] private Transform healthBarFill;
+    private float hpTargetAngle;
+    private float smoothTime = 0.25f;
+    private float currVelocity;
 
     [Header("Combo System")]
     public List<AttackSO> combo;
@@ -43,6 +47,8 @@ public class PlayerCombat : MonoBehaviour
 
     void Start()
     {
+        hpTargetAngle = 0;
+
         inputs = new PlayerInputActions();
         inputs.Player.Enable();
         inputs.Player.Attack.performed += Attack;
@@ -60,6 +66,10 @@ public class PlayerCombat : MonoBehaviour
 
         swordCollider.enabled = inCombo;
 
+        // Update health bar fill        
+        float hpZRot = Mathf.SmoothDampAngle(healthBarFill.eulerAngles.z, hpTargetAngle, ref currVelocity, smoothTime);
+        healthBarFill.rotation = Quaternion.Euler(0, 0, hpZRot);
+
         // Debug purposes only! 
         if (Input.GetKeyDown(KeyCode.K))
         {
@@ -69,6 +79,8 @@ public class PlayerCombat : MonoBehaviour
 
     void Attack(InputAction.CallbackContext context)
     {
+        if (isDead) return;
+
         inCombo = true;
         CancelInvoke("ExitCombo");
 
@@ -163,7 +175,10 @@ public class PlayerCombat : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if (isDead) return;
+
         HP -= damage;
+        hpTargetAngle = (1 - HP / initHP) * 156.0f;
 
         if (HP <= 0)
         {
