@@ -36,15 +36,6 @@ public class SkeletonHealth : MonoBehaviour
         if (healthBar != null)
             healthBar.SetMaxHealth(maxHealth);
     }
-    
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            Debug.Log("Skeleton took 5 damage from 'H' key press.");
-            TakeDamage(5f);
-        }
-    }
 
     public void TakeDamage(float damage) 
     {
@@ -116,7 +107,7 @@ public class SkeletonHealth : MonoBehaviour
             agent.isStopped = false;
     }
 
-    void Die()
+    public void Die()
     {
         if (isDead) return;
 
@@ -132,6 +123,8 @@ public class SkeletonHealth : MonoBehaviour
             GetComponent<Collider>().enabled = false;
 
         StartCoroutine(DieAndDestroy());
+        EnemyKillTracker.Instance.AddKill();
+
     }
 
     private IEnumerator DieAndDestroy()

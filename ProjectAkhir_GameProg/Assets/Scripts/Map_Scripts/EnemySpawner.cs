@@ -7,16 +7,13 @@ public class EnemySpawner : MonoBehaviour
     [System.Serializable]
     public class EnemyGroup
     {
-        public GameObject enemyPrefab;
+        public List<GameObject> enemyPrefabs = new List<GameObject>(); // 🔥 multiple enemies
         public int count = 5;
         public float spawnInterval = 1f;
         public int spawnPointIndex = 0;
 
         [HideInInspector] public int spawnedCount = 0;
         [HideInInspector] public int deadCount = 0;
-
-        public GameObject minibossPrefab;
-        [HideInInspector] public bool minibossSpawned = false;
     }
 
     [Header("Enemy Settings")]
@@ -24,7 +21,7 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private List<Transform> spawnPoints = new List<Transform>();
 
     [Header("Effects")]
-    [SerializeField] private GameObject spawnEffectPrefab; // 🔥 NEW
+    [SerializeField] private GameObject spawnEffectPrefab;
 
     private bool playerInside = false;
     private bool isSpawning = false;
@@ -56,6 +53,7 @@ public class EnemySpawner : MonoBehaviour
         {
             EnemyGroup group = enemyGroups[g];
 
+            // Safe spawnpoint
             int spIndex = Mathf.Clamp(group.spawnPointIndex, 0, Mathf.Max(0, spawnPoints.Count - 1));
             Transform spawnPoint = spawnPoints.Count > 0 ? spawnPoints[spIndex] : transform;
 
@@ -63,58 +61,51 @@ public class EnemySpawner : MonoBehaviour
             {
                 if (!playerInside)
                 {
-                    Debug.Log("Player left area — pausing enemy spawn. Progress preserved.");
+                    Debug.Log("Player left area — pausing spawn. Progress kept.");
                     isSpawning = false;
                     yield break;
                 }
 
+                if (group.enemyPrefabs.Count == 0)
+                {
+                    Debug.LogWarning("EnemyGroup has no enemy prefabs!");
+                    break;
+                }
+
+                // Choose enemy (sequential)
+                int index = group.spawnedCount % group.enemyPrefabs.Count;
+                GameObject prefab = group.enemyPrefabs[index];
+
                 // Spawn enemy
-                var instance = Instantiate(group.enemyPrefab, spawnPoint.position, Quaternion.identity);
+                var enemy = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
 
-                // 🔥 Spawn effect
+                // Spawn effect
                 if (spawnEffectPrefab != null)
-                {
                     Instantiate(spawnEffectPrefab, spawnPoint.position, Quaternion.identity);
-                }
 
-                // Register death callback
-                var notifier = instance.GetComponent<EnemyDeathNotifier>();
+                // Death notifier support
+                var notifier = enemy.GetComponent<EnemyDeathNotifier>();
                 if (notifier != null)
-                {
                     notifier.SetSpawner(this, g);
-                }
 
                 group.spawnedCount++;
-                Debug.Log($"Spawned enemy {group.spawnedCount}/{group.count} from {group.enemyPrefab.name} (group {g})");
+                Debug.Log($"Spawned enemy {group.spawnedCount}/{group.count} (Group {g})");
 
                 yield return new WaitForSeconds(group.spawnInterval);
             }
         }
 
-        Debug.Log($"✅ All enemies spawned for area: {gameObject.name}");
+        Debug.Log($"✔ All enemies spawned for area: {gameObject.name}");
         isSpawning = false;
     }
 
-    public void NotifyEnemyDeath(int groupIndex, GameObject enemyGo = null)
+    public void NotifyEnemyDeath(int groupIndex, GameObject enemy = null)
     {
         if (groupIndex < 0 || groupIndex >= enemyGroups.Count) return;
 
         var group = enemyGroups[groupIndex];
-
         group.deadCount++;
-        Debug.Log($"Enemy from group {groupIndex} died — {group.deadCount}/{group.count} dead.");
 
-        // Spawn miniboss ONLY when all enemies are dead
-        if (group.deadCount >= group.count &&
-            !group.minibossSpawned &&
-            group.minibossPrefab != null)
-        {
-            Transform spawnPoint = spawnPoints.Count > 0 ? spawnPoints[group.spawnPointIndex] : transform;
-
-            Instantiate(group.minibossPrefab, spawnPoint.position, Quaternion.identity);
-            group.minibossSpawned = true;
-
-            Debug.Log($"🔥 All enemies from group {groupIndex} are dead — MINIBOSS SPAWNED!");
-        }
+        Debug.Log($"Enemy died from group {groupIndex} — {group.deadCount}/{group.count} dead.");
     }
 }

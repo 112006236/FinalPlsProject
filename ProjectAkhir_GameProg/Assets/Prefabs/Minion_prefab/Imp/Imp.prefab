@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 2620518102664303245}
   - component: {fileID: 2620518102664303244}
   m_Layer: 3
-  m_Name: SkeletonHealthBar
+  m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -113,7 +113,7 @@ RectTransform:
   - {fileID: 2620518102738943968}
   - {fileID: 2620518102894342081}
   m_Father: {fileID: 2620518104558915610}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -454,56 +454,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1 &2620518103474813174
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2620518103474813175}
-  - component: {fileID: 2620518103474813160}
-  m_Layer: 0
-  m_Name: Imp Behavior
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2620518103474813175
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2620518103474813174}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2620518104558915610}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2620518103474813160
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2620518103474813174}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: adabf4cefa52249a1b5472115b104b97, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damage: 10
-  attackRange: 1.5
-  attackCooldown: 3
-  spriteTransform: {fileID: 2620518104558915610}
-  flipInsteadOfRotate: 1
-  attackEffect: {fileID: 2504214343621411456, guid: 3ed0d324122d7b24eaec75c55c74aafc, type: 3}
 --- !u!1 &2620518104558915609
 GameObject:
   m_ObjectHideFlags: 0
@@ -516,11 +466,10 @@ GameObject:
   - component: {fileID: 2620518104558915613}
   - component: {fileID: 2620518104558915612}
   - component: {fileID: 2620518104558915611}
-  - component: {fileID: 2620518104558915600}
-  - component: {fileID: 2620518104558915601}
-  - component: {fileID: 2620518104558915602}
   - component: {fileID: 2620518104558915603}
-  - component: {fileID: 2620518104558915604}
+  - component: {fileID: 2809928629659260050}
+  - component: {fileID: 1988643683}
+  - component: {fileID: 1988643684}
   m_Layer: 0
   m_Name: Imp
   m_TagString: Enemy
@@ -540,7 +489,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2620518103474813175}
   - {fileID: 2620518102664303243}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -631,43 +579,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &2620518104558915600
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2620518104558915609}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a341df1b41c44d72a92bedf3b012645, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!65 &2620518104558915601
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2620518104558915609}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2620518104558915602
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2620518104558915609}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 239f1b88ad2b04c00a110b843cf5ae8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!195 &2620518104558915603
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -690,7 +601,21 @@ NavMeshAgent:
   m_BaseOffset: 0.53333336
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &2620518104558915604
+--- !u!136 &2809928629659260050
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2620518104558915609}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.53333336
+  m_Height: 1.0666667
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1988643683
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -699,14 +624,32 @@ MonoBehaviour:
   m_GameObject: {fileID: 2620518104558915609}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d853894e874bf340a5b268ac33cab2e, type: 3}
+  m_Script: {fileID: 11500000, guid: 403d1a596d4cb49fc962bb4e1b2334e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 50
-  isDead: 0
+  maxHealth: 25
+  moveSpeed: 3
+  attackDamage: 5
   healthBar: {fileID: 2620518102664303244}
-  hurtDuration: 0.5
+  hurtVFX: {fileID: 1429954232896169633, guid: 83036083a4ebcd34f98131bd3cf6f4d2, type: 3}
   swordImpactVFX: {fileID: 1429954232896169632, guid: 83036083a4ebcd34f98131bd3cf6f4d2, type: 3}
-  knockbackForce: 12
-  knockbackDuration: 0.3
-  dieDuration: 1
+  knockbackForce: 17
+  knockbackDuration: 0.2
+--- !u!114 &1988643684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2620518104558915609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aaaf301aed5ef4be7a1e0212a4dac0c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackRange: 0.9
+  attackCooldown: 1.5
+  attackVFX: {fileID: 6294508013172393186, guid: 043176b6a68be2b43b073aaaa4782c7d, type: 3}
+  sprite: {fileID: 2620518104558915610}
+  flipInsteadOfRotate: 1
+  healthBar: {fileID: 2620518104558915610}

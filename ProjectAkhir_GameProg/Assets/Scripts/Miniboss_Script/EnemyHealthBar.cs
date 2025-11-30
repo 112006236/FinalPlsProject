@@ -4,13 +4,13 @@ using UnityEngine.UI;
 public class EnemyHealthBar : MonoBehaviour
 {
     [Header("UI References")]
-    public Image foreground;      // Main health bar (instant)
-    public Image damageBar;       // The delayed white bar
+    public Image foreground;
+    public Image damageBar;
     public Gradient healthGradient;
 
     [Header("Settings")]
-    public float shrinkDelay = 0.2f; // Time before the white bar starts shrinking
-    public float shrinkSpeed = 0.4f; // How fast the white bar shrinks
+    public float shrinkDelay = 0.2f;
+    public float shrinkSpeed = 0.5f; // units per second
 
     private float maxHealth;
     private float targetFill;
@@ -19,7 +19,10 @@ public class EnemyHealthBar : MonoBehaviour
     void Start()
     {
         if (foreground != null)
+        {
+            foreground.fillAmount = 1f;
             foreground.color = Color.red;
+        }
 
         if (damageBar != null)
             damageBar.fillAmount = 1f;
@@ -28,23 +31,32 @@ public class EnemyHealthBar : MonoBehaviour
     public void SetMaxHealth(float health)
     {
         maxHealth = health;
-        UpdateHealth(health);
-        if (damageBar != null) 
+
+        targetFill = 1f;
+
+        if (foreground != null)
+            foreground.fillAmount = 1f;
+
+        if (damageBar != null)
             damageBar.fillAmount = 1f;
     }
 
     public void UpdateHealth(float currentHealth)
     {
-        targetFill = currentHealth / maxHealth;
+        if (maxHealth <= 0) return;
 
-        // Main bar updates instantly
-        foreground.fillAmount = targetFill;
+        targetFill = Mathf.Clamp01(currentHealth / maxHealth);
 
-        // Color update
-        if (healthGradient != null)
-            foreground.color = healthGradient.Evaluate(targetFill);
+        // Instant update
+        if (foreground != null)
+        {
+            foreground.fillAmount = targetFill;
 
-        // Reset the delay timer
+            if (healthGradient != null)
+                foreground.color = healthGradient.Evaluate(targetFill);
+        }
+
+        // Reset timer
         shrinkTimer = shrinkDelay;
     }
 
@@ -59,21 +71,14 @@ public class EnemyHealthBar : MonoBehaviour
             return;
         }
 
-        // Smoothly shrink the white bar
+        // Smooth shrink using MoveTowards
         if (damageBar.fillAmount > targetFill)
         {
-            damageBar.fillAmount = Mathf.Lerp(
+            damageBar.fillAmount = Mathf.MoveTowards(
                 damageBar.fillAmount,
                 targetFill,
-                Time.deltaTime * shrinkSpeed
+                shrinkSpeed * Time.deltaTime
             );
-        }
-    }
-    public class HealthBarFix : MonoBehaviour
-    {
-        void LateUpdate()
-        {
-            transform.localScale = Vector3.one; 
         }
     }
 }
