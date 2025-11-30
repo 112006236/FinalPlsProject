@@ -107,6 +107,17 @@ public class EnemyStats : MonoBehaviour
             if (playerCombat != null)
                 TakeDamage(playerCombat.attackDamage);
         }
+        SwordProjectile projectile = other.GetComponent<SwordProjectile>();
+        if (projectile != null)
+        {
+            TakeDamage(projectile.attackDamage);
+
+            // Optional: spawn VFX on projectile hit
+            if (swordImpactVFX != null)
+                Instantiate(swordImpactVFX, transform.position, Quaternion.identity);
+
+            Destroy(other.gameObject); // remove projectile
+        }
     }
 
     // ---------------- DEATH -----------------
