@@ -147,6 +147,11 @@ public class SkeletonHealth : MonoBehaviour
             Vector3 impactPoint = other.ClosestPoint(transform.position);
             Instantiate(swordImpactVFX, impactPoint, Quaternion.Euler(0, 0, 0));
             TakeDamage(other.gameObject.GetComponentInParent<PlayerCombat>().attackDamage);
+        } else if (other.CompareTag("Sword Projectile"))
+        {
+            Vector3 impactPoint = other.ClosestPoint(transform.position);
+            Instantiate(swordImpactVFX, impactPoint, Quaternion.Euler(0, 0, 0));
+            TakeDamage(other.gameObject.GetComponent<SwordProjectile>().attackDamage);
         }
     }
 }

@@ -126,12 +126,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   initHP: 100
   deathParticles: {fileID: 3543992500629518964, guid: 5d74adf29fab5614b9fbce2d87c8e7b0, type: 3}
+  healthBarFill: {fileID: 0}
   combo:
   - {fileID: 11400000, guid: b57df9c39eeb3ae4594f827f13a48f60, type: 2}
   - {fileID: 11400000, guid: a09f54b5574a3d8478d66dfdedfb06fb, type: 2}
   timeBetweenCombo: 0.2
   timeBetweenAttacks: 0.5
   exitComboTime: 0.8
+  specialMoveUnlocked: 010101
+  sm1Projectile: {fileID: 7693039643493395875, guid: 853e4b90b982e6a4aa22191c902bb370, type: 3}
+  radiusFromPlayer: 1
+  projectilePerWave: 8
+  waveCount: 3
+  waveDuration: 0.2
+  waveDetaTime: 0.4
+  waveDeltaAngle: 30
   anim: {fileID: 5766828217849564429}
   slashVFXs:
   - {fileID: 1983844513708117435}
@@ -515,7 +524,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5766828218090051092}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 6, z: -10}
+  m_LocalPosition: {x: 0, y: 5, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -694,6 +703,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Slash Horizontal VFX
       objectReference: {fileID: 0}
+    - target: {fileID: 6710139492206580334, guid: 95b8d3d65b5d7f1409c4ed1723887826, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 95b8d3d65b5d7f1409c4ed1723887826, type: 3}
 --- !u!4 &1831472009471035097 stripped
@@ -760,6 +773,10 @@ PrefabInstance:
     - target: {fileID: 6710139492206580332, guid: 95b8d3d65b5d7f1409c4ed1723887826, type: 3}
       propertyPath: m_Name
       value: Slash Vertical VFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 6710139492206580334, guid: 95b8d3d65b5d7f1409c4ed1723887826, type: 3}
+      propertyPath: playOnAwake
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6710139492206580334, guid: 95b8d3d65b5d7f1409c4ed1723887826, type: 3}
       propertyPath: startDelay.scalar

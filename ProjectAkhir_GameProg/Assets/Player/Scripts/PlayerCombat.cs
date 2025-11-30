@@ -21,9 +21,25 @@ public class PlayerCombat : MonoBehaviour
     float lastComboEnd;
     int comboCounter;
 
+    public float attackDamage = 25f;    // Damage per hit
+
     public float timeBetweenCombo = 0.5f;
     public float timeBetweenAttacks = 0.2f;
     public float exitComboTime = 0.5f;
+
+    // SET ALL TO FALSE LATER
+    [HideInInspector] public bool[] specialMoveUnlocked = { true, true, true };
+
+    [Header("Special Move 1")]
+    [SerializeField] private GameObject sm1Projectile;
+    [SerializeField] private GameObject sm1ProjectileSpawnEffect;
+    [SerializeField] private float radiusFromPlayer = 1f;
+    [SerializeField] private int projectilePerWave = 6;
+    [SerializeField] private int waveCount = 2;
+    [SerializeField] private float waveDuration = 0.5f;
+    [SerializeField] private float waveDetaTime = 0.8f;
+    [SerializeField] private float waveDeltaAngle = 15f;
+    
 
     [Header("Animation")]
     public Animator anim;
@@ -32,9 +48,7 @@ public class PlayerCombat : MonoBehaviour
     public Transform attackPoint;       // Empty object in front of the sword
     [SerializeField] private Collider swordCollider;
 
-    [Header("Unused (DELETE LATER)")]
-    public float attackRange = 1.5f;    // How far the slash reaches
-    public float attackDamage = 25f;    // Damage per hit
+    
 
     PlayerInputActions inputs;
     [HideInInspector] public bool inCombo;
@@ -52,6 +66,7 @@ public class PlayerCombat : MonoBehaviour
         inputs = new PlayerInputActions();
         inputs.Player.Enable();
         inputs.Player.Attack.performed += Attack;
+        inputs.Player.SM1.performed += SM1;
 
         inCombo = false;
 
@@ -119,35 +134,84 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    void DealDamage()
+    void SM1(InputAction.CallbackContext context)
     {
-        float radius = attackRange;
-        Vector3 origin = attackPoint.position;
+        StartCoroutine(PerformSM1());
+    }
 
-        Collider[] enemiesHit = Physics.OverlapSphere(origin, radius, LayerMask.GetMask("Enemy"));
-
-        foreach (Collider enemy in enemiesHit)
+    IEnumerator PerformSM1()
+    {
+        for (int i = 0; i < waveCount; i++)
         {
-            Vector3 toEnemy = enemy.transform.position - transform.position;
-            if (Vector3.Dot(toEnemy.normalized, transform.forward) > 0)
+            List<Vector3> forwards = new List<Vector3>();
+            for (int j = 0; j < projectilePerWave; j++)
             {
-                // Check for different health scripts
-                GolemHealth golemHealth = enemy.GetComponent<GolemHealth>();
-                TreeHealth treeHealth = enemy.GetComponent<TreeHealth>();
-                BatHealth batHealth = enemy.GetComponent<BatHealth>();
-                MushroomHealth mushroomHealth = enemy.GetComponent<MushroomHealth>();
-                SkeletonHealth skeletonHealth = enemy.GetComponent<SkeletonHealth>();
-
-                if (golemHealth != null) golemHealth.TakeDamage(attackDamage);
-                if (treeHealth != null) treeHealth.TakeDamage(attackDamage);
-                if (batHealth != null) batHealth.TakeDamage(attackDamage);
-                if (mushroomHealth != null) mushroomHealth.TakeDamage(attackDamage);
-                if (skeletonHealth != null) skeletonHealth.TakeDamage(attackDamage);
-
-                // Debug.Log("Hit " + enemy.name);
+                forwards.Add(
+                    Quaternion.AngleAxis((float)j / projectilePerWave * 360.0f + i * waveDeltaAngle, transform.up) 
+                    * transform.forward);
             }
+
+            StartCoroutine(FireProjectiles(forwards));
+
+            yield return new WaitForSeconds(waveDetaTime);
         }
     }
+
+    IEnumerator FireProjectiles(List<Vector3> forwards)
+    {
+        for (int i = 0; i < projectilePerWave; i++)
+        {
+            // Fire sword projectile
+            Vector3 spawnPoint = transform.position + radiusFromPlayer * forwards[i];
+
+            Instantiate(sm1ProjectileSpawnEffect, spawnPoint, Quaternion.Euler(0, 0, 0));
+
+            GameObject proj = Instantiate(sm1Projectile, spawnPoint, Quaternion.Euler(0, 0, 0));
+            proj.transform.up = forwards[i];
+            // Add delay between projectiles
+            yield return new WaitForSeconds(waveDuration / projectilePerWave);
+        }   
+    }
+
+    void SM2(InputAction.CallbackContext context)
+    {
+
+    }
+
+    void SM3(InputAction.CallbackContext context)
+    {
+
+    }
+
+//    void DealDamage()
+//     {
+//         float radius = attackRange;
+//         Vector3 origin = attackPoint.position;
+
+    //         Collider[] enemiesHit = Physics.OverlapSphere(origin, radius, LayerMask.GetMask("Enemy"));
+
+    //         foreach (Collider enemy in enemiesHit)
+    //         {
+    //             Vector3 toEnemy = enemy.transform.position - transform.position;
+    //             if (Vector3.Dot(toEnemy.normalized, transform.forward) > 0)
+    //             {
+    //                 // Check for different health scripts
+    //                 GolemHealth golemHealth = enemy.GetComponent<GolemHealth>();
+    //                 TreeHealth treeHealth = enemy.GetComponent<TreeHealth>();
+    //                 BatHealth batHealth = enemy.GetComponent<BatHealth>();
+    //                 MushroomHealth mushroomHealth = enemy.GetComponent<MushroomHealth>();
+    //                 SkeletonHealth skeletonHealth = enemy.GetComponent<SkeletonHealth>();
+
+    //                 if (golemHealth != null) golemHealth.TakeDamage(attackDamage);
+    //                 if (treeHealth != null) treeHealth.TakeDamage(attackDamage);
+    //                 if (batHealth != null) batHealth.TakeDamage(attackDamage);
+    //                 if (mushroomHealth != null) mushroomHealth.TakeDamage(attackDamage);
+    //                 if (skeletonHealth != null) skeletonHealth.TakeDamage(attackDamage);
+
+    //                 // Debug.Log("Hit " + enemy.name);
+    //             }
+    //         }
+    //     }
 
 
     void ExitAttack()
@@ -168,9 +232,9 @@ public class PlayerCombat : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        if (attackPoint == null) return;
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+        // if (attackPoint == null) return;
+        // Gizmos.color = Color.red;
+        // Gizmos.DrawWireSphere(attackPoint.position, attackRange);
     }
 
     public void TakeDamage(float damage)
