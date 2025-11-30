@@ -53,6 +53,33 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SM1"",
+                    ""type"": ""Button"",
+                    ""id"": ""71eade02-1542-4a81-9b7b-68c51dd91693"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SM2"",
+                    ""type"": ""Button"",
+                    ""id"": ""190b8edc-be13-4584-a4f1-234faf0bd7ec"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SM3"",
+                    ""type"": ""Button"",
+                    ""id"": ""49ea0d09-54c1-495f-a640-3e075fe28d8d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -132,6 +159,39 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                     ""action"": ""Attack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3380a1fa-8faf-45f3-a768-5ab26ede3b86"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SM1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""72a2c165-7ff3-4433-a602-4c5ec4764f8c"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SM2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b7be4baa-d7b3-4f41-9e76-354188904cc1"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SM3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -143,6 +203,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
         m_Player_MouseLook = m_Player.FindAction("MouseLook", throwIfNotFound: true);
         m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
+        m_Player_SM1 = m_Player.FindAction("SM1", throwIfNotFound: true);
+        m_Player_SM2 = m_Player.FindAction("SM2", throwIfNotFound: true);
+        m_Player_SM3 = m_Player.FindAction("SM3", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -205,6 +268,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Movement;
     private readonly InputAction m_Player_MouseLook;
     private readonly InputAction m_Player_Attack;
+    private readonly InputAction m_Player_SM1;
+    private readonly InputAction m_Player_SM2;
+    private readonly InputAction m_Player_SM3;
     public struct PlayerActions
     {
         private @PlayerInputActions m_Wrapper;
@@ -212,6 +278,9 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
         public InputAction @MouseLook => m_Wrapper.m_Player_MouseLook;
         public InputAction @Attack => m_Wrapper.m_Player_Attack;
+        public InputAction @SM1 => m_Wrapper.m_Player_SM1;
+        public InputAction @SM2 => m_Wrapper.m_Player_SM2;
+        public InputAction @SM3 => m_Wrapper.m_Player_SM3;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -230,6 +299,15 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @Attack.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttack;
                 @Attack.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttack;
                 @Attack.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnAttack;
+                @SM1.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSM1;
+                @SM1.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSM1;
+                @SM1.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSM1;
+                @SM2.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSM2;
+                @SM2.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSM2;
+                @SM2.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSM2;
+                @SM3.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSM3;
+                @SM3.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSM3;
+                @SM3.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSM3;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -243,6 +321,15 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
                 @Attack.started += instance.OnAttack;
                 @Attack.performed += instance.OnAttack;
                 @Attack.canceled += instance.OnAttack;
+                @SM1.started += instance.OnSM1;
+                @SM1.performed += instance.OnSM1;
+                @SM1.canceled += instance.OnSM1;
+                @SM2.started += instance.OnSM2;
+                @SM2.performed += instance.OnSM2;
+                @SM2.canceled += instance.OnSM2;
+                @SM3.started += instance.OnSM3;
+                @SM3.performed += instance.OnSM3;
+                @SM3.canceled += instance.OnSM3;
             }
         }
     }
@@ -252,5 +339,8 @@ public partial class @PlayerInputActions : IInputActionCollection2, IDisposable
         void OnMovement(InputAction.CallbackContext context);
         void OnMouseLook(InputAction.CallbackContext context);
         void OnAttack(InputAction.CallbackContext context);
+        void OnSM1(InputAction.CallbackContext context);
+        void OnSM2(InputAction.CallbackContext context);
+        void OnSM3(InputAction.CallbackContext context);
     }
 }

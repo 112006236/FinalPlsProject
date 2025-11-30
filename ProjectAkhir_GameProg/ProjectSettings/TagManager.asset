@@ -7,7 +7,7 @@ TagManager:
   - Enemy
   - Sword
   - FxTemporaire
-  - Area
+  - Sword Projectile
   layers:
   - Default
   - TransparentFX
