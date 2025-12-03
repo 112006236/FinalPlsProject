@@ -29,8 +29,7 @@ public class MedPack : MonoBehaviour
         if (targetPlayer != null)
         {
             // Move towards the player
-            Vector3 direction = (targetPlayer.position - transform.position).normalized;
-            transform.position += direction * moveSpeed * Time.deltaTime;
+            transform.position = Vector3.MoveTowards(transform.position, targetPlayer.position, moveSpeed * Time.deltaTime);
 
             // Check if close enough to heal
             if (Vector3.Distance(transform.position, targetPlayer.position) < 0.5f)
@@ -41,13 +40,9 @@ public class MedPack : MonoBehaviour
                     playerCombat.Heal(healAmount);
                 }
 
-                // Play collect effect at medpack's position
                 if (collectEffect != null)
-                {
                     Instantiate(collectEffect, transform.position, Quaternion.identity);
-                }
 
-                // Destroy the medpack
                 Destroy(gameObject);
             }
         }
@@ -66,6 +61,7 @@ public class MedPack : MonoBehaviour
             }
         }
     }
+
 
     private void OnDrawGizmosSelected()
     {

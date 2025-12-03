@@ -16,6 +16,7 @@ public class PlayerCombat : MonoBehaviour
     private float hpFullFill = .43f;
     private float smoothTime = 0.25f;
     private float currVelocity;
+    private float hpTargetAngle;
 
     [Header("Combo System")]
     public List<AttackSO> combo;
@@ -354,13 +355,13 @@ public class PlayerCombat : MonoBehaviour
     //THIS IS FOR THE POWER UP
     public void Heal(float amount)
     {
-        if (isDead) return;               // don't heal dead players (change if you want revive behavior)
+        if (isDead) return;
+
         HP += amount;
-        if (HP > initHP) HP = initHP;     // clamp
+        if (HP > initHP) HP = initHP;
 
-        // update the health-bar target rotation (keeps the UI consistent)
-        hpTargetAngle = (1 - HP / initHP) * 156.0f;
-
+        // Update health bar
+        hpTargetFill = HP / initHP * hpFullFill;
     }
 
     private IEnumerator DieCoroutine()
