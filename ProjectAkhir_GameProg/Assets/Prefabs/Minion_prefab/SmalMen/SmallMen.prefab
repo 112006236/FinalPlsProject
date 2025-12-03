@@ -399,8 +399,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aaaf301aed5ef4be7a1e0212a4dac0c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 1
-  attackCooldown: 1.5
+  attackRange: 1.3
+  attackCooldown: 2
   attackVFX: {fileID: 0}
   sprite: {fileID: 7245512845391942397}
   flipInsteadOfRotate: 1

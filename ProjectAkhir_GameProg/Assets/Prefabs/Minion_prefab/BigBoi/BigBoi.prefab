@@ -570,7 +570,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f61af6fc54ed4fdfbbb75d8d369884d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 2.4
+  attackRange: 2.1
   attackCooldown: 2.7
   attackVFX: {fileID: 0}
   sprite: {fileID: 3999863012600786834}

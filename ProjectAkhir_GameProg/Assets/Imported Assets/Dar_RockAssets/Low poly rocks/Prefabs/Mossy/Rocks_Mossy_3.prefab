@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7784534632508083683}
   - component: {fileID: 3892388411280914460}
   - component: {fileID: 5557042797674035263}
+  - component: {fileID: 7281330973941585272}
   m_Layer: 0
   m_Name: Rocks_Mossy_3
   m_TagString: Untagged
@@ -84,3 +85,16 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &7281330973941585272
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6560947068162973419}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.7087326, y: 2.2988799, z: 2.4331388}
+  m_Center: {x: -0.014674187, y: -0.3966676, z: -0.024580479}

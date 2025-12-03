@@ -256,7 +256,17 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    
+    //THIS IS FOR THE POWER UP
+    public void Heal(float amount)
+    {
+        if (isDead) return;               // don't heal dead players (change if you want revive behavior)
+        HP += amount;
+        if (HP > initHP) HP = initHP;     // clamp
+
+        // update the health-bar target rotation (keeps the UI consistent)
+        hpTargetAngle = (1 - HP / initHP) * 156.0f;
+
+    }
 
     private IEnumerator DieCoroutine()
     {
