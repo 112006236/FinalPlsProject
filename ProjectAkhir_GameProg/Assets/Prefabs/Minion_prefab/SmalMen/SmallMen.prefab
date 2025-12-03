@@ -242,7 +242,7 @@ GameObject:
   - component: {fileID: 7245512845391942390}
   - component: {fileID: 7245512845391942391}
   - component: {fileID: 7245512845391942388}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: SmallMen
   m_TagString: Untagged
   m_Icon: {fileID: 0}

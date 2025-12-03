@@ -394,7 +394,7 @@ GameObject:
   - component: {fileID: 3999863012600786831}
   - component: {fileID: 3999863012600786824}
   - component: {fileID: 3999863012600786825}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: BigBoi
   m_TagString: Untagged
   m_Icon: {fileID: 0}

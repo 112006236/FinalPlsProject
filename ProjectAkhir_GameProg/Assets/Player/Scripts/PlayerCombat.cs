@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerCombat : MonoBehaviour
 {
@@ -10,8 +11,9 @@ public class PlayerCombat : MonoBehaviour
     [System.NonSerialized] public float HP;
     [System.NonSerialized] public bool isDead;
     [SerializeField] private GameObject deathParticles;
-    [SerializeField] private Transform healthBarFill;
-    private float hpTargetAngle;
+    [SerializeField] private Image healthBarFill;
+    private float hpTargetFill;
+    private float hpFullFill = .43f;
     private float smoothTime = 0.25f;
     private float currVelocity;
 
@@ -31,6 +33,10 @@ public class PlayerCombat : MonoBehaviour
     [HideInInspector] public bool[] specialMoveUnlocked = { true, true, true };
 
     [Header("Special Move 1")]
+    [SerializeField] private float sm1Cooldown = 5f;
+    private float sm1StartTime;
+    private float sm1Duration;
+    [SerializeField] private float sm1Damage = 15f;
     [SerializeField] private GameObject sm1Projectile;
     [SerializeField] private GameObject sm1ProjectileSpawnEffect;
     [SerializeField] private float radiusFromPlayer = 1f;
@@ -39,6 +45,21 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float waveDuration = 0.5f;
     [SerializeField] private float waveDetaTime = 0.8f;
     [SerializeField] private float waveDeltaAngle = 15f;
+    [SerializeField] private Image sm1Icon;
+    [SerializeField] private Image sm1CooldownFill;
+
+    [Header("Special Move 2")]
+    [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private float sm2Cooldown = 5f;
+    private float sm2StartTime;
+    [SerializeField] private float sm2Radius = 10f;
+    [SerializeField] private float sm2Damage = 10f;
+    private float sm2VFXScale;
+    [SerializeField] private ParticleSystem sm2ImpactVFX;
+    [SerializeField] private ParticleSystem sm2WaveVFX;
+    [SerializeField] private ParticleSystem sm2EnemyHitVFX;
+    [SerializeField] private Image sm2Icon;
+    [SerializeField] private Image sm2CooldownFill;
     
 
     [Header("Animation")]
@@ -49,7 +70,6 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private Collider swordCollider;
 
     
-
     PlayerInputActions inputs;
     [HideInInspector] public bool inCombo;
     private PlayerMovement playerMovement;
@@ -57,21 +77,29 @@ public class PlayerCombat : MonoBehaviour
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
+
+        // Init player health
+        HP = initHP;
+        isDead = false;
+        hpTargetFill = hpFullFill;
+
+        // Init player combo attack
+        inCombo = false;
+
+        // Init player special moves
+        sm1Duration = waveCount * (waveDetaTime + waveDuration);
+        sm1StartTime = Time.time - sm1Duration;
+
+        sm2VFXScale = .84f * sm2Radius;
     }
 
     void Start()
     {
-        hpTargetAngle = 0;
-
         inputs = new PlayerInputActions();
         inputs.Player.Enable();
         inputs.Player.Attack.performed += Attack;
         inputs.Player.SM1.performed += SM1;
-
-        inCombo = false;
-
-        HP = initHP;
-        isDead = false;
+        inputs.Player.SM2.performed += SM2;
     }
 
     void Update()
@@ -82,13 +110,56 @@ public class PlayerCombat : MonoBehaviour
         swordCollider.enabled = inCombo;
 
         // Update health bar fill        
-        float hpZRot = Mathf.SmoothDampAngle(healthBarFill.eulerAngles.z, hpTargetAngle, ref currVelocity, smoothTime);
-        healthBarFill.rotation = Quaternion.Euler(0, 0, hpZRot);
+        float _fill = Mathf.SmoothDampAngle(healthBarFill.fillAmount, hpTargetFill, ref currVelocity, smoothTime);
+        healthBarFill.fillAmount = _fill;
+
+        // Update SM cooldown fill
+        UpdateSMCooldownUI();
 
         // Debug purposes only! 
         if (Input.GetKeyDown(KeyCode.K))
         {
             TakeDamage(40.0f);
+        }
+    }
+
+    private void UpdateSMCooldownUI()
+    {
+        // SM1
+        Color c = sm1Icon.color;
+        if (Time.time - sm1Duration - sm1StartTime < sm1Cooldown)
+        {
+            c.a = .7f;
+            sm1Icon.color = c;
+
+            if (Time.time - sm1StartTime < sm1Duration)
+            {
+                sm1CooldownFill.fillAmount = 0f;
+            }
+            else
+            {
+                sm1CooldownFill.fillAmount = (Time.time - sm1StartTime - sm1Duration) / sm1Cooldown;
+            }
+        }
+        else
+        {
+            c.a = 1f;
+            sm1Icon.color = c;
+        }
+
+        // SM2
+        c = sm2Icon.color;
+        if (Time.time - sm2StartTime < sm2Cooldown)
+        {
+            c.a = .7f;
+            sm2Icon.color = c;
+
+            sm2CooldownFill.fillAmount = (Time.time - sm2StartTime) / sm2Cooldown;
+        }
+        else
+        {
+            c.a = 1f;
+            sm2Icon.color = c;
         }
     }
 
@@ -136,7 +207,11 @@ public class PlayerCombat : MonoBehaviour
 
     void SM1(InputAction.CallbackContext context)
     {
-        StartCoroutine(PerformSM1());
+        if (Time.time - sm1Duration - sm1StartTime >= sm1Cooldown)
+        {
+            sm1StartTime = Time.time;
+            StartCoroutine(PerformSM1());
+        }
     }
 
     IEnumerator PerformSM1()
@@ -168,6 +243,7 @@ public class PlayerCombat : MonoBehaviour
 
             GameObject proj = Instantiate(sm1Projectile, spawnPoint, Quaternion.Euler(0, 0, 0));
             proj.transform.up = forwards[i];
+            proj.GetComponent<SwordProjectile>().attackDamage = sm1Damage;
             // Add delay between projectiles
             yield return new WaitForSeconds(waveDuration / projectilePerWave);
         }   
@@ -175,7 +251,26 @@ public class PlayerCombat : MonoBehaviour
 
     void SM2(InputAction.CallbackContext context)
     {
+        if (Time.time - sm2StartTime >= sm2Cooldown)
+        {
+            sm2StartTime = Time.time;
 
+            ParticleSystem impactVFX = Instantiate(sm2ImpactVFX, transform.position, Quaternion.Euler(-90, 0, 0));
+            ParticleSystem waveVFX = Instantiate(sm2WaveVFX, transform.position, Quaternion.Euler(90, 0, 0));
+
+            impactVFX.transform.localScale = sm2VFXScale * new Vector3(1f, 1f, 1f);
+            waveVFX.transform.localScale = sm2VFXScale * new Vector3(1f, 1f, 1f);
+
+
+
+            // Detect all enemy in range
+            Collider[] enemies = Physics.OverlapSphere(transform.position, sm2Radius, enemyLayer);
+            foreach (Collider enemy in enemies)
+            {
+                enemy.GetComponent<EnemyStats>().TakeDamage(sm2Damage);
+                Instantiate(sm2EnemyHitVFX, enemy.transform.position, Quaternion.Euler(0, 0, 0));
+            }
+        }
     }
 
     void SM3(InputAction.CallbackContext context)
@@ -233,8 +328,8 @@ public class PlayerCombat : MonoBehaviour
     void OnDrawGizmosSelected()
     {
         // if (attackPoint == null) return;
-        // Gizmos.color = Color.red;
-        // Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, sm2Radius);
     }
 
     public void TakeDamage(float damage)
@@ -242,7 +337,7 @@ public class PlayerCombat : MonoBehaviour
         if (isDead) return;
 
         HP -= damage;
-        hpTargetAngle = (1 - HP / initHP) * 156.0f;
+        hpTargetFill = HP / initHP * hpFullFill;
 
         if (HP <= 0)
         {
