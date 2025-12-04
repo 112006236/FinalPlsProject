@@ -273,7 +273,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5766828216632494510}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.1693688, y: -0.9594244, z: 1.1347641}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -347,6 +347,7 @@ MonoBehaviour:
   exitComboTime: 0.8
   specialMoveUnlocked: 010101
   sm1Cooldown: 5
+  sm1Damage: 15
   sm1Projectile: {fileID: 7693039643493395875, guid: 853e4b90b982e6a4aa22191c902bb370, type: 3}
   sm1ProjectileSpawnEffect: {fileID: 5880797563127281583, guid: 265d3a5ba69981a4698ceabcedf368b0, type: 3}
   radiusFromPlayer: 1
@@ -357,6 +358,17 @@ MonoBehaviour:
   waveDeltaAngle: 30
   sm1Icon: {fileID: 0}
   sm1CooldownFill: {fileID: 0}
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  sm2Cooldown: 5
+  sm2Radius: 10
+  sm2Damage: 10
+  sm2ImpactVFX: {fileID: 0}
+  sm2WaveVFX: {fileID: 0}
+  sm2EnemyHitVFX: {fileID: 0}
+  sm2Icon: {fileID: 0}
+  sm2CooldownFill: {fileID: 0}
   anim: {fileID: 5766828217849564429}
   slashVFXs:
   - {fileID: 1983844513708117435}
