@@ -70,6 +70,9 @@ public class PlayerCombat : MonoBehaviour
     public Transform attackPoint;       // Empty object in front of the sword
     [SerializeField] private Collider swordCollider;
 
+    [Header("UI")]
+    [SerializeField] private GameObject deathUI;
+
     
     PlayerInputActions inputs;
     [HideInInspector] public bool inCombo;
@@ -367,6 +370,8 @@ public class PlayerCombat : MonoBehaviour
     private IEnumerator DieCoroutine()
     {
         anim.SetTrigger("Die");
+        if (deathUI != null)
+            deathUI.SetActive(true);
         yield return new WaitForSeconds(2.0f);
         Instantiate(deathParticles, transform.position, Quaternion.Euler(0, 0, 0));
         Destroy(gameObject);
