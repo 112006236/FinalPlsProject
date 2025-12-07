@@ -7,7 +7,7 @@ public class EnemySpawner : MonoBehaviour
     [System.Serializable]
     public class EnemyGroup
     {
-        public List<GameObject> enemyPrefabs = new List<GameObject>(); // 🔥 multiple enemies
+        public List<GameObject> enemyPrefabs = new List<GameObject>();
         public int count = 5;
         public float spawnInterval = 1f;
         public int spawnPointIndex = 0;
@@ -25,6 +25,17 @@ public class EnemySpawner : MonoBehaviour
 
     private bool playerInside = false;
     private bool isSpawning = false;
+
+    public bool AreaCleared { get; private set; } = false;
+
+    private void Start()
+    {
+        // 🔹 Register this area with ArenaControl dynamically
+        if (ArenaControl.Instance != null)
+        {
+            ArenaControl.Instance.RegisterArea(this);
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -53,7 +64,6 @@ public class EnemySpawner : MonoBehaviour
         {
             EnemyGroup group = enemyGroups[g];
 
-            // Safe spawnpoint
             int spIndex = Mathf.Clamp(group.spawnPointIndex, 0, Mathf.Max(0, spawnPoints.Count - 1));
             Transform spawnPoint = spawnPoints.Count > 0 ? spawnPoints[spIndex] : transform;
 
@@ -72,21 +82,20 @@ public class EnemySpawner : MonoBehaviour
                     break;
                 }
 
-                // Choose enemy (sequential)
                 int index = group.spawnedCount % group.enemyPrefabs.Count;
                 GameObject prefab = group.enemyPrefabs[index];
 
-                // Spawn enemy
-                var enemy = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
+                var enemyGO = Instantiate(prefab, spawnPoint.position, Quaternion.identity);
 
-                // Spawn effect
                 if (spawnEffectPrefab != null)
                     Instantiate(spawnEffectPrefab, spawnPoint.position, Quaternion.identity);
 
-                // Death notifier support
-                var notifier = enemy.GetComponent<EnemyDeathNotifier>();
-                if (notifier != null)
-                    notifier.SetSpawner(this, g);
+                var stats = enemyGO.GetComponent<EnemyStats>();
+                if (stats != null)
+                {
+                    int capturedIndex = g;
+                    stats.OnDeath += (e) => NotifyEnemyDeath(capturedIndex);
+                }
 
                 group.spawnedCount++;
                 Debug.Log($"Spawned enemy {group.spawnedCount}/{group.count} (Group {g})");
@@ -99,13 +108,36 @@ public class EnemySpawner : MonoBehaviour
         isSpawning = false;
     }
 
-    public void NotifyEnemyDeath(int groupIndex, GameObject enemy = null)
+    public void NotifyEnemyDeath(int groupIndex)
     {
         if (groupIndex < 0 || groupIndex >= enemyGroups.Count) return;
 
         var group = enemyGroups[groupIndex];
         group.deadCount++;
 
-        Debug.Log($"Enemy died from group {groupIndex} — {group.deadCount}/{group.count} dead.");
+        if (group.deadCount >= group.count)
+        {
+            Debug.Log($"🔥 All enemies in group {groupIndex} are dead!");
+        }
+
+        bool allGroupsCleared = true;
+        foreach (var g in enemyGroups)
+        {
+            if (g.deadCount < g.count)
+            {
+                allGroupsCleared = false;
+                break;
+            }
+        }
+
+        if (allGroupsCleared && !AreaCleared)
+        {
+            AreaCleared = true;
+            Debug.Log($"✔ AREA CLEARED: {gameObject.name}");
+
+            // 🔥 Notify ArenaControl
+            if (ArenaControl.Instance != null)
+                ArenaControl.Instance.NotifyAreaCleared(this);
+        }
     }
 }
