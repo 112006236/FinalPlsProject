@@ -28,13 +28,13 @@ public class EnemySpawner : MonoBehaviour
 
     public bool AreaCleared { get; private set; } = false;
 
+    // Event to notify ArenaControl
+    public event System.Action OnAreaCleared;
+
     private void Start()
     {
-        // 🔹 Register this area with ArenaControl dynamically
         if (ArenaControl.Instance != null)
-        {
             ArenaControl.Instance.RegisterArea(this);
-        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -115,29 +115,19 @@ public class EnemySpawner : MonoBehaviour
         var group = enemyGroups[groupIndex];
         group.deadCount++;
 
-        if (group.deadCount >= group.count)
-        {
-            Debug.Log($"🔥 All enemies in group {groupIndex} are dead!");
-        }
-
+        // Check if all groups are cleared
         bool allGroupsCleared = true;
         foreach (var g in enemyGroups)
-        {
             if (g.deadCount < g.count)
-            {
                 allGroupsCleared = false;
-                break;
-            }
-        }
 
         if (allGroupsCleared && !AreaCleared)
         {
             AreaCleared = true;
             Debug.Log($"✔ AREA CLEARED: {gameObject.name}");
 
-            // 🔥 Notify ArenaControl
-            if (ArenaControl.Instance != null)
-                ArenaControl.Instance.NotifyAreaCleared(this);
+            OnAreaCleared?.Invoke();
+
         }
     }
 }

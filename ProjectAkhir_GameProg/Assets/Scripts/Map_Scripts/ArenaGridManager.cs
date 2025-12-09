@@ -11,15 +11,18 @@ public class ArenaGridManager : MonoBehaviour
     [SerializeField] private GameObject[] enemyAreaPrefabs;
     [SerializeField] private int enemyAreaCount = 5;
 
+    [Header("Shrine & Cage Prefabs")]
+    [SerializeField] private GameObject shrinePrefab;
+    [SerializeField] private int shrineCount = 2;
+    [SerializeField] private GameObject cagePrefab;
+    [SerializeField] private int cageCount = 2;
+
     [Header("Normal Area Prefabs")]
     [SerializeField] private GameObject[] normalAreaPrefabs;
     [SerializeField] private float[] normalSpawnRates;
 
     [Header("Spawn Point Area")]
     [SerializeField] private GameObject spawnPointPrefab;
-
-    [Header("Outer Walls")]
-    [SerializeField] private GameObject wallPrefab;
 
     private int[,] gridFlags; // -1 empty, -2 buffer, >=0 used
 
@@ -64,7 +67,7 @@ public class ArenaGridManager : MonoBehaviour
             gridFlags[middleX, middleZ] = -2;
         }
 
-        // --- Randomly place enemy areas ---
+        // --- Randomly place enemy areas (with buffer) ---
         List<Vector2Int> available = new List<Vector2Int>();
         for (int x = 0; x < gridX; x++)
             for (int z = 0; z < gridZ; z++)
@@ -80,11 +83,10 @@ public class ArenaGridManager : MonoBehaviour
             int enemyIndex = Random.Range(0, enemyAreaPrefabs.Length);
             Vector3 spawnPos = origin + new Vector3((pos.x + 0.5f) * cellSize, 0, (pos.y + 0.5f) * cellSize);
 
-            // Enemy prefab stays with its normal rotation
             Instantiate(enemyAreaPrefabs[enemyIndex], spawnPos, Quaternion.identity, transform);
             gridFlags[pos.x, pos.y] = enemyIndex;
 
-            // Create buffer around it
+            // Create buffer around enemy areas
             for (int dx = -1; dx <= 1; dx++)
                 for (int dz = -1; dz <= 1; dz++)
                 {
@@ -98,6 +100,28 @@ public class ArenaGridManager : MonoBehaviour
                 }
         }
 
+        // --- Place Shrine areas (no buffer) ---
+        for (int i = 0; i < shrineCount; i++)
+        {
+            Vector2Int pos = GetRandomEmptyCell(gridX, gridZ);
+            if (pos.x == -1) break; // no empty cell found
+
+            Vector3 spawnPos = origin + new Vector3((pos.x + 0.5f) * cellSize, 0, (pos.y + 0.5f) * cellSize);
+            Instantiate(shrinePrefab, spawnPos, Quaternion.identity, transform);
+            gridFlags[pos.x, pos.y] = -3; // optional special flag
+        }
+
+        // --- Place Cage areas (no buffer) ---
+        for (int i = 0; i < cageCount; i++)
+        {
+            Vector2Int pos = GetRandomEmptyCell(gridX, gridZ);
+            if (pos.x == -1) break;
+
+            Vector3 spawnPos = origin + new Vector3((pos.x + 0.5f) * cellSize, 0, (pos.y + 0.5f) * cellSize);
+            Instantiate(cagePrefab, spawnPos, Quaternion.identity, transform);
+            gridFlags[pos.x, pos.y] = -4; // optional special flag
+        }
+
         // --- Fill remaining cells with normal areas (random rotation) ---
         for (int z = 0; z < gridZ; z++)
         {
@@ -108,7 +132,6 @@ public class ArenaGridManager : MonoBehaviour
                     int normalIndex = GetWeightedRandomIndex(normalSpawnRates);
                     Vector3 spawnPos = origin + new Vector3((x + 0.5f) * cellSize, 0, (z + 0.5f) * cellSize);
 
-                    // Random rotation for normal areas only
                     Quaternion rot = Quaternion.Euler(0, 90 * Random.Range(0, 4), 0);
 
                     Instantiate(normalAreaPrefabs[normalIndex], spawnPos, rot, transform);
@@ -116,27 +139,20 @@ public class ArenaGridManager : MonoBehaviour
                 }
             }
         }
-
-        // --- Spawn walls on outermost edges ---
-        if (wallPrefab != null)
-        {
-            for (int x = 0; x < gridX; x++)
-            {
-                SpawnWall(origin, x, 0);
-                SpawnWall(origin, x, gridZ - 1);
-            }
-            for (int z = 0; z < gridZ; z++)
-            {
-                SpawnWall(origin, 0, z);
-                SpawnWall(origin, gridX - 1, z);
-            }
-        }
     }
 
-    private void SpawnWall(Vector3 origin, int x, int z)
+    private Vector2Int GetRandomEmptyCell(int gridX, int gridZ)
     {
-        Vector3 pos = origin + new Vector3((x + 0.5f) * cellSize, 0, (z + 0.5f) * cellSize);
-        Instantiate(wallPrefab, pos, Quaternion.identity, transform);
+        List<Vector2Int> emptyCells = new List<Vector2Int>();
+        for (int x = 0; x < gridX; x++)
+            for (int z = 0; z < gridZ; z++)
+                if (gridFlags[x, z] == -1)
+                    emptyCells.Add(new Vector2Int(x, z));
+
+        if (emptyCells.Count == 0) return new Vector2Int(-1, -1);
+
+        int r = Random.Range(0, emptyCells.Count);
+        return emptyCells[r];
     }
 
     private int GetWeightedRandomIndex(float[] rates)

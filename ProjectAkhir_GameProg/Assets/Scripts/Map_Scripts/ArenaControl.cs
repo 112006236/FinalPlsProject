@@ -1,41 +1,168 @@
-using UnityEngine;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+
+public enum ObjectiveType
+{
+    Shrine,
+    EnemyArea,
+    Cage
+}
+
+[System.Serializable]
+public class ArenaObjective
+{
+    public ObjectiveType type;
+    public int count; // How many of this type are required
+}
 
 public class ArenaControl : MonoBehaviour
 {
     public static ArenaControl Instance;
 
-    private List<EnemySpawner> enemyAreas = new List<EnemySpawner>();
-    private int clearedAreas = 0;
+    [Header("Arena Settings")]
+    public int totalObjectives = 6;
+    public List<ArenaObjective> assignedObjectives = new List<ArenaObjective>();
+
+    [Header("UI")]
+    public TextMeshProUGUI shrineText;
+    public TextMeshProUGUI enemyText;
+    public TextMeshProUGUI cageText;
+
+    [Header("Win UI")]
+    public GameObject youWinUI; // Deactivated by default in inspector
+
+    private Dictionary<ObjectiveType, int> completedByType = new Dictionary<ObjectiveType, int>();
+    private int totalCompleted = 0;
 
     private void Awake()
     {
         Instance = this;
     }
 
-    // EnemySpawner calls this when it is spawned
+    private void Start()
+    {
+        AssignRandomObjectives();
+        InitializeCompletionTracking();
+        UpdateUI();
+        DebugObjectives();
+    }
+
+    #region Assignment
+    private void AssignRandomObjectives()
+    {
+        assignedObjectives.Clear();
+        int remaining = totalObjectives;
+
+        int shrineCount = Random.Range(1, Mathf.Max(2, remaining - 1));
+        remaining -= shrineCount;
+
+        int enemyCount = Random.Range(1, Mathf.Max(2, remaining));
+        remaining -= enemyCount;
+
+        int cageCount = remaining;
+
+        assignedObjectives.Add(new ArenaObjective { type = ObjectiveType.Shrine, count = shrineCount });
+        assignedObjectives.Add(new ArenaObjective { type = ObjectiveType.EnemyArea, count = enemyCount });
+        assignedObjectives.Add(new ArenaObjective { type = ObjectiveType.Cage, count = cageCount });
+    }
+
+    private void InitializeCompletionTracking()
+    {
+        foreach (var obj in assignedObjectives)
+            completedByType[obj.type] = 0;
+    }
+
+    private void DebugObjectives()
+    {
+        Debug.Log("🎯 Arena Objectives Assigned:");
+        foreach (var obj in assignedObjectives)
+        {
+            Debug.Log($"- {obj.type}: {obj.count}");
+        }
+    }
+    #endregion
+
+    #region Registration
+    public void RegisterShrine(CaptureShrine shrine)
+    {
+        shrine.OnShrineCaptured += () => NotifyObjectiveCompleted(ObjectiveType.Shrine);
+        Debug.Log($"✔ Registered Shrine: {shrine.gameObject.name}");
+    }
+
     public void RegisterArea(EnemySpawner spawner)
     {
-        if (!enemyAreas.Contains(spawner))
+        spawner.OnAreaCleared += () => NotifyObjectiveCompleted(ObjectiveType.EnemyArea);
+        Debug.Log($"✔ Registered Enemy Area: {spawner.gameObject.name}");
+    }
+
+    public void RegisterCage(MultiHealthObject cage)
+    {
+        cage.OnDestroyed += () => NotifyObjectiveCompleted(ObjectiveType.Cage);
+        Debug.Log($"✔ Registered Cage: {cage.gameObject.name}");
+    }
+    #endregion
+
+    #region Completion
+    private void NotifyObjectiveCompleted(ObjectiveType type)
+    {
+        int maxCount = assignedObjectives.Find(o => o.type == type).count;
+        int currentCount = completedByType[type];
+
+        if (currentCount >= maxCount)
         {
-            enemyAreas.Add(spawner);
-            Debug.Log($"✔ Registered Enemy Area: {spawner.gameObject.name}. Total areas: {enemyAreas.Count}");
+            Debug.Log($"❌ {type} completion ignored (already fulfilled).");
+            return;
+        }
+
+        completedByType[type]++;
+        totalCompleted++;
+        Debug.Log($"🔥 {type} completed! {completedByType[type]}/{maxCount} ({totalCompleted}/{totalObjectives})");
+
+        UpdateUI();
+
+        if (totalCompleted >= totalObjectives)
+        {
+            OnArenaCompleted();
         }
     }
 
-    public void NotifyAreaCleared(EnemySpawner area)
+    private void OnArenaCompleted()
     {
-        clearedAreas++;
-        Debug.Log($"🔥 Area cleared! {clearedAreas}/{enemyAreas.Count}");
+        Debug.Log("✅ All objectives completed! Arena cleared!");
 
-        if (clearedAreas >= enemyAreas.Count)
+        if (youWinUI != null)
+            youWinUI.SetActive(true);
+
+        // Optional: pause the game or disable player movement
+        // Time.timeScale = 0f;
+    }
+    #endregion
+
+    #region UI
+    private void UpdateUI()
+    {
+        foreach (var obj in assignedObjectives)
         {
-            SpawnFinalBoss();
+            int completed = completedByType[obj.type];
+            int required = obj.count;
+
+            switch (obj.type)
+            {
+                case ObjectiveType.Shrine:
+                    if (shrineText != null)
+                        shrineText.text = $"Shrines: {completed}/{required}";
+                    break;
+                case ObjectiveType.EnemyArea:
+                    if (enemyText != null)
+                        enemyText.text = $"Enemy Areas: {completed}/{required}";
+                    break;
+                case ObjectiveType.Cage:
+                    if (cageText != null)
+                        cageText.text = $"Cages: {completed}/{required}";
+                    break;
+            }
         }
     }
-
-    private void SpawnFinalBoss()
-    {
-        Debug.Log("💀 FINAL BOSS SPAWN WOULD BE SPAWNED HERE!");
-    }
+    #endregion
 }

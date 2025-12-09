@@ -18,6 +18,14 @@ public class MultiHealthObject : MonoBehaviour
     public GameObject destroyVFX;
     public GameObject barBreakVFX;
 
+    public event System.Action OnDestroyed;
+
+    private void Start()
+    {
+        ArenaControl.Instance?.RegisterCage(this);
+    }
+
+
     private void Awake()
     {
         currentHealth = healthPerBar * numberOfBars;
@@ -71,8 +79,11 @@ public class MultiHealthObject : MonoBehaviour
         if (destroyVFX != null)
             Instantiate(destroyVFX, transform.position, Quaternion.identity);
 
+        OnDestroyed?.Invoke();
+
         Destroy(gameObject);
     }
+
 
     // Helper methods
     public float GetCurrentHealth() => currentHealth;
