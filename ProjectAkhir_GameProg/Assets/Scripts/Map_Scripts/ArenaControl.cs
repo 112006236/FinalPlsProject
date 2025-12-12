@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum ObjectiveType
 {
@@ -24,13 +25,17 @@ public class ArenaControl : MonoBehaviour
     public int totalObjectives = 6;
     public List<ArenaObjective> assignedObjectives = new List<ArenaObjective>();
 
-    [Header("UI")]
-    public TextMeshProUGUI shrineText;
-    public TextMeshProUGUI enemyText;
-    public TextMeshProUGUI cageText;
+    [Header("Progress Bars")]
+    public Image shrineBarFill;
+    public Image enemyBarFill;
+    public Image cageBarFill;
+
+    public TextMeshProUGUI shrineLabel;
+    public TextMeshProUGUI enemyLabel;
+    public TextMeshProUGUI cageLabel;
 
     [Header("Win UI")]
-    public GameObject youWinUI; // Deactivated by default in inspector
+    public GameObject youWinUI;
 
     private Dictionary<ObjectiveType, int> completedByType = new Dictionary<ObjectiveType, int>();
     private int totalCompleted = 0;
@@ -120,7 +125,6 @@ public class ArenaControl : MonoBehaviour
         Debug.Log($"🔥 {type} completed! {completedByType[type]}/{maxCount} ({totalCompleted}/{totalObjectives})");
 
         UpdateUI();
-
         if (totalCompleted >= totalObjectives)
         {
             OnArenaCompleted();
@@ -133,9 +137,6 @@ public class ArenaControl : MonoBehaviour
 
         if (youWinUI != null)
             youWinUI.SetActive(true);
-
-        // Optional: pause the game or disable player movement
-        // Time.timeScale = 0f;
     }
     #endregion
 
@@ -147,19 +148,44 @@ public class ArenaControl : MonoBehaviour
             int completed = completedByType[obj.type];
             int required = obj.count;
 
+            float fillAmount = (required > 0) ? (float)completed / required : 0f;
+
+            bool isDone = completed >= required;
+            Color barColor = isDone ? Color.green : Color.white;
+
             switch (obj.type)
             {
                 case ObjectiveType.Shrine:
-                    if (shrineText != null)
-                        shrineText.text = $"Shrines: {completed}/{required}";
+                    if (shrineBarFill != null)
+                    {
+                        shrineBarFill.fillAmount = fillAmount;
+                        shrineBarFill.color = barColor;
+                    }
+                    if (shrineLabel != null)
+                        shrineLabel.text = $"{completed}/{required}";
+                        Debug.Log($"{obj.type} FillAmount = {fillAmount}");
                     break;
+
                 case ObjectiveType.EnemyArea:
-                    if (enemyText != null)
-                        enemyText.text = $"Enemy Areas: {completed}/{required}";
+                    if (enemyBarFill != null)
+                    {
+                        enemyBarFill.fillAmount = fillAmount;
+                        enemyBarFill.color = barColor;
+                                Debug.Log($"{obj.type} FillAmount = {fillAmount}");
+                    }
+                    if (enemyLabel != null)
+                        enemyLabel.text = $"{completed}/{required}";
                     break;
+
                 case ObjectiveType.Cage:
-                    if (cageText != null)
-                        cageText.text = $"Cages: {completed}/{required}";
+                    if (cageBarFill != null)
+                    {
+                        cageBarFill.fillAmount = fillAmount;
+                        cageBarFill.color = barColor;
+                    }
+                    if (cageLabel != null)
+                        cageLabel.text = $"{completed}/{required}";
+                        Debug.Log($"{obj.type} FillAmount = {fillAmount}");
                     break;
             }
         }

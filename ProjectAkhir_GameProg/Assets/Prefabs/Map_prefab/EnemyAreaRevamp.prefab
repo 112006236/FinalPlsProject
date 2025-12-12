@@ -496,7 +496,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3922269969485182485
 Transform:
   m_ObjectHideFlags: 0
@@ -631,7 +631,6 @@ GameObject:
   - component: {fileID: 2822242669963516821}
   - component: {fileID: 2822242669963516818}
   - component: {fileID: 2822242669963516819}
-  - component: {fileID: 5689534447274913855}
   m_Layer: 0
   m_Name: EnemyAreaRevamp
   m_TagString: Area
@@ -733,19 +732,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5689534447274913855
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2822242669963516816}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27fb6ddecfadf4cc589c373d31e72a39, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  areaName: Spawner
 --- !u!1 &2962231408817836958
 GameObject:
   m_ObjectHideFlags: 0
@@ -1882,7 +1868,7 @@ BoxCollider:
   m_GameObject: {fileID: 5830508426567099995}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -1980,7 +1966,7 @@ BoxCollider:
   m_GameObject: {fileID: 6008224508683838414}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -2152,7 +2138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8637225171683734424
 Transform:
   m_ObjectHideFlags: 0
@@ -2474,7 +2460,7 @@ BoxCollider:
   m_GameObject: {fileID: 7167822345485546969}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -3546,7 +3532,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3848700671444962660
 Transform:
   m_ObjectHideFlags: 0
@@ -5471,7 +5457,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 160606, guid: 5c3cbac9d5eae3844a928d36e6dbd1a6, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 498466, guid: 5c3cbac9d5eae3844a928d36e6dbd1a6, type: 3}
       propertyPath: m_RootOrder

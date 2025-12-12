@@ -8,6 +8,9 @@ TagManager:
   - Sword
   - FxTemporaire
   - Sword Projectile
+  - Area
+  - Shrine
+  - Princess
   layers:
   - Default
   - TransparentFX

@@ -3,44 +3,50 @@ using System.Linq;
 
 public class PlayerAreaIndicator : MonoBehaviour
 {
-    [SerializeField] private string areaTag = "Area";
-    [SerializeField] private float rotateSpeed = 8f;
+    [Header("Area Tags (Customizable)")]
+    public string shrineTag = "Shrine";
+    public string enemyAreaTag = "Area";
+    public string cageTag = "Princess";
+
+    [Header("Rotation Settings")]
+    public float rotateSpeed = 8f;
+
+    private string currentTargetTag;  // tag chosen by button
     private bool isInsideArea = false;
+
+    void Start()
+    {
+        // Default target so the arrow doesn't break before choosing
+        currentTargetTag = shrineTag;
+    }
 
     void Update()
     {
-        // Hide indicator if inside any area
         if (isInsideArea)
         {
             gameObject.SetActive(false);
             return;
         }
 
-        // Make sure the arrow is visible again
         if (!gameObject.activeSelf)
             gameObject.SetActive(true);
 
-        GameObject nearestArea = FindNearestArea();
+        GameObject nearestArea = FindNearestArea(currentTargetTag);
         if (nearestArea == null) return;
 
         Vector3 dir = nearestArea.transform.position - transform.position;
-
-        // Keep direction horizontal
         dir.y = 0;
 
         if (dir.sqrMagnitude > 0.01f)
         {
-            // Find the target Y-Angle only
             float targetY = Quaternion.LookRotation(dir).eulerAngles.y;
 
-            // Smoothly interpolate only the Y axis
             float newY = Mathf.LerpAngle(
                 transform.eulerAngles.y,
                 targetY,
                 Time.deltaTime * rotateSpeed
             );
 
-            // Apply ONLY Y rotation
             transform.rotation = Quaternion.Euler(
                 transform.eulerAngles.x,
                 newY,
@@ -49,9 +55,12 @@ public class PlayerAreaIndicator : MonoBehaviour
         }
     }
 
-    GameObject FindNearestArea()
+    // ------------------------------
+    // FIND NEAREST AREA FOR A TAG
+    // ------------------------------
+    GameObject FindNearestArea(string tag)
     {
-        GameObject[] areas = GameObject.FindGameObjectsWithTag(areaTag);
+        GameObject[] areas = GameObject.FindGameObjectsWithTag(tag);
         if (areas.Length == 0)
             return null;
 
@@ -60,16 +69,24 @@ public class PlayerAreaIndicator : MonoBehaviour
             .FirstOrDefault();
     }
 
-    // --- Player trigger detection ---
-    private void OnTriggerEnter(Collider other)
+    // ------------------------------
+    // BUTTON FUNCTIONS
+    // ------------------------------
+    public void PointToShrine()
     {
-        if (other.CompareTag(areaTag))
-            isInsideArea = true;
+        currentTargetTag = shrineTag;
+        isInsideArea = false;  // force arrow visible
     }
 
-    private void OnTriggerExit(Collider other)
+    public void PointToEnemyArea()
     {
-        if (other.CompareTag(areaTag))
-            isInsideArea = false;
+        currentTargetTag = enemyAreaTag;
+        isInsideArea = false;
+    }
+
+    public void PointToCage()
+    {
+        currentTargetTag = cageTag;
+        isInsideArea = false;
     }
 }
