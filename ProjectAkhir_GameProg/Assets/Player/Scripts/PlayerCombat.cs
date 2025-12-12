@@ -241,7 +241,7 @@ public class PlayerCombat : MonoBehaviour
         for (int i = 0; i < projectilePerWave; i++)
         {
             // Fire sword projectile
-            Vector3 spawnPoint = transform.position + radiusFromPlayer * forwards[i];
+            Vector3 spawnPoint = transform.position + radiusFromPlayer * forwards[i] + .5f * transform.up;
 
             Instantiate(sm1ProjectileSpawnEffect, spawnPoint, Quaternion.Euler(0, 0, 0));
 

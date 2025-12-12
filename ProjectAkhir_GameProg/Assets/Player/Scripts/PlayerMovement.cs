@@ -12,7 +12,7 @@ public class PlayerMovement : MonoBehaviour
     public float cameraRadius = 10f;
     public float mouseSensitivity = 0.1f;
     private CharacterController controller;
-    private Animator animator;
+    [SerializeField] private Animator animator;
     public Transform sprites;
 
     [HideInInspector]
@@ -29,7 +29,6 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        animator = GetComponentInChildren<Animator>();
         controller = GetComponent<CharacterController>();
 
         inputActions = new PlayerInputActions();

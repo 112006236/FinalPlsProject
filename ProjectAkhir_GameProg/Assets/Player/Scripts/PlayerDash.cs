@@ -19,7 +19,7 @@ public class PlayerDash : MonoBehaviour
     [HideInInspector]
     public bool isDashing;
 
-    private Animator anim;
+    [SerializeField] private Animator anim;
     [SerializeField] private Transform sprites;
     [SerializeField] private ParticleSystem cooldownVFX;
     private bool playedCooldownVFX;
@@ -27,7 +27,6 @@ public class PlayerDash : MonoBehaviour
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
-        anim = GetComponent<Animator>();
 
         anim.SetLayerWeight(2, 0);
         anim.SetBool("Dashing", false);

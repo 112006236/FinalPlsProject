@@ -107,9 +107,11 @@ public class EnemyStats : MonoBehaviour
             if (playerCombat != null)
                 TakeDamage(playerCombat.attackDamage);
         }
+
         SwordProjectile projectile = other.GetComponent<SwordProjectile>();
         if (projectile != null)
         {
+            Debug.Log("Hit by projectile...");
             TakeDamage(projectile.attackDamage);
 
             // Optional: spawn VFX on projectile hit
