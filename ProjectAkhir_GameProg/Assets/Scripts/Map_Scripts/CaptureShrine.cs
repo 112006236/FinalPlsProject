@@ -1,25 +1,42 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System;
 
 public class CaptureShrine : MonoBehaviour
 {
     [Header("Capture Settings")]
-    public float captureTime = 5f;        // Total time required to capture
-    public Collider captureTrigger;       // Trigger zone around shrine
+    public float captureTime = 5f;
+    public Collider captureTrigger;
+
+    [Header("UI Settings")]
+    public Image captureBarForeground;
+    public Image captureBarBackground;
+
+    [Header("Rune Settings")]
+    public Transform runeQuad;           // Assign your circular rune quad
+    public float rotationSpeed = 90f;     // Degrees per second
+    public Color capturedColor = Color.red;
 
     private float captureProgress = 0f;
     private bool playerInside = false;
     private bool shrineCaptured = false;
 
-    public event Action OnShrineCaptured; // Event for other systems
+    private Renderer runeRenderer;
+
+    public event Action OnShrineCaptured;
 
     private void Start()
     {
-        // Automatically register this shrine with the ArenaControl
         if (ArenaControl.Instance != null)
         {
             ArenaControl.Instance.RegisterShrine(this);
         }
+
+        if (captureBarForeground != null)
+            captureBarForeground.fillAmount = 0f;
+
+        if (runeQuad != null)
+            runeRenderer = runeQuad.GetComponent<Renderer>();
     }
 
     private void Update()
@@ -28,15 +45,23 @@ public class CaptureShrine : MonoBehaviour
 
         if (playerInside)
         {
+            // Rotate rune while capturing
+            RotateRune();
+
             captureProgress += Time.deltaTime;
 
             if (captureProgress >= captureTime)
             {
+                captureProgress = captureTime;
                 shrineCaptured = true;
-                Debug.Log($"🏆 Shrine captured: {gameObject.name}");
 
+                SetRuneCapturedColor();
+
+                Debug.Log($"🏆 Shrine captured: {gameObject.name}");
                 OnShrineCaptured?.Invoke();
             }
+
+            UpdateCaptureBar();
         }
     }
 
@@ -52,9 +77,33 @@ public class CaptureShrine : MonoBehaviour
             playerInside = false;
     }
 
-    // --- Helper Methods ---
+    // ---------- Helpers ----------
+
+    private void RotateRune()
+    {
+        if (runeQuad != null)
+        {
+            runeQuad.Rotate(Vector3.up, rotationSpeed * Time.deltaTime, Space.World);
+        }
+    }
+
+    private void SetRuneCapturedColor()
+    {
+        if (runeRenderer != null)
+        {
+            runeRenderer.material.color = capturedColor;
+        }
+    }
+
+    private void UpdateCaptureBar()
+    {
+        if (captureBarForeground != null)
+        {
+            captureBarForeground.fillAmount = captureProgress / captureTime;
+        }
+    }
+
     public bool IsPlayerInside() => playerInside;
     public bool IsCaptured() => shrineCaptured;
-    public float GetCaptureProgress() => captureProgress;
     public float GetCapturePercentage() => captureProgress / captureTime;
 }

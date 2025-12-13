@@ -575,6 +575,7 @@ GameObject:
   - component: {fileID: 3581474482460348946}
   - component: {fileID: 3659230831562933422}
   - component: {fileID: 5330335500974376185}
+  - component: {fileID: 7751104659553227288}
   m_Layer: 0
   m_Name: Princess
   m_TagString: Untagged
@@ -663,6 +664,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 0}
   lockYRotation: 1
+--- !u!95 &7751104659553227288
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5817831666699746833}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 43c59e490309340e39133086f1723794, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &6495022968964666624
 GameObject:
   m_ObjectHideFlags: 0
