@@ -8,7 +8,7 @@ public class bossWalk : StateMachineBehaviour
     Rigidbody rb;
     Transform player;
 
-    public float speed = 3f;
+    public float speed = 5f;
 
     BossManager bossManager;
 
