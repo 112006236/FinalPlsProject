@@ -56,7 +56,23 @@ public class BossMeteorAttack : MonoBehaviour
             // Let the meteor know its marker (so it can destroy it on impact)
             Meteor meteorScript = meteor.GetComponent<Meteor>();
             if (meteorScript != null)
+            {
                 meteorScript.warningMarker = marker;
+                // --- THE 30% CHANCE LOGIC ---
+                // Random.value returns 0.0 to 1.0. 0.3f = 30%
+                if (Random.value <= 0.2f) 
+                {
+                    meteorScript.isScatter = true;
+                    // Optional: Change the color or scale of cluster meteors 
+                    // so the player can tell the difference!
+                    meteor.GetComponent<Renderer>().material.color = Color.red; 
+                }
+                else
+                {
+                    meteorScript.isScatter = false;
+                }
+            }
+                
 
             spawnInterval = Random.Range(0f, 0.5f);
 

@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 8827628450634078061}
   - component: {fileID: 907949787474595110}
   - component: {fileID: 4017543464368706324}
-  - component: {fileID: 1382570605364708744}
-  m_Layer: 0
-  m_Name: MeteorPrefab
+  - component: {fileID: -301972464876224681}
+  m_Layer: 7
+  m_Name: MeteorBullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -115,7 +115,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1382570605364708744
+--- !u!114 &-301972464876224681
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -124,14 +124,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 4815525585342939160}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7c512a8534261b4eb60920fa8983838, type: 3}
+  m_Script: {fileID: 11500000, guid: ce6233d5b9d07054d8ac5b66667683d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fallSpeed: 40
-  impactEffect: {fileID: 0}
-  destroyDelay: 2
-  bulletPrefab: {fileID: 4815525585342939160, guid: 67fc1f5d6e6cfdf45aa1e5231e5fbc81, type: 3}
-  isScatter: 0
-  bulletCount: 8
-  bulletSpeed: 15
-  warningMarker: {fileID: 0}
+  speed: 10
+  lifeTime: 3
