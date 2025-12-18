@@ -10,6 +10,8 @@ public class Meteor : MonoBehaviour
 
     public bool isScatter = false;
 
+    public float damage = 5.0f;
+
     public int bulletCount = 12;       // number of bullets to spawn
     public float bulletSpeed = 15f;    // how fast bullets fly
 
@@ -43,6 +45,11 @@ public class Meteor : MonoBehaviour
             SpawnBullets();
         }
 
+        PlayerCombat pc = collision.gameObject.GetComponent<PlayerCombat>();
+        if (pc != null)
+        {
+            pc.TakeDamage(damage);
+        }
 
         // Destroy marker
         if (warningMarker != null)
