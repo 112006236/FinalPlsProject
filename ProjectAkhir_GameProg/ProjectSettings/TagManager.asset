@@ -11,6 +11,7 @@ TagManager:
   - Area
   - Shrine
   - Princess
+  - Boss
   layers:
   - Default
   - TransparentFX
@@ -19,8 +20,8 @@ TagManager:
   - Water
   - UI
   - Ground
-  - 
-  - 
+  - MeteorBullet
+  - Player
   - 
   - 
   - 

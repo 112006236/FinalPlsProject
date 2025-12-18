@@ -21,10 +21,17 @@ public class ArenaGridManager : MonoBehaviour
     [SerializeField] private GameObject[] normalAreaPrefabs;
     [SerializeField] private float[] normalSpawnRates;
 
-    [Header("Spawn Point Area")]
-    [SerializeField] private GameObject spawnPointPrefab;
+    [Header("Player Spawn Area")]
+    [SerializeField] private GameObject spawnAreaPrefab;
+    [SerializeField] private int spawnAreaSizeX = 2;
+    [SerializeField] private int spawnAreaSizeZ = 2;
 
-    private int[,] gridFlags; // -1 empty, -2 buffer, >=0 used
+    private int[,] gridFlags;
+    // -1 = empty
+    // -2 = buffer / blocked
+    // >=0 = used by normal/enemy
+    // -3 shrine
+    // -4 cage
 
     private void Start()
     {
@@ -59,15 +66,38 @@ public class ArenaGridManager : MonoBehaviour
         int middleX = gridX / 2;
         int middleZ = gridZ / 2;
 
-        // --- Spawn center ---
-        if (spawnPointPrefab != null)
+        // =========================
+        // Spawn Area (2x2 protected)
+        // =========================
+
+        int startX = middleX - (spawnAreaSizeX / 2);
+        int startZ = middleZ - (spawnAreaSizeZ / 2);
+
+        startX = Mathf.Clamp(startX, 0, gridX - spawnAreaSizeX);
+        startZ = Mathf.Clamp(startZ, 0, gridZ - spawnAreaSizeZ);
+
+        Vector3 spawnAreaCenter = origin + new Vector3(
+            (startX + spawnAreaSizeX * 0.5f) * cellSize,
+            0,
+            (startZ + spawnAreaSizeZ * 0.5f) * cellSize
+        );
+
+        if (spawnAreaPrefab != null)
+            Instantiate(spawnAreaPrefab, spawnAreaCenter, Quaternion.identity, transform);
+
+        // Mark spawn cells as blocked
+        for (int x = 0; x < spawnAreaSizeX; x++)
         {
-            Vector3 spawnPos = origin + new Vector3((middleX + 0.5f) * cellSize, 0, (middleZ + 0.5f) * cellSize);
-            Instantiate(spawnPointPrefab, spawnPos, Quaternion.identity, transform);
-            gridFlags[middleX, middleZ] = -2;
+            for (int z = 0; z < spawnAreaSizeZ; z++)
+            {
+                gridFlags[startX + x, startZ + z] = -2;
+            }
         }
 
-        // --- Randomly place enemy areas (with buffer) ---
+        // =========================
+        // Enemy Areas (with buffer)
+        // =========================
+
         List<Vector2Int> available = new List<Vector2Int>();
         for (int x = 0; x < gridX; x++)
             for (int z = 0; z < gridZ; z++)
@@ -86,32 +116,43 @@ public class ArenaGridManager : MonoBehaviour
             Instantiate(enemyAreaPrefabs[enemyIndex], spawnPos, Quaternion.identity, transform);
             gridFlags[pos.x, pos.y] = enemyIndex;
 
-            // Create buffer around enemy areas
+            // Buffer around enemy area
             for (int dx = -1; dx <= 1; dx++)
+            {
                 for (int dz = -1; dz <= 1; dz++)
                 {
                     int nx = pos.x + dx;
                     int nz = pos.y + dz;
-                    if (nx >= 0 && nx < gridX && nz >= 0 && nz < gridZ && gridFlags[nx, nz] == -1)
+
+                    if (nx >= 0 && nx < gridX &&
+                        nz >= 0 && nz < gridZ &&
+                        gridFlags[nx, nz] == -1)
                     {
                         gridFlags[nx, nz] = -2;
                         available.RemoveAll(p => p.x == nx && p.y == nz);
                     }
                 }
+            }
         }
 
-        // --- Place Shrine areas (no buffer) ---
+        // =========================
+        // Shrines
+        // =========================
+
         for (int i = 0; i < shrineCount; i++)
         {
             Vector2Int pos = GetRandomEmptyCell(gridX, gridZ);
-            if (pos.x == -1) break; // no empty cell found
+            if (pos.x == -1) break;
 
             Vector3 spawnPos = origin + new Vector3((pos.x + 0.5f) * cellSize, 0, (pos.y + 0.5f) * cellSize);
             Instantiate(shrinePrefab, spawnPos, Quaternion.identity, transform);
-            gridFlags[pos.x, pos.y] = -3; // optional special flag
+            gridFlags[pos.x, pos.y] = -3;
         }
 
-        // --- Place Cage areas (no buffer) ---
+        // =========================
+        // Cages
+        // =========================
+
         for (int i = 0; i < cageCount; i++)
         {
             Vector2Int pos = GetRandomEmptyCell(gridX, gridZ);
@@ -119,10 +160,13 @@ public class ArenaGridManager : MonoBehaviour
 
             Vector3 spawnPos = origin + new Vector3((pos.x + 0.5f) * cellSize, 0, (pos.y + 0.5f) * cellSize);
             Instantiate(cagePrefab, spawnPos, Quaternion.identity, transform);
-            gridFlags[pos.x, pos.y] = -4; // optional special flag
+            gridFlags[pos.x, pos.y] = -4;
         }
 
-        // --- Fill remaining cells with normal areas (random rotation) ---
+        // =========================
+        // Fill with Normal Areas
+        // =========================
+
         for (int z = 0; z < gridZ; z++)
         {
             for (int x = 0; x < gridX; x++)
@@ -131,7 +175,6 @@ public class ArenaGridManager : MonoBehaviour
                 {
                     int normalIndex = GetWeightedRandomIndex(normalSpawnRates);
                     Vector3 spawnPos = origin + new Vector3((x + 0.5f) * cellSize, 0, (z + 0.5f) * cellSize);
-
                     Quaternion rot = Quaternion.Euler(0, 90 * Random.Range(0, 4), 0);
 
                     Instantiate(normalAreaPrefabs[normalIndex], spawnPos, rot, transform);
@@ -149,16 +192,17 @@ public class ArenaGridManager : MonoBehaviour
                 if (gridFlags[x, z] == -1)
                     emptyCells.Add(new Vector2Int(x, z));
 
-        if (emptyCells.Count == 0) return new Vector2Int(-1, -1);
+        if (emptyCells.Count == 0)
+            return new Vector2Int(-1, -1);
 
-        int r = Random.Range(0, emptyCells.Count);
-        return emptyCells[r];
+        return emptyCells[Random.Range(0, emptyCells.Count)];
     }
 
     private int GetWeightedRandomIndex(float[] rates)
     {
         float total = 0f;
-        foreach (var r in rates) total += r;
+        foreach (float r in rates)
+            total += r;
 
         float rnd = Random.value * total;
         for (int i = 0; i < rates.Length; i++)
@@ -167,6 +211,7 @@ public class ArenaGridManager : MonoBehaviour
                 return i;
             rnd -= rates[i];
         }
+
         return rates.Length - 1;
     }
 }
