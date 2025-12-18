@@ -68,8 +68,6 @@ public class Meteor : MonoBehaviour
             
         }
 
-        
-
         // Destroy marker
         if (warningMarker != null)
             Destroy(warningMarker);
@@ -86,7 +84,7 @@ public class Meteor : MonoBehaviour
         {
             float angle = i * (360f / bulletCount);
             Vector3 dir = Quaternion.Euler(0, angle, 0) * Vector3.forward; // horizontal circle
-            Vector3 spawnOffset = dir * 1.2f + Vector3.up * 0.8f;
+            Vector3 spawnOffset = dir * 1.2f + Vector3.up * 0.2f;
             GameObject bullet = Instantiate(
                 bulletPrefab,
                 transform.position + spawnOffset,

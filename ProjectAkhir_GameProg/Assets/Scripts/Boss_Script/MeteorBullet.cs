@@ -35,7 +35,7 @@ public class MeteorBullet : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         // Optional: small explosion or damage
-        //UnityEngine.Debug.Log("Bullet Hit: " + collision.gameObject.name);
+        UnityEngine.Debug.Log("Bullet Hit: " + collision.gameObject.name);
         //if (collision.gameObject.CompareTag("Boss")) return;
         PlayerCombat pc = collision.gameObject.GetComponent<PlayerCombat>();
         if (pc != null)
