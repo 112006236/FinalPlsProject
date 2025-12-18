@@ -104,15 +104,15 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: idle_0
+      name: idle_4
       rect:
         serializedVersion: 2
-        x: 0
+        x: 988
         y: 0
         width: 247
         height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -125,15 +125,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_1
+      name: idle_11
       rect:
         serializedVersion: 2
-        x: 247
+        x: 2717
         y: 0
         width: 247
         height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -146,15 +146,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_2
+      name: idle_3
       rect:
         serializedVersion: 2
-        x: 494
+        x: 741
         y: 0
         width: 247
         height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -167,15 +167,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_3
+      name: idle_0
       rect:
         serializedVersion: 2
-        x: 741
+        x: 0
         y: 0
         width: 247
         height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -188,15 +188,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_4
+      name: idle_1
       rect:
         serializedVersion: 2
-        x: 988
+        x: 247
         y: 0
         width: 247
         height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -209,15 +209,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_5
+      name: idle_13
       rect:
         serializedVersion: 2
-        x: 1235
+        x: 3211
         y: 0
         width: 247
         height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -230,15 +230,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_6
+      name: idle_8
       rect:
         serializedVersion: 2
-        x: 1482
+        x: 1976
         y: 0
         width: 247
         height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -251,15 +251,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_7
+      name: idle_6
       rect:
         serializedVersion: 2
-        x: 1729
+        x: 1482
         y: 0
         width: 247
         height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -272,15 +272,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_8
+      name: idle_7
       rect:
         serializedVersion: 2
-        x: 1976
+        x: 1729
         y: 0
         width: 247
         height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -293,15 +293,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_9
+      name: idle_2
       rect:
         serializedVersion: 2
-        x: 2223
+        x: 494
         y: 0
         width: 247
         height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -314,15 +314,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_10
+      name: idle_5
       rect:
         serializedVersion: 2
-        x: 2470
+        x: 1235
         y: 0
         width: 247
         height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -335,15 +335,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_11
+      name: idle_12
       rect:
         serializedVersion: 2
-        x: 2717
+        x: 2964
         y: 0
         width: 247
         height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -356,15 +356,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_12
+      name: idle_9
       rect:
         serializedVersion: 2
-        x: 2964
+        x: 2223
         y: 0
         width: 247
         height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -377,15 +377,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: idle_13
+      name: idle_10
       rect:
         serializedVersion: 2
-        x: 3211
+        x: 2470
         y: 0
         width: 247
         height: 87
-      alignment: 0
-      pivot: {x: 0, y: 0}
+      alignment: 9
+      pivot: {x: 0.44, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -408,20 +408,20 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      idle_4: -1809878693
-      idle_11: -1478895236
-      idle_3: 70739883
-      idle_0: 1259997946
-      idle_1: 1018591921
-      idle_13: -1534582232
-      idle_8: 329709836
-      idle_6: -1977473218
-      idle_7: -1661573130
-      idle_2: -1516263436
-      idle_5: -2067660277
-      idle_12: 239979498
-      idle_9: 1108164237
-      idle_10: 1675999434
+      idle_4: 1259997946
+      idle_11: 1018591921
+      idle_3: -1516263436
+      idle_0: 70739883
+      idle_1: -1809878693
+      idle_13: -2067660277
+      idle_8: -1977473218
+      idle_6: -1661573130
+      idle_7: 329709836
+      idle_2: 1108164237
+      idle_5: 1675999434
+      idle_12: -1478895236
+      idle_9: 239979498
+      idle_10: -1534582232
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

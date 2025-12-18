@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 
 public class Meteor : MonoBehaviour
@@ -9,8 +10,9 @@ public class Meteor : MonoBehaviour
     public GameObject bulletPrefab;
 
     public bool isScatter = false;
+    public bool no= false;
 
-    public float damage = 5.0f;
+    public float damage = 10.0f;
 
     public int bulletCount = 12;       // number of bullets to spawn
     public float bulletSpeed = 15f;    // how fast bullets fly
@@ -19,21 +21,37 @@ public class Meteor : MonoBehaviour
 
     private bool hasLanded = false;
 
+    public float rotationSpeed = 100f;
+    // You can choose which axis to spin on. 
+    // Usually, Z-axis for 2D sprites, or Y if you want it to "twirl"
+    public Vector3 rotationAxis = new Vector3(0, 0, 1);
+
+
     void Start()
     {
         GetComponent<Rigidbody>().AddForce(Vector3.down * 1200f);
     }
     void Update()
     {
-      
+        transform.Rotate(rotationAxis * rotationSpeed * Time.deltaTime);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (hasLanded) return;
         hasLanded = true;
+        if (collision.gameObject.CompareTag("Boss"))
+        {
+            return;
+        } 
+        PlayerCombat pc = collision.gameObject.GetComponent<PlayerCombat>();
+        if (pc != null)
+        {
+            UnityEngine.Debug.Log("hit by big met");
+            pc.TakeDamage(damage);
+        }
 
-        UnityEngine.Debug.Log("Hit: " + collision.gameObject.name);
+        //UnityEngine.Debug.Log("Hit: " + collision.gameObject.name);
         // Spawn explosion effect
         if (impactEffect != null)
             Instantiate(impactEffect, transform.position, Quaternion.identity);
@@ -41,15 +59,16 @@ public class Meteor : MonoBehaviour
 
         if (bulletPrefab != null)
         {
+
             if (isScatter)
-            SpawnBullets();
+            {
+                SpawnBullets();    
+            }
+            
+            
         }
 
-        PlayerCombat pc = collision.gameObject.GetComponent<PlayerCombat>();
-        if (pc != null)
-        {
-            pc.TakeDamage(damage);
-        }
+        
 
         // Destroy marker
         if (warningMarker != null)
@@ -61,7 +80,7 @@ public class Meteor : MonoBehaviour
 
     void SpawnBullets()
     {
-        UnityEngine.Debug.Log("Spawn Bullets");
+        //UnityEngine.Debug.Log("Spawn Bullets");
         
         for (int i = 0; i < bulletCount; i++)
         {

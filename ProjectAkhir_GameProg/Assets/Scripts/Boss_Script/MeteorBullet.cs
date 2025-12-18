@@ -4,7 +4,9 @@ public class MeteorBullet : MonoBehaviour
 {
     public float speed = 10f;
     public float lifeTime = 3f;
-    public float damage = 3.0f;
+    public float damage = 5.0f;
+
+    public GameObject impactEffect;
     private Collider col;
 
     void Awake()
@@ -33,8 +35,8 @@ public class MeteorBullet : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         // Optional: small explosion or damage
-        UnityEngine.Debug.Log("Bullet Hit: " + collision.gameObject.name);
-
+        //UnityEngine.Debug.Log("Bullet Hit: " + collision.gameObject.name);
+        //if (collision.gameObject.CompareTag("Boss")) return;
         PlayerCombat pc = collision.gameObject.GetComponent<PlayerCombat>();
         if (pc != null)
         {
@@ -42,6 +44,13 @@ public class MeteorBullet : MonoBehaviour
             pc.TakeDamage(damage);
         }
 
+        if (impactEffect != null)
+            Instantiate(impactEffect, transform.position, Quaternion.identity);
+
+        if (collision.gameObject.CompareTag("Boss"))
+        {
+            return;
+        } 
         if (collision.gameObject.name == "MeteorBullet") return;
         Destroy(gameObject);
     }

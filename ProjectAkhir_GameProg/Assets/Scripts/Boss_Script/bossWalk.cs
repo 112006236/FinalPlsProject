@@ -8,7 +8,7 @@ public class bossWalk : StateMachineBehaviour
     Rigidbody rb;
     Transform player;
 
-    public float speed = 5f;
+    public float speed = 3f;
 
     BossManager bossManager;
 
@@ -26,7 +26,7 @@ public class bossWalk : StateMachineBehaviour
         Vector3 target = new Vector3(player.position.x, player.position.y, player.position.z);
         Vector3 newPos = Vector3.MoveTowards(rb.position, target, speed * Time.deltaTime);
         rb.MovePosition(newPos);
-        bossManager.LookAtPlayer();
+        //bossManager.LookAtPlayer();
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state

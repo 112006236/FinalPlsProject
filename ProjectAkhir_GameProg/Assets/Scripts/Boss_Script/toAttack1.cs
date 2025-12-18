@@ -8,14 +8,15 @@ public class toAttack1 : StateMachineBehaviour
     private float attackDelay;
 
     private float goState2;
+    private bool hasTransitioned; // NEW: Prevent multiple triggers
     
         // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        attackDelay = Random.Range(1.5f, 3f);
         timer = 0f;
-
-        goState2 = Random.Range(15f, 16f);
+        hasTransitioned = false; // Reset when entering state
+        attackDelay = Random.Range(1.5f, 3f);
+        goState2 = Random.Range(5f, 6f);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -24,16 +25,17 @@ public class toAttack1 : StateMachineBehaviour
         
         timer += Time.deltaTime;
 
-        // Attack trigger
-        if (timer >= attackDelay)
+        // Attack logic
+        if (timer >= attackDelay && !hasTransitioned) 
         {
             animator.SetTrigger("Attack1");
-            attackDelay = timer + Random.Range(1.5f, 3f); // schedule next attack
+            attackDelay = timer + Random.Range(1.5f, 3f);
         }
 
-        // Transition to walk state after 15s
-        if (timer >= goState2)
+        // Transition logic - Add the !hasTransitioned check here
+        if (timer >= goState2 && !hasTransitioned)
         {
+            hasTransitioned = true; // Mark as done
             animator.SetTrigger("toWalk");
         }
 
@@ -45,6 +47,7 @@ public class toAttack1 : StateMachineBehaviour
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         animator.ResetTrigger("Attack1");
+        animator.ResetTrigger("toWalk"); // Reset toWalk so it doesn't fire again
     }
 
 

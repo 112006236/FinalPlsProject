@@ -11,6 +11,7 @@ TagManager:
   - Area
   - Shrine
   - Princess
+  - Boss
   layers:
   - Default
   - TransparentFX

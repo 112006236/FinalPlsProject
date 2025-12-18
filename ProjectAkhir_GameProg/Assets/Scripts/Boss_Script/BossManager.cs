@@ -8,7 +8,7 @@ public class BossManager : MonoBehaviour
     public Animator animator;   // Reference to the boss's Animator
     private bool isFlipped = false;
      [Header("Phase Settings")]
-    public float phase2Time = 2f;
+    public float phase2Time = 0.5f;
     private float timer;
     private bool isPhase2 = false;
 
@@ -19,21 +19,37 @@ public class BossManager : MonoBehaviour
 
     private float ChargeTimer = 2f;
 
-    public float AttackDistance = 3.2f;
+    public float AttackDistance = 3f;
 
     private bool isCharging = false;
     private Vector3 chargeTarget;
     public Transform player;
 
+    [Header("Graphics / Animation")]
+    public Transform sprite;
+    public bool flipInsteadOfRotate = true;
+    private Vector3 initialScale;
+    private SpriteRenderer spriteRenderer;
+    //private Animator anim;
+
+    [Header("Effects")]
+    public GameObject slashPrefab; // Drag your slash sprite/prefab here
+    public Transform slashPoint;  // A child object positioned at the sword's tip
+
+    private bool lookLeft;
+
     void Start()
     {
         animator = GetComponentInChildren<Animator>();
+        if (sprite != null) initialScale = sprite.localScale;
+        spriteRenderer = sprite.GetComponent<SpriteRenderer>();
     }
     void Update()
     {
         // Keep counting up time
         timer += Time.deltaTime;
-
+        //OnDrawGizmos();
+        HandleSpriteFlip();
         // After 15 seconds, tell the Animator to go to state 2
         if (!isPhase2 && timer >= phase2Time)
         {
@@ -49,12 +65,14 @@ public class BossManager : MonoBehaviour
 
     void Phase2()
     {
+        Debug.Log("in phase 2");
         ChargeTimer += Time.deltaTime;
         
         if (!isCharging)
         {
+            //Debug.Log("test");
             float distance = Vector3.Distance(transform.position, player.position);
-
+            //Debug.Log(distance);
             // Trigger charge if close enough
             if (distance <= chargeDistance && ChargeTimer >= 5f)
             {
@@ -67,6 +85,8 @@ public class BossManager : MonoBehaviour
             float distance = Vector3.Distance(transform.position, player.position);
             if (distance <= AttackDistance)
             {
+                Debug.Log("ToAttack");
+                //SpawnSlash();
                 animator.SetTrigger("Attack2");
             }
         }
@@ -76,8 +96,8 @@ public class BossManager : MonoBehaviour
     {
         isCharging = true;
         //agent.isStopped = true;
-
-        animator.SetTrigger("Charge"); // Optional: charge animation trigger
+        Debug.Log("charge Attack");
+        //animator.SetTrigger("Charge"); // Optional: charge animation trigger
 
         yield return new WaitForSeconds(0.5f); // wind-up delay before dash
 
@@ -102,24 +122,47 @@ public class BossManager : MonoBehaviour
         //agent.speed = walkSpeed;
     }
 
-    public void LookAtPlayer()
+    private void HandleSpriteFlip()
     {
-        if (player != null)
+        if (player.position.x > transform.position.x)
         {
-            Vector3 flipped = transform.localScale;
-            flipped.z *= -1f;
-
-            if (transform.position.x < player.position.x && isFlipped)
-            {
-                transform.localScale = flipped;
-                transform.Rotate(0f, 180f, 0f);
-                isFlipped = false;
-            }
-            else if (transform.position.x > player.position.x && !isFlipped) {
-                transform.localScale = flipped;
-                transform.Rotate(0f, 180f, 0f);
-                isFlipped = true;
-            }
+            Debug.Log("look right");
+            // if (flipInsteadOfRotate)  sprite.localScale = new Vector3(initialScale.x, initialScale.y, initialScale.z);
+            // else                      sprite.rotation = Quaternion.Euler(0, 0, 0);
+            spriteRenderer.flipX = false;  
+            lookLeft = false;       
+        }
+        else
+        {
+            // if (flipInsteadOfRotate)  new Vector3(-initialScale.x, initialScale.y, initialScale.z);
+            // else                      sprite.rotation = Quaternion.Euler(0, 180, 0);
+            Debug.Log("look left");
+            spriteRenderer.flipX = true;
+            lookLeft = true;
         }
     }
-}
+
+    public void SpawnSlash() 
+    {
+        // Instantiate the slash effect
+
+        float slashScale = 10f;
+
+        Quaternion flatRotation = Quaternion.Euler(90, 0, 0);
+
+        GameObject slash = Instantiate(slashPrefab, transform.position, flatRotation);
+        Debug.Log("slash spawn");
+        // If the boss is flipped, flip the slash too!
+        //slash.transform.localScale = new Vector3(slashScale, slashScale, slashScale);
+        if (!lookLeft) 
+        {
+            slash.transform.localScale = new Vector3(-slashScale, slashScale, slashScale);
+        } 
+        else
+        {
+            slash.transform.localScale = new Vector3(slashScale, slashScale, slashScale);
+        }
+    }
+
+
+    }
