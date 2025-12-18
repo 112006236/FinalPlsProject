@@ -38,6 +38,7 @@ public class ArenaControl : MonoBehaviour
     public GameObject youWinUI;
 
     private Dictionary<ObjectiveType, int> completedByType = new Dictionary<ObjectiveType, int>();
+    private HashSet<ObjectiveType> powerUpGrantedFor = new HashSet<ObjectiveType>();
     private int totalCompleted = 0;
 
     private void Awake()
@@ -122,14 +123,27 @@ public class ArenaControl : MonoBehaviour
 
         completedByType[type]++;
         totalCompleted++;
-        Debug.Log($"🔥 {type} completed! {completedByType[type]}/{maxCount} ({totalCompleted}/{totalObjectives})");
+
+        Debug.Log($"🔥 {type} completed! {completedByType[type]}/{maxCount}");
 
         UpdateUI();
+
+        // ⭐ NEW: Check if THIS objective type just finished
+        if (completedByType[type] == maxCount && !powerUpGrantedFor.Contains(type))
+        {
+            powerUpGrantedFor.Add(type);
+            Debug.Log($"PowerUpManager Instance = {PowerUpManager.Instance}");
+            Debug.Log($"🎁 Power-Up triggered for completing {type}");
+            PowerUpManager.Instance.ShowChoices();
+        }
+
+        // Arena fully completed (optional)
         if (totalCompleted >= totalObjectives)
         {
             OnArenaCompleted();
         }
     }
+
 
     private void OnArenaCompleted()
     {
@@ -137,6 +151,8 @@ public class ArenaControl : MonoBehaviour
 
         if (youWinUI != null)
             youWinUI.SetActive(true);
+
+        PowerUpManager.Instance.ShowChoices();
     }
     #endregion
 

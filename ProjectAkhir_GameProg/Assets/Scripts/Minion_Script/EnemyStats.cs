@@ -30,6 +30,11 @@ public class EnemyStats : MonoBehaviour
     private Transform player;
     private Collider enemyCollider;
 
+    private bool isStunned = false;
+
+    // 🔥 NEW: cache PlayerCombat
+    private PlayerCombat playerCombat;
+
     private void Awake()
     {
         currentHealth = maxHealth;
@@ -38,7 +43,11 @@ public class EnemyStats : MonoBehaviour
         agent.speed = moveSpeed;
 
         GameObject p = GameObject.FindWithTag("Player");
-        if (p != null) player = p.transform;
+        if (p != null)
+        {
+            player = p.transform;
+            playerCombat = p.GetComponent<PlayerCombat>(); // 🔥 NEW
+        }
 
         if (healthBar != null)
             healthBar.SetMaxHealth(maxHealth);
@@ -56,11 +65,9 @@ public class EnemyStats : MonoBehaviour
         currentHealth -= dmg;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-        // Update health bar
         if (healthBar != null)
             healthBar.UpdateHealth(currentHealth);
 
-        // Hurt VFX
         if (hurtVFX != null)
             Instantiate(hurtVFX, transform.position, Quaternion.identity);
 
@@ -97,29 +104,71 @@ public class EnemyStats : MonoBehaviour
     // ---------------- TRIGGER DAMAGE -----------------
     private void OnTriggerEnter(Collider other)
     {
+        // ---------- MELEE ----------
         if (other.CompareTag("Sword"))
         {
             Vector3 impactPoint = other.ClosestPoint(transform.position);
             if (swordImpactVFX != null)
                 Instantiate(swordImpactVFX, impactPoint, Quaternion.identity);
 
-            PlayerCombat playerCombat = other.GetComponentInParent<PlayerCombat>();
-            if (playerCombat != null)
-                TakeDamage(playerCombat.attackDamage);
+            if (playerCombat == null) return;
+
+            float dmg = playerCombat.CalculateDamage(playerCombat.attackDamage, this);
+            TakeDamage(dmg);
+            playerCombat.ApplyLifesteal(dmg);
         }
 
+        // ---------- PROJECTILE ----------
         SwordProjectile projectile = other.GetComponent<SwordProjectile>();
         if (projectile != null)
         {
-            Debug.Log("Hit by projectile...");
-            TakeDamage(projectile.attackDamage);
+            float dmg = projectile.attackDamage;
 
-            // Optional: spawn VFX on projectile hit
+            if (playerCombat != null)
+            {
+                dmg = playerCombat.CalculateDamage(projectile.attackDamage, this);
+                playerCombat.ApplyLifesteal(dmg);
+            }
+
+            TakeDamage(dmg);
+
             if (swordImpactVFX != null)
                 Instantiate(swordImpactVFX, transform.position, Quaternion.identity);
 
-            Destroy(other.gameObject); // remove projectile
+            Destroy(other.gameObject);
         }
+    }
+
+    public void ApplyStun(float duration)
+    {
+        if (isStunned) return;
+        StartCoroutine(StunRoutine(duration));
+    }
+
+    private IEnumerator StunRoutine(float duration)
+    {
+        isStunned = true;
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        if (agent != null) agent.isStopped = true;
+        yield return new WaitForSeconds(duration);
+        if (agent != null) agent.isStopped = false;
+        isStunned = false;
+    }
+
+    public void ApplyStagger(float multiplier)
+    {
+        // Example: briefly reduce speed or interrupt attack
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        if (agent != null)
+            StartCoroutine(StaggerRoutine(multiplier));
+    }
+
+    private IEnumerator StaggerRoutine(float multiplier)
+    {
+        float originalSpeed = agent.speed;
+        agent.speed *= (1f / multiplier); // reduce movement
+        yield return new WaitForSeconds(0.3f);
+        agent.speed = originalSpeed;
     }
 
     // ---------------- DEATH -----------------
@@ -128,10 +177,15 @@ public class EnemyStats : MonoBehaviour
         if (agent != null) agent.isStopped = true;
         if (enemyCollider != null) enemyCollider.enabled = false;
 
+        // 🔥 COOLDOWN REFUND TRIGGER
+        if (playerCombat != null)
+        {
+            playerCombat.OnEnemyKilled();
+        }
+
         // Notify listeners
         OnDeath?.Invoke(this);
 
-        // Increment kill tracker
         if (EnemyKillTracker.Instance != null)
             EnemyKillTracker.Instance.AddKill();
 

@@ -24,6 +24,25 @@ public class PlayerCombat : MonoBehaviour
     float lastComboEnd;
     int comboCounter;
 
+    [Header("Attack Power Ups")]
+    public float critChance = 0f;          // 0–1
+    public float critMultiplier = 2f;
+    //A POWER UP ENDS HERE
+
+    [Header("Utility Power Ups")]
+    public bool lifestealEnabled = false;
+    public float lifestealPercent = 0.1f;
+
+    public bool damageReductionWhileAttacking = false;
+    public float attackDamageReduction = 0.3f;
+
+    public bool cooldownRefundOnKillEnabled = false;
+    public float cooldownRefundAmount = 0.5f;
+    //U POWER UP ENDS HERE
+
+    [HideInInspector] public int extraSM2Waves = 0; // Extra waves added by power-ups
+
+
     public float attackDamage = 25f;    // Damage per hit
 
     public float timeBetweenCombo = 0.5f;
@@ -61,7 +80,13 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private ParticleSystem sm2EnemyHitVFX;
     [SerializeField] private Image sm2Icon;
     [SerializeField] private Image sm2CooldownFill;
-    
+
+    [Header("SM2 CC Effects")]
+    public bool sm2PullEnabled = false;
+    public bool sm2StunEnabled = false;
+    public float sm2StunDuration = 1.0f;
+    public float sm2PullForce = 5.0f;
+    public float sm2StaggerMultiplier = 1.0f;
 
     [Header("Animation")]
     public Animator anim;
@@ -265,8 +290,6 @@ public class PlayerCombat : MonoBehaviour
             impactVFX.transform.localScale = sm2VFXScale * new Vector3(1f, 1f, 1f);
             waveVFX.transform.localScale = sm2VFXScale * new Vector3(1f, 1f, 1f);
 
-
-
             // Detect all enemy in range
             Collider[] enemies = Physics.OverlapSphere(transform.position, sm2Radius, enemyLayer);
             foreach (Collider enemy in enemies)
@@ -274,8 +297,12 @@ public class PlayerCombat : MonoBehaviour
                 enemy.GetComponent<EnemyStats>().TakeDamage(sm2Damage);
                 Instantiate(sm2EnemyHitVFX, enemy.transform.position, Quaternion.Euler(0, 0, 0));
             }
+
+            int totalWaves = 1 + extraSM2Waves; // Base 1 wave + extra from power-ups
+            StartCoroutine(SM2Waves(totalWaves, 0.3f));
         }
     }
+
 
     void SM3(InputAction.CallbackContext context)
     {
@@ -340,6 +367,12 @@ public class PlayerCombat : MonoBehaviour
     {
         if (isDead) return;
 
+        // FOR DAMAGE REDUCTION WHILE ATTACKING
+        if (damageReductionWhileAttacking && inCombo)
+        {
+            damage *= (1f - attackDamageReduction);
+        }
+
         HP -= damage;
         hpTargetFill = HP / initHP * hpFullFill;
 
@@ -355,7 +388,7 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    //THIS IS FOR THE POWER UP
+    //THIS IS FOR THE POWER UP POTION
     public void Heal(float amount)
     {
         if (isDead) return;
@@ -367,6 +400,96 @@ public class PlayerCombat : MonoBehaviour
         hpTargetFill = HP / initHP * hpFullFill;
     }
 
+    //THIS IS FOR THE VAMP
+    public void ApplyLifesteal(float damageDealt)
+    {
+        if (!lifestealEnabled || isDead) return;
+
+        Heal(damageDealt * lifestealPercent);
+    }
+
+    //THIS IS FOR THE CRIT SKILLS
+    public float CalculateDamage(float baseDamage, EnemyStats enemy)
+    {
+        float finalDamage = baseDamage;
+
+        // 🔥 CRITICAL HIT
+        if (Random.value < critChance)
+        {
+            finalDamage *= critMultiplier;
+            Debug.Log("CRIT HIT!");
+        }
+
+        return finalDamage;
+    }
+
+    //THIS IS FOR THE CD SKILLS
+    public void ReduceCooldowns(float multiplier)
+    {
+        sm1Cooldown *= multiplier;
+        sm2Cooldown *= multiplier;
+
+        // Safety clamp
+        sm1Cooldown = Mathf.Max(1f, sm1Cooldown);
+        sm2Cooldown = Mathf.Max(1f, sm2Cooldown);
+    }
+    public void OnEnemyKilled()
+    {
+        if (!cooldownRefundOnKillEnabled) return;
+
+        sm1StartTime -= cooldownRefundAmount;
+        sm2StartTime -= cooldownRefundAmount;
+
+        Debug.Log("Cooldown refunded on kill!");
+    }
+    //THIS IS FOR THE EXTRA WAVE SKILLS
+    public void AddSM1Waves(int extra)
+    {
+        waveCount += extra;
+        sm1Duration = waveCount * (waveDetaTime + waveDuration); // Update duration
+        Debug.Log($"SM1 wave count increased to {waveCount}");
+    }
+
+    public IEnumerator SM2Waves(int waveCount, float waveDelay)
+    {
+        for (int i = 0; i < waveCount; i++)
+        {
+            Collider[] enemies = Physics.OverlapSphere(transform.position, sm2Radius, enemyLayer);
+
+            foreach (Collider enemyCol in enemies)
+            {
+                EnemyStats enemy = enemyCol.GetComponent<EnemyStats>();
+                if (enemy != null)
+                {
+                    // Apply damage
+                    enemy.TakeDamage(sm2Damage);
+                    Instantiate(sm2EnemyHitVFX, enemy.transform.position, Quaternion.identity);
+
+                    // Apply stun if enabled
+                    if (sm2StunEnabled)
+                        enemy.ApplyStun(sm2StunDuration);
+
+                    // Apply stagger
+                    enemy.ApplyStagger(sm2StaggerMultiplier);
+                }
+            }
+
+            // Optional: VFX per wave
+            ParticleSystem waveVFX = Instantiate(sm2WaveVFX, transform.position, Quaternion.Euler(90, 0, 0));
+            waveVFX.transform.localScale = sm2VFXScale * Vector3.one;
+
+            yield return new WaitForSeconds(waveDelay);
+        }
+    }
+
+    public void EnableSM2CC(bool pull, bool stun, float stunDuration, float staggerMultiplier)
+    {
+        sm2PullEnabled = pull;
+        sm2StunEnabled = stun;
+        sm2StunDuration = stunDuration;
+        sm2StaggerMultiplier = staggerMultiplier;
+    }
+    
     private IEnumerator DieCoroutine()
     {
         anim.SetTrigger("Die");
