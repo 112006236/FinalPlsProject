@@ -436,9 +436,9 @@ public class PlayerCombat : MonoBehaviour
     public void OnEnemyKilled()
     {
         if (!cooldownRefundOnKillEnabled) return;
-
-        sm1StartTime -= cooldownRefundAmount;
-        sm2StartTime -= cooldownRefundAmount;
+        
+        sm1StartTime += cooldownRefundAmount;
+        sm2StartTime += cooldownRefundAmount;
 
         Debug.Log("Cooldown refunded on kill!");
     }

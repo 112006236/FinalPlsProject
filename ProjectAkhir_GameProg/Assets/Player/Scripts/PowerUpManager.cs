@@ -34,6 +34,8 @@ public class PowerUpManager : MonoBehaviour
 
     public void ShowChoices()
     {
+        Time.timeScale = 0f;
+
         panel.SetActive(true);
 
         currentChoices.Clear();
@@ -51,6 +53,7 @@ public class PowerUpManager : MonoBehaviour
             titles.Length,
             descriptions.Length
         );
+        choiceCount = 3;
 
         List<PowerUpSO> pool = new List<PowerUpSO>(allPowerUps);
 
@@ -61,9 +64,9 @@ public class PowerUpManager : MonoBehaviour
             pool.RemoveAt(index);
             currentChoices.Add(chosen);
 
-            icons[i].sprite = chosen.icon;
-            titles[i].text = chosen.powerUpName;
-            descriptions[i].text = chosen.description;
+            // icons[i].sprite = chosen.icon;
+            titles[i].SetText(chosen.powerUpName);
+            descriptions[i].SetText(chosen.description);
 
             int btnIndex = i;
             buttons[i].onClick.RemoveAllListeners();
@@ -72,14 +75,20 @@ public class PowerUpManager : MonoBehaviour
     }
 
 
-    void SelectPowerUp(int index)
+    public void SelectPowerUp(int index)
     {
+        Debug.Log(currentChoices.Count);
+        for (int i = 0; i < currentChoices.Count; i++)
+        {
+            Debug.Log(currentChoices[i].description);
+        }
         ApplyPowerUp(currentChoices[index]);
         Close();
     }
 
     void Close()
     {
+        Time.timeScale = 1f;
         panel.SetActive(false);
         Time.timeScale = 1f;
     }

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 861b3b5598ed3442d90b71e9f5e4ab4c, type: 3}
+  m_Name: Extra SM2 Waves
+  m_EditorClassIdentifier: 
+  powerUpName: Extra Stomps
+  description: Increase number of power stomps
+  icon: {fileID: 21300000, guid: 6ffc895b4f9684c71811a95f83b25ffc, type: 3}
+  type: 6
+  floatValue: 0
+  intValue: 0
