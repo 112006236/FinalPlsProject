@@ -564,7 +564,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &144068937
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1538,6 +1538,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   totalObjectives: 6
   assignedObjectives: []
+  shrineBarFill: {fileID: 0}
+  enemyBarFill: {fileID: 0}
+  cageBarFill: {fileID: 0}
   shrineLabel: {fileID: 2063810015}
   enemyLabel: {fileID: 1735578983}
   cageLabel: {fileID: 166766203}
