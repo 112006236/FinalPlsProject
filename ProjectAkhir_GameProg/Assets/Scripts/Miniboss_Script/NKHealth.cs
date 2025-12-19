@@ -41,12 +41,24 @@ public class NKHealth : MonoBehaviour
         if (healthBar != null)
             healthBar.UpdateHealth(currentHealth);
 
+        // Only play take_hit if not attacking or dashing
         if (animator != null && !isDead)
-            animator.Play("take_hit", 0, 0);
+        {
+            if (enemyScript != null)
+            {
+                if (enemyScript.canNormalAttack &&enemyScript.canDashAttack)
+                    animator.Play("take_hit", 0, 0);
+            }
+            else
+            {
+                animator.Play("take_hit", 0, 0);
+            }
+        }
 
         if (currentHealth <= 0)
             Die();
     }
+
 
     void Die()
     {

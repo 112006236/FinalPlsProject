@@ -22,17 +22,13 @@ public class Necromancer : MonoBehaviour
     public int fireballDamage = 15;
     public float attackRange = 12f;
 
-    private float lastFireballTime = 0f;
+    private float lastFireballTime = -100f;
     private bool isAttacking = false;
     private bool facingLeft = true;
 
-    [Header("Health")]
-    public float maxHealth = 200f;
-    private float currentHealth;
 
     private void Start()
     {
-        currentHealth = maxHealth;
         sr = GetComponent<SpriteRenderer>();
         if (player == null)
             player = GameObject.FindWithTag("Player").transform;
@@ -41,7 +37,6 @@ public class Necromancer : MonoBehaviour
     private void Update()
     {
         if (player == null) return;
-        if (currentHealth <= 0) return;
 
         float dist = Vector3.Distance(transform.position, player.position);
 
@@ -87,6 +82,7 @@ public class Necromancer : MonoBehaviour
     private IEnumerator PerformAttack1()
     {
         isAttacking = true;
+        lastFireballTime= Time.time;
         animator.Play("attack1", -1, 0f);
         animator.Update(0f);
 
@@ -112,30 +108,22 @@ public class Necromancer : MonoBehaviour
     // ---------------- FLIP SPRITE ----------------
     private void FlipSprite()
     {
-        if (player == null) return;
-        bool shouldFaceLeft = player.position.x < transform.position.x;
-        sr.flipX = !shouldFaceLeft;
-    }
+        if (player == null || sr == null) return;
 
-    // ---------------- DAMAGE ----------------
-    public void TakeDamage(float dmg)
-    {
-        currentHealth -= dmg;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        Camera cam = Camera.main;
+        if (cam == null) return;
 
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-        else
-        {
-            animator.Play("hurt");
-        }
-    }
+        // Vector from enemy to player
+        Vector3 toPlayer = player.position - transform.position;
 
-    private void Die()
-    {
-        animator.Play("death");
-        Destroy(gameObject, 1f); // delay to let death animation play
+        // Camera's right direction
+        Vector3 camRight = cam.transform.right;
+
+        // Project onto camera right vector
+        float dot = Vector3.Dot(toPlayer, camRight);
+
+        // Sprite faces LEFT by default
+        // Player on camera-right → flip
+        sr.flipX = dot < 0f;
     }
 }

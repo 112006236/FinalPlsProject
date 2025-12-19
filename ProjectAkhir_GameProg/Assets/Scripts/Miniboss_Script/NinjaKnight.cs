@@ -20,13 +20,14 @@ public class NinjaKnight : MonoBehaviour
     public float attackCooldown = 0.3f;       // Short cooldown for combo
     public float dashAttackCooldown = 0.7f;   // Longer cooldown for dash
     private bool canAttack = true;
-    private bool isDashing = false;
-    private bool canNormalAttack = true;  // For normal attack combo
-    private bool canDashAttack = true;    // For dash attack
+    public bool isDashing = false;
+    public bool canNormalAttack = true;  // For normal attack combo
+    public bool canDashAttack = true;    // For dash attack
 
     private int comboStep = 0;                 // Track normal attack combo
 
     private string currentAnimation = "";
+    private float dashtolerance=3.2f;
 
     private void Start()
     {
@@ -66,7 +67,7 @@ public class NinjaKnight : MonoBehaviour
         //     transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 720f * Time.deltaTime);
         // }
 
-        if (distance > attackRange && distance > dashAttackRange)
+        if ((distance > attackRange && distance<=dashtolerance)||distance>dashAttackRange)
         {
             transform.position += direction * moveSpeed * Time.deltaTime;
             PlayAnimOnce("run");
@@ -82,7 +83,7 @@ public class NinjaKnight : MonoBehaviour
                 StartCoroutine(NormalAttackCombo());
 
             // Dash attack
-            else if (distance <= dashAttackRange && distance > attackRange && canDashAttack){
+            else if (distance <= dashAttackRange && distance > attackRange && distance>dashtolerance && canDashAttack){
                 Debug.Log("tes");
                 StartCoroutine(DashAttack(direction));
             }
@@ -116,20 +117,20 @@ public class NinjaKnight : MonoBehaviour
 
         // Attack2 + fall
         PlayAnimOnce("attack2");
-        if (Vector2.Distance(transform.position, player.position) <= attackRange)
+        if (Vector3.Distance(transform.position, player.position) <= attackRange)
         {
             yield return new WaitForSeconds(0.45f);
             PlayerCombat pc = player.GetComponent<PlayerCombat>();
-            if (pc != null && !pc.isDead)
+            if (pc != null && !pc.isDead && Vector3.Distance(transform.position, player.position) <= attackRange)
                 pc.TakeDamage(dashAttackDamage);
         }
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.4f);
         PlayAnimOnce("fall");
         yield return new WaitForSeconds(0.3f);
         PlayAnimOnce("idle");
 
         // Dash cooldown
-        yield return new WaitForSeconds(dashAttackCooldown - 0.8f); // remaining time
+        yield return new WaitForSeconds(dashAttackCooldown - 0.7f); // remaining time
         canDashAttack = true;
     }
 
@@ -142,21 +143,21 @@ public class NinjaKnight : MonoBehaviour
 
         if (comboStep % 2 == 0){
             PlayAnimOnce("attack1");
-            if (Vector2.Distance(transform.position, player.position) <= attackRange)
+            if (Vector3.Distance(transform.position, player.position) <= attackRange)
             {
                 yield return new WaitForSeconds(0.45f);
                 PlayerCombat pc = player.GetComponent<PlayerCombat>();
-                if (pc != null && !pc.isDead)
+                if (pc != null && !pc.isDead && Vector3.Distance(transform.position, player.position) <= attackRange)
                     pc.TakeDamage(normalAttackDamage);
             }
         }
         else{
             PlayAnimOnce("attack2");
-            if (Vector2.Distance(transform.position, player.position) <= attackRange)
+            if (Vector3.Distance(transform.position, player.position) <= attackRange)
             {
                 yield return new WaitForSeconds(0.45f);
                 PlayerCombat pc = player.GetComponent<PlayerCombat>();
-                if (pc != null && !pc.isDead)
+                if (pc != null && !pc.isDead && Vector3.Distance(transform.position, player.position) <= attackRange)
                     pc.TakeDamage(normalAttackDamage);
             }
         }
@@ -179,13 +180,23 @@ public class NinjaKnight : MonoBehaviour
 
     private void FlipSprite()
     {
-        if (player == null) return;
+        if (player == null || sr == null) return;
 
-        // Check if player is to the left of the NinjaKnight
-        bool isPlayerLeft = player.position.x < transform.position.x;
+        Camera cam = Camera.main;
+        if (cam == null) return;
 
-        // Flip sprite to face left if player is left
-        sr.flipX = isPlayerLeft;
+        // Vector from enemy to player
+        Vector3 toPlayer = player.position - transform.position;
+
+        // Camera's right direction
+        Vector3 camRight = cam.transform.right;
+
+        // Project onto camera right vector
+        float dot = Vector3.Dot(toPlayer, camRight);
+
+        // Sprite faces LEFT by default
+        // Player on camera-right → flip
+        sr.flipX = dot < 0f;
     }
 
 }
