@@ -1,13 +1,13 @@
 using UnityEngine;
 
-public class BOFHealth : MonoBehaviour
+public class NHealth : MonoBehaviour
 {
     public float maxHealth = 100f;
     private float currentHealth;
     private Animator animator;
     [HideInInspector] public bool isDead = false;
 
-    private DragonWarrior enemyScript;
+    private NinjaKnight enemyScript;
     public EnemyHealthBar healthBar; // reference to your new UI health bar script
     [SerializeField] private PlayerCombat playerCombat;
     private float playerDamage;
@@ -16,7 +16,7 @@ public class BOFHealth : MonoBehaviour
     {
         currentHealth = maxHealth;
         animator = GetComponent<Animator>();
-        enemyScript = GetComponent<DragonWarrior>();
+        enemyScript = GetComponent<NinjaKnight>();
 
         if (playerCombat == null)
         {
@@ -41,20 +41,12 @@ public class BOFHealth : MonoBehaviour
         if (healthBar != null)
             healthBar.UpdateHealth(currentHealth);
 
-        // Only play hurt if not attacking or healing
-        BringerOfDeath bossScript = GetComponent<BringerOfDeath>();
         if (animator != null && !isDead)
-        {
-            if (bossScript == null || (!bossScript.isAttacking && !bossScript.isHealing))
-            {
-                animator.Play("BringerOfDeath_hurt", 0, 0);
-            }
-        }
+            animator.Play("hurt", 0, 0);
 
         if (currentHealth <= 0)
             Die();
     }
-
 
     void Die()
     {
@@ -65,9 +57,9 @@ public class BOFHealth : MonoBehaviour
             enemyScript.enabled = false;
 
         if (animator != null)
-            animator.Play("BringerOfDeath_die", 0, 0);
+            animator.Play("death", 0, 0);
 
-        Destroy(gameObject, 1.15f);
+        Destroy(gameObject, 2f);
     }
 
     private void OnTriggerEnter(Collider other)
