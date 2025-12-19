@@ -202,6 +202,7 @@ public class BossManager : MonoBehaviour
             areaAttackCooldownTimer -= 3f;
             chargeCooldownTimer -= 3f;
             meteorCooldownTimer = 0;
+            Debug.Log("test");
         }
 
         float distance = Vector3.Distance(transform.position, player.position);
