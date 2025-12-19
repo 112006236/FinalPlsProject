@@ -201,4 +201,5 @@ public class EnemyStats : MonoBehaviour
 
     // ---------------- HELPERS -----------------
     public float GetCurrentHealth() => currentHealth;
+    public float GetMaxHealth() => maxHealth;
 }

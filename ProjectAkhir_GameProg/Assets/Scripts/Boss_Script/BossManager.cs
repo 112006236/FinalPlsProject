@@ -1,22 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using Mono.CompilerServices.SymbolWriter;
 using UnityEditor.UIElements;
 using UnityEngine;
 
 public class BossManager : MonoBehaviour
 {
     public Animator animator;   // Reference to the boss's Animator
+    private EnemyStats stats;
     private bool isFlipped = false;
      [Header("Phase Settings")]
     public float phase2Time = 0.5f;
     private float timer;
     private bool isPhase2 = false;
+    private bool isPhase3 = false;
 
     [Header("Movement Settings")]
     public float walkSpeed = 1f;
     public float chargeSpeed = 15f;
-    public float chargeDistance = 12f;
+    
 
     private float ChargeTimer = 2f;
 
@@ -43,19 +46,52 @@ public class BossManager : MonoBehaviour
     public GameObject AreaAttackWarningCircle;
     public float AreaAttackDelay = 1.5f;
     private bool isPerformingAreaAttack = false;
+
+
+    [Header("Charge Attack Settings")]
+    public GameObject lineWarningPrefab; // Drag a long rectangle prefab here
+    public float trackingDuration = 2.5f; // Time indicator follows player
+    public float lockDuration = 1.5f;     // Time indicator stays still before dash
+    public float chargeDistanceMax = 40f; // Max length of the indicator/dash
+    public float chargeDistance = 21f;
+
+    public float chargeDamage = 20f;
+
+    private bool hasHitPlayerThisCharge = false;
+
+    [Header("Attack Cooldowns")]
+    public float chargeCooldown = 5f;
+    public float areaAttackCooldown = 2.5f;
+
+    public float chargeCooldownRandom = 2f;
+
+    private float chargeCooldownTimer = 0f;
+    private float areaAttackCooldownTimer = 0f;
+
     void Start()
     {
         animator = GetComponentInChildren<Animator>();
         if (sprite != null) initialScale = sprite.localScale;
         spriteRenderer = sprite.GetComponent<SpriteRenderer>();
+        stats = GetComponent<EnemyStats>();
     }
+
     void Update()
     {
         // Keep counting up time
         timer += Time.deltaTime;
+        chargeCooldownTimer += Time.deltaTime;
+        areaAttackCooldownTimer += Time.deltaTime;
+        
         //OnDrawGizmos();
         HandleSpriteFlip();
-        //Flip();
+
+        if (!isPhase3 && stats.GetCurrentHealth() < stats.GetMaxHealth()/2)
+        {
+             setPhase3();
+        }
+           
+ 
         // After 15 seconds, tell the Animator to go to state 2
         if (!isPhase2 && timer >= phase2Time)
         {
@@ -67,8 +103,21 @@ public class BossManager : MonoBehaviour
         {
             Phase2();
         }
+
+        
+
+
+        if (isPhase3)
+        {
+            Phase3();
+        }
     }
 
+    public void setPhase3()
+    {
+        isPhase2 = false;
+        isPhase3 = true;
+    }
     void Phase2()
     {
         ChargeTimer += Time.deltaTime;
@@ -76,51 +125,105 @@ public class BossManager : MonoBehaviour
 
         float distance = Vector3.Distance(transform.position, player.position);
   
-         if (distance <= AttackDistance)
+         if (distance <= AttackDistance && areaAttackCooldownTimer >= areaAttackCooldown)
         {
            StartCoroutine(AreaAttackRoutine());
+           areaAttackCooldownTimer = -1f;
+           chargeCooldownTimer = 4f;
+           return; 
+        }       
+        
+        
+    }
+    
+    void Phase3()
+    {
+        ChargeTimer += Time.deltaTime;
+        if (isCharging || isPerformingAreaAttack) return;
+
+        float distance = Vector3.Distance(transform.position, player.position);
+  
+         if (distance <= AttackDistance && areaAttackCooldownTimer >= areaAttackCooldown)
+        {
+           StartCoroutine(AreaAttackRoutine());
+           areaAttackCooldownTimer = -1f;
+           chargeCooldownTimer = 6f;
            return; 
         }
         
         
-        if (distance <= chargeDistance && ChargeTimer >= 5f)
+        if (distance <= chargeDistance && chargeCooldownTimer >= chargeCooldown)
         {
-            //StartCoroutine(ChargeAttack());
+            StartCoroutine(ChargeAttack());
+            chargeCooldownTimer = -Random.Range(0f, chargeCooldownRandom);
+            areaAttackCooldownTimer = 0f;
             return;
         }
-       
-       
-        
     }
     
-     IEnumerator ChargeAttack()
+
+    IEnumerator ChargeAttack()
     {
         isCharging = true;
-        //agent.isStopped = true;
-        Debug.Log("charge Attack");
-        //animator.SetTrigger("Charge"); // Optional: charge animation trigger
+        hasHitPlayerThisCharge = false;
+        //ChargeTimer = 0f;
 
-        yield return new WaitForSeconds(0.5f); // wind-up delay before dash
+        animator.SetTrigger("WalktoIdle");
+        Vector3 Offset = new Vector3(0,1,0);
+        GameObject warningLine = Instantiate(
+            lineWarningPrefab,
+            transform.position - Offset,
+            Quaternion.identity
+        );
 
-        // Get player’s last known position
-        chargeTarget = player.position;
+        warningLine.transform.SetParent(transform);
+        warningLine.transform.localPosition = Vector3.zero;
 
-        // 🔹 Dash straight at player
-        float chargeDuration = 3f;
+        Vector3 lockedDir = transform.right;
         float elapsed = 0f;
 
-        while (elapsed < chargeDuration)
+        // TRACKING PHASE
+        while (elapsed < trackingDuration)
         {
-            transform.position = Vector3.MoveTowards(transform.position, chargeTarget, chargeSpeed * Time.deltaTime);
+            Vector3 dir = player.position - transform.position;
+            dir.y = 0f;
+            dir.Normalize();
+
+            lockedDir = dir;
+
+            float angle = Mathf.Atan2(dir.z, dir.x) * Mathf.Rad2Deg;
+            warningLine.transform.rotation = Quaternion.Euler(0, -angle, 0);
+
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        // After charge ends, resume walking
-        //agent.isStopped = false;
+        // LOCK PHASE
+        var sr = warningLine.GetComponentInChildren<Renderer>();
+        if (sr) sr.material.color = Color.red;
+
+        yield return new WaitForSeconds(lockDuration);
+
+        Destroy(warningLine);
+
+        // DASH
+        Vector3 startPos = transform.position;
+        Vector3 endPos = startPos + lockedDir * chargeDistance;
+
+        float dashDuration = 0.7f;
+        float t = 0f;
+
+        while (t < dashDuration)
+        {
+            t += Time.deltaTime;
+            transform.position = Vector3.Lerp(startPos, endPos, t / dashDuration);
+            yield return null;
+        }
+
+        animator.SetTrigger("IdletoWalk");
+
+        //yield return new WaitForSeconds(3.5f);
         isCharging = false;
-        ChargeTimer = 0f;
-        //agent.speed = walkSpeed;
     }
 
     IEnumerator AreaAttackRoutine()
@@ -163,7 +266,7 @@ public class BossManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         Destroy(warning);
 
-        yield return new WaitForSeconds(3.5f);
+        //yield return new WaitForSeconds(3.5f);
         isPerformingAreaAttack = false;
 
     }
@@ -190,7 +293,7 @@ public class BossManager : MonoBehaviour
     {
         if (player.position.x > transform.position.x)
         {
-            Debug.Log("look right");
+            //Debug.Log("look right");
             // if (flipInsteadOfRotate)  sprite.localScale = new Vector3(initialScale.x, initialScale.y, initialScale.z);
             // else                      sprite.rotation = Quaternion.Euler(0, 0, 0);
             spriteRenderer.flipX = false;  
@@ -200,7 +303,7 @@ public class BossManager : MonoBehaviour
         {
             // if (flipInsteadOfRotate)  new Vector3(-initialScale.x, initialScale.y, initialScale.z);
             // else                      sprite.rotation = Quaternion.Euler(0, 180, 0);
-            Debug.Log("look left");
+            //Debug.Log("look left");
             spriteRenderer.flipX = true;
             lookLeft = true;
         }
@@ -225,6 +328,26 @@ public class BossManager : MonoBehaviour
         else
         {
             slash.transform.localScale = new Vector3(slashScale, slashScale, slashScale);
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        
+        Debug.Log("ChargeCollisiotn");
+        if (!isCharging) return;
+        if (hasHitPlayerThisCharge) return;
+
+        
+
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            PlayerCombat health = collision.gameObject.GetComponent<PlayerCombat>();
+            if (health != null)
+            {
+                health.TakeDamage(chargeDamage);
+                hasHitPlayerThisCharge = true;
+            }
         }
     }
 
