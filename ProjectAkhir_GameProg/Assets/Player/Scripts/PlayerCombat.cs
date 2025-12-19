@@ -74,6 +74,8 @@ public class PlayerCombat : MonoBehaviour
     private float sm2StartTime;
     [SerializeField] private float sm2Radius = 10f;
     [SerializeField] private float sm2Damage = 10f;
+    [SerializeField] private float sm2WaveDelay = 0.5f;
+    [SerializeField] private float sm2OffsetScale = 1f;
     private float sm2VFXScale;
     [SerializeField] private ParticleSystem sm2ImpactVFX;
     [SerializeField] private ParticleSystem sm2WaveVFX;
@@ -283,31 +285,11 @@ public class PlayerCombat : MonoBehaviour
         if (Time.time - sm2StartTime >= sm2Cooldown)
         {
             sm2StartTime = Time.time;
-
-            ParticleSystem impactVFX = Instantiate(sm2ImpactVFX, transform.position, Quaternion.Euler(-90, 0, 0));
-            ParticleSystem waveVFX = Instantiate(sm2WaveVFX, transform.position, Quaternion.Euler(90, 0, 0));
-
-            impactVFX.transform.localScale = sm2VFXScale * new Vector3(1f, 1f, 1f);
-            waveVFX.transform.localScale = sm2VFXScale * new Vector3(1f, 1f, 1f);
-
-            // Detect all enemy in range
-            Collider[] enemies = Physics.OverlapSphere(transform.position, sm2Radius, enemyLayer);
-            foreach (Collider enemy in enemies)
-            {
-                enemy.GetComponent<EnemyStats>().TakeDamage(sm2Damage);
-                Instantiate(sm2EnemyHitVFX, enemy.transform.position, Quaternion.Euler(0, 0, 0));
-            }
-
             int totalWaves = 1 + extraSM2Waves; // Base 1 wave + extra from power-ups
-            StartCoroutine(SM2Waves(totalWaves, 0.3f));
+            StartCoroutine(SM2Waves(totalWaves, sm2WaveDelay));
         }
     }
 
-
-    void SM3(InputAction.CallbackContext context)
-    {
-
-    }
 
 //    void DealDamage()
 //     {
@@ -414,7 +396,8 @@ public class PlayerCombat : MonoBehaviour
         float finalDamage = baseDamage;
 
         // 🔥 CRITICAL HIT
-        if (Random.value < critChance)
+        float r = Random.value;
+        if (r < critChance)
         {
             finalDamage *= critMultiplier;
             Debug.Log("CRIT HIT!");
@@ -454,7 +437,8 @@ public class PlayerCombat : MonoBehaviour
     {
         for (int i = 0; i < waveCount; i++)
         {
-            Collider[] enemies = Physics.OverlapSphere(transform.position, sm2Radius, enemyLayer);
+            Vector3 randomOffset = sm2OffsetScale * new Vector3(Random.value - .5f, 0, Random.value - .5f);
+            Collider[] enemies = Physics.OverlapSphere(transform.position + randomOffset, sm2Radius, enemyLayer);
 
             foreach (Collider enemyCol in enemies)
             {
@@ -475,8 +459,10 @@ public class PlayerCombat : MonoBehaviour
             }
 
             // Optional: VFX per wave
-            ParticleSystem waveVFX = Instantiate(sm2WaveVFX, transform.position, Quaternion.Euler(90, 0, 0));
+            ParticleSystem waveVFX = Instantiate(sm2WaveVFX, transform.position + randomOffset, Quaternion.Euler(90, 0, 0));
+            ParticleSystem impactVFX = Instantiate(sm2ImpactVFX, transform.position + randomOffset, Quaternion.Euler(-90, 0, 0));
             waveVFX.transform.localScale = sm2VFXScale * Vector3.one;
+            impactVFX.transform.localScale = sm2VFXScale * new Vector3(1f, 1f, 1f);
 
             yield return new WaitForSeconds(waveDelay);
         }

@@ -913,9 +913,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1420760402}
     - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+      propertyPath: sm2Radius
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+      propertyPath: sm2WaveDelay
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
       propertyPath: healthBarFill
       value: 
       objectReference: {fileID: 1694529531}
+    - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+      propertyPath: sm2OffsetScale
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
       propertyPath: sm1CooldownFill
       value: 
@@ -1538,9 +1550,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   totalObjectives: 6
   assignedObjectives: []
-  shrineBarFill: {fileID: 0}
-  enemyBarFill: {fileID: 0}
-  cageBarFill: {fileID: 0}
   shrineLabel: {fileID: 2063810015}
   enemyLabel: {fileID: 1735578983}
   cageLabel: {fileID: 166766203}

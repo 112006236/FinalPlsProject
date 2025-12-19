@@ -34,6 +34,7 @@ public class EnemyStats : MonoBehaviour
 
     // 🔥 NEW: cache PlayerCombat
     private PlayerCombat playerCombat;
+    [SerializeField] private ParticleSystem critVFX;
 
     private void Awake()
     {
@@ -68,8 +69,14 @@ public class EnemyStats : MonoBehaviour
         if (healthBar != null)
             healthBar.UpdateHealth(currentHealth);
 
-        if (hurtVFX != null)
-            Instantiate(hurtVFX, transform.position, Quaternion.identity);
+        if (dmg - playerCombat.attackDamage > 0.1f)
+        {
+            Instantiate(critVFX, transform.position, Quaternion.identity);
+        } else
+        {
+            Instantiate(swordImpactVFX, transform.position, Quaternion.identity);
+        }
+        
 
         if (currentHealth <= 0)
         {
