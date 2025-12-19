@@ -11,6 +11,7 @@ public class BossMeteorAttack : MonoBehaviour
     public float spawnHeight = 20f;
     public float spawnInterval = 0f;
     public float warningDelay = 0.05f; // Time between marker and meteor impact
+    public float scatterChance = 0.3f;
 
     [Header("References")]
     public Transform player;
@@ -60,7 +61,7 @@ public class BossMeteorAttack : MonoBehaviour
                 meteorScript.warningMarker = marker;
                 // --- THE 30% CHANCE LOGIC ---
                 // Random.value returns 0.0 to 1.0. 0.3f = 30%
-                if (Random.value <= 0.3f) 
+                if (Random.value <= scatterChance) 
                 {
                     meteorScript.isScatter = true;
                     // Optional: Change the color or scale of cluster meteors 

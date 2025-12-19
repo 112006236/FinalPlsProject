@@ -32,12 +32,6 @@ public class toAttack1 : StateMachineBehaviour
             attackDelay = timer + Random.Range(1.5f, 3f);
         }
 
-        // Transition logic - Add the !hasTransitioned check here
-        if (timer >= goState2 && !hasTransitioned)
-        {
-            hasTransitioned = true; // Mark as done
-            animator.SetTrigger("toWalk");
-        }
 
         
 

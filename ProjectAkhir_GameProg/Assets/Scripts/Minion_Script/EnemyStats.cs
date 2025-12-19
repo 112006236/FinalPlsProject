@@ -7,7 +7,7 @@ using UnityEngine.AI;
 public class EnemyStats : MonoBehaviour
 {
     public event Action<EnemyStats> OnDeath;
-
+    
     [Header("Base Stats")]
     public float maxHealth = 50f;
     public float moveSpeed = 3f;
@@ -201,5 +201,8 @@ public class EnemyStats : MonoBehaviour
 
     // ---------------- HELPERS -----------------
     public float GetCurrentHealth() => currentHealth;
-    public float GetMaxHealth() => maxHealth;
+    public float GetMaxHealth()
+    {
+        return maxHealth;
+    }
 }

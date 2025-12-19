@@ -543,6 +543,7 @@ RectTransform:
   - {fileID: 1361223926}
   - {fileID: 1579222334}
   - {fileID: 1332636127}
+  - {fileID: 1349724411}
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -623,7 +624,6 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 849380523}
-  - {fileID: 1349724411}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -671,11 +671,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   meteorPrefab: {fileID: 4815525585342939160, guid: fd147ed16443b1847810f05b98b2ad13, type: 3}
   warningMarkerPrefab: {fileID: 6899899444500700329, guid: bb0b15a48c5ccd6408dcd3d395da0614, type: 3}
-  meteorCount: 15
+  meteorCount: 12
   spawnRadius: 13
   spawnHeight: 25
   spawnInterval: 0.2
   warningDelay: 0.2
+  scatterChance: 0.3
   player: {fileID: 2011969675}
 --- !u!114 &491491852
 MonoBehaviour:
@@ -693,7 +694,6 @@ MonoBehaviour:
   phase2Time: 15
   walkSpeed: 4
   chargeSpeed: 15
-  chargeDistance: 10
   AttackDistance: 8
   player: {fileID: 2011969675}
   sprite: {fileID: 849380523}
@@ -701,6 +701,16 @@ MonoBehaviour:
   slashPoint: {fileID: 0}
   AreaAttackWarningCircle: {fileID: 6899899444500700329, guid: 4a0918a70584c7f4091de02ba22f726d, type: 3}
   AreaAttackDelay: 1.5
+  lineWarningPrefab: {fileID: 4383039846951780886, guid: f3ce8daff3f115a4897955c8bc2214a6, type: 3}
+  trackingDuration: 1.5
+  lockDuration: 1
+  chargeDistanceMax: 40
+  chargeDistance: 25
+  chargeDamage: 20
+  chargeCooldown: 12
+  areaAttackCooldown: 6
+  meteorCooldown: 10
+  chargeCooldownRandom: 2
 --- !u!114 &491491853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -713,7 +723,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 403d1a596d4cb49fc962bb4e1b2334e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 1000
+  maxHealth: 2000
   moveSpeed: 4
   attackDamage: 10
   healthBar: {fileID: 1349724410}
@@ -721,6 +731,7 @@ MonoBehaviour:
   swordImpactVFX: {fileID: 0}
   knockbackForce: 0
   knockbackDuration: 0
+  critVFX: {fileID: 0}
 --- !u!195 &491491854
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -775,6 +786,10 @@ PrefabInstance:
     - target: {fileID: 1214765522, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
       propertyPath: m_Layer
       value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1214765522, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1214765523, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
       propertyPath: m_Enabled
@@ -1894,7 +1909,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.09, y: -11.68}
+  m_AnchoredPosition: {x: -0.08999634, y: -11.68}
   m_SizeDelta: {x: 689.1, y: 135.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1127455406
@@ -1970,7 +1985,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.000027337, y: -11.6}
+  m_AnchoredPosition: {x: 0.000030517578, y: -11.599998}
   m_SizeDelta: {x: 650, y: 99.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1178447350
@@ -2147,7 +2162,7 @@ GameObject:
   - component: {fileID: 1349724412}
   - component: {fileID: 1349724410}
   m_Layer: 3
-  m_Name: HealthBar
+  m_Name: BossHealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2206,21 +2221,21 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1349724409}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.61}
-  m_LocalScale: {x: 0.0011999999, y: 0.0011999999, z: 0.0011999999}
+  m_LocalPosition: {x: 0, y: 0, z: -1.4345907}
+  m_LocalScale: {x: 2.35, y: 0.32, z: 0.0028221456}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1127455405}
   - {fileID: 2060044724}
   - {fileID: 1519987021}
   - {fileID: 1178447349}
-  m_Father: {fileID: 491491848}
-  m_RootOrder: 1
+  m_Father: {fileID: 200579146}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -1.44, y: 5.77}
-  m_SizeDelta: {x: 1101, y: 483}
+  m_AnchoredPosition: {x: 973.69, y: 712.6}
+  m_SizeDelta: {x: 978.535, y: 530.791}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1349724412
 MonoBehaviour:
@@ -2261,7 +2276,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 1
+  m_PresetInfoIsWorld: 0
 --- !u!223 &1349724414
 Canvas:
   m_ObjectHideFlags: 0
@@ -2523,7 +2538,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.000027337, y: -11.6}
+  m_AnchoredPosition: {x: 0.000030517578, y: -11.599998}
   m_SizeDelta: {x: 650, y: 99.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1579222333
@@ -3083,7 +3098,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.000027337, y: -11.6}
+  m_AnchoredPosition: {x: 0.000030517578, y: -11.599998}
   m_SizeDelta: {x: 650, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2060044725

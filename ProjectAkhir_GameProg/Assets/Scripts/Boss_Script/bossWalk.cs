@@ -45,7 +45,7 @@ public class bossWalk : StateMachineBehaviour
         
         float distance = Vector3.Distance(bossParentTransform.position, target);
 
-        if (distance > 1.5f)
+        if (distance > 3f)
         {
             // Directly move the parent transform
             bossParentTransform.position = Vector3.MoveTowards(

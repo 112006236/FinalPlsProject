@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class AreaAttackEffect : MonoBehaviour
 {
-    public float damageAmount = 20f;
+    public float damageAmount = 15f;
     public LayerMask playerLayer;
 
     // This matches your 20x, 0.05y, 20z prefab dimensions

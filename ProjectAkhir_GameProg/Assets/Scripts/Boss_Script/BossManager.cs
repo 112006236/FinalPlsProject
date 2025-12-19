@@ -9,12 +9,16 @@ public class BossManager : MonoBehaviour
 {
     public Animator animator;   // Reference to the boss's Animator
     private EnemyStats stats;
+    private float maxHealth;
+    private BossMeteorAttack bossMeteorAttack;
     private bool isFlipped = false;
      [Header("Phase Settings")]
     public float phase2Time = 0.5f;
     private float timer;
     private bool isPhase2 = false;
     private bool isPhase3 = false;
+
+    private bool isPhase4 = false;
 
     [Header("Movement Settings")]
     public float walkSpeed = 1f;
@@ -63,10 +67,14 @@ public class BossManager : MonoBehaviour
     public float chargeCooldown = 5f;
     public float areaAttackCooldown = 2.5f;
 
+    public float meteorCooldown = 10f;
+
     public float chargeCooldownRandom = 2f;
 
     private float chargeCooldownTimer = 0f;
     private float areaAttackCooldownTimer = 0f;
+
+    private float meteorCooldownTimer = 0f;
 
     void Start()
     {
@@ -74,6 +82,8 @@ public class BossManager : MonoBehaviour
         if (sprite != null) initialScale = sprite.localScale;
         spriteRenderer = sprite.GetComponent<SpriteRenderer>();
         stats = GetComponent<EnemyStats>();
+        bossMeteorAttack = GetComponent<BossMeteorAttack>();
+        maxHealth = stats.GetCurrentHealth();
     }
 
     void Update()
@@ -82,16 +92,22 @@ public class BossManager : MonoBehaviour
         timer += Time.deltaTime;
         chargeCooldownTimer += Time.deltaTime;
         areaAttackCooldownTimer += Time.deltaTime;
-        
+        meteorCooldownTimer += Time.deltaTime;
+        Debug.Log("current Boss Health: " + stats.GetCurrentHealth());
+        Debug.Log(maxHealth*(70.0/100.0));
         //OnDrawGizmos();
         HandleSpriteFlip();
 
-        if (!isPhase3 && stats.GetCurrentHealth() < stats.GetMaxHealth()/2)
+        if (!isPhase3 && stats.GetCurrentHealth() < maxHealth*(70.0/100.0))
         {
-             setPhase3();
+            setPhase3();
+        }
+
+        if (!isPhase4 && stats.GetCurrentHealth() < maxHealth*(50.0/100.0))
+        {
+            setPhase4();
         }
            
- 
         // After 15 seconds, tell the Animator to go to state 2
         if (!isPhase2 && timer >= phase2Time)
         {
@@ -104,20 +120,33 @@ public class BossManager : MonoBehaviour
             Phase2();
         }
 
-        
-
-
         if (isPhase3)
         {
             Phase3();
+        }
+
+        if (isPhase4)
+        {
+            Phase4();
         }
     }
 
     public void setPhase3()
     {
+        Debug.Log("setPhase3");
         isPhase2 = false;
         isPhase3 = true;
     }
+
+    public void setPhase4()
+    {
+        bossMeteorAttack.scatterChance = 0.5f;
+        bossMeteorAttack.meteorCount = 8;
+        isPhase2 = false;
+        isPhase3 = false;
+        isPhase4 = true;
+    }
+
     void Phase2()
     {
         ChargeTimer += Time.deltaTime;
@@ -133,21 +162,22 @@ public class BossManager : MonoBehaviour
            return; 
         }       
         
-        
     }
     
     void Phase3()
     {
+        Debug.Log("in Phase 3");
         ChargeTimer += Time.deltaTime;
         if (isCharging || isPerformingAreaAttack) return;
 
         float distance = Vector3.Distance(transform.position, player.position);
+
   
          if (distance <= AttackDistance && areaAttackCooldownTimer >= areaAttackCooldown)
         {
            StartCoroutine(AreaAttackRoutine());
            areaAttackCooldownTimer = -1f;
-           chargeCooldownTimer = 6f;
+           chargeCooldownTimer = 7f;
            return; 
         }
         
@@ -156,6 +186,40 @@ public class BossManager : MonoBehaviour
         {
             StartCoroutine(ChargeAttack());
             chargeCooldownTimer = -Random.Range(0f, chargeCooldownRandom);
+            areaAttackCooldownTimer -= 3f;
+            return;
+        }
+    }
+
+    void Phase4()
+    {
+        ChargeTimer += Time.deltaTime;
+        if (isCharging || isPerformingAreaAttack) return;
+
+        if (meteorCooldownTimer >= meteorCooldown)
+        {
+            animator.SetTrigger("WalktoMeteor");
+            areaAttackCooldownTimer -= 3f;
+            chargeCooldownTimer -= 3f;
+            meteorCooldownTimer = 0;
+        }
+
+        float distance = Vector3.Distance(transform.position, player.position);
+
+  
+         if (distance <= AttackDistance && areaAttackCooldownTimer >= areaAttackCooldown)
+        {
+           StartCoroutine(AreaAttackRoutine());
+           areaAttackCooldownTimer = 1f;
+           chargeCooldownTimer = 8.5f;
+           return; 
+        }
+        
+        
+        if (distance <= chargeDistance && chargeCooldownTimer >= chargeCooldown)
+        {
+            StartCoroutine(ChargeAttack());
+            chargeCooldownTimer = -Random.Range(0f, -2f);
             areaAttackCooldownTimer = 0f;
             return;
         }

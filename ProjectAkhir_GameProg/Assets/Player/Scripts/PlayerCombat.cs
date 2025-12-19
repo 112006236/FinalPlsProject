@@ -8,6 +8,8 @@ public class PlayerCombat : MonoBehaviour
 {
     [Header("Player Stats")]
     public float initHP = 100.0f;
+
+    public float attackDamage = 25f;    // Damage per hit
     [System.NonSerialized] public float HP;
     [System.NonSerialized] public bool isDead;
     [SerializeField] private GameObject deathParticles;
@@ -43,7 +45,7 @@ public class PlayerCombat : MonoBehaviour
     [HideInInspector] public int extraSM2Waves = 0; // Extra waves added by power-ups
 
 
-    public float attackDamage = 25f;    // Damage per hit
+    
 
     public float timeBetweenCombo = 0.5f;
     public float timeBetweenAttacks = 0.2f;
