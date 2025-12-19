@@ -1909,83 +1909,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!1001 &737520225
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2908020670692347616, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: maxHealth
-      value: 160
-      objectReference: {fileID: 0}
-    - target: {fileID: 2908020670692347622, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: attackRange
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 2908020670692347622, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: stopDistance
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 2908020670692347622, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: retreatDistance
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 2908020670692347622, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: fireballCooldown
-      value: 1.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 2908020670692347626, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: m_RootOrder
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 2908020670692347626, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -5.002
-      objectReference: {fileID: 0}
-    - target: {fileID: 2908020670692347626, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.141
-      objectReference: {fileID: 0}
-    - target: {fileID: 2908020670692347626, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -1.8475028
-      objectReference: {fileID: 0}
-    - target: {fileID: 2908020670692347626, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2908020670692347626, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2908020670692347626, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2908020670692347626, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2908020670692347626, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2908020670692347626, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2908020670692347626, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2908020670692347631, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
-      propertyPath: m_Name
-      value: Necromancer_Miniboss
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
 --- !u!1 &766125273
 GameObject:
   m_ObjectHideFlags: 0
@@ -5098,3 +5021,60 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fe8368b84bc7641258743cd519c9fe22, type: 3}
+--- !u!1001 &7954629664990652988
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 7954629663870594243, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
+      propertyPath: m_RootOrder
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7954629663870594243, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -5.002
+      objectReference: {fileID: 0}
+    - target: {fileID: 7954629663870594243, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.141
+      objectReference: {fileID: 0}
+    - target: {fileID: 7954629663870594243, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.8475028
+      objectReference: {fileID: 0}
+    - target: {fileID: 7954629663870594243, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7954629663870594243, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7954629663870594243, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7954629663870594243, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7954629663870594243, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7954629663870594243, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7954629663870594243, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7954629663870594251, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
+      propertyPath: m_Name
+      value: Necromancer_Miniboss
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
