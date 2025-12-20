@@ -351,6 +351,8 @@ MonoBehaviour:
   healthBar: {fileID: 4709327270262309289}
   playerCombat: {fileID: 0}
   swordImpactVFX: {fileID: 1429954232896169632, guid: 83036083a4ebcd34f98131bd3cf6f4d2, type: 3}
+  knockbackForce: 15
+  knockbackDuration: 0.15
 --- !u!1 &4709327270923992234
 GameObject:
   m_ObjectHideFlags: 0

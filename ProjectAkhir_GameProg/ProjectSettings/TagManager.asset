@@ -12,6 +12,7 @@ TagManager:
   - Shrine
   - Princess
   - Boss
+  - Cage
   layers:
   - Default
   - TransparentFX

@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 356344194471383931}
   - component: {fileID: 7123125153016355851}
   - component: {fileID: 5795679699427375922}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: CageEnemySpawner
-  m_TagString: Untagged
+  m_TagString: Princess
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -82,7 +82,7 @@ GameObject:
   - component: {fileID: 2706163306444018}
   - component: {fileID: 4288248263227057214}
   - component: {fileID: 790726689630465589}
-  m_Layer: 3
+  m_Layer: 9
   m_Name: bg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -158,7 +158,7 @@ GameObject:
   - component: {fileID: 4078451840734025207}
   - component: {fileID: 5459248535747371837}
   - component: {fileID: 374938384406946757}
-  m_Layer: 3
+  m_Layer: 9
   m_Name: background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -235,7 +235,7 @@ GameObject:
   - component: {fileID: 2822242669963516821}
   - component: {fileID: 2822242669963516818}
   - component: {fileID: 2822242669963516819}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Save the Princess
   m_TagString: Princess
   m_Icon: {fileID: 0}
@@ -341,7 +341,7 @@ GameObject:
   - component: {fileID: 2358092882249522533}
   - component: {fileID: 4830501320491803668}
   - component: {fileID: 6781384723205599470}
-  m_Layer: 3
+  m_Layer: 9
   m_Name: HealthBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -503,7 +503,7 @@ GameObject:
   - component: {fileID: 2145494709944412185}
   - component: {fileID: 358908312198879009}
   - component: {fileID: 8666402353052415927}
-  m_Layer: 3
+  m_Layer: 9
   m_Name: DamageBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -580,7 +580,7 @@ GameObject:
   - component: {fileID: 3659230831562933422}
   - component: {fileID: 5330335500974376185}
   - component: {fileID: 7751104659553227288}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Princess
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -699,7 +699,7 @@ GameObject:
   - component: {fileID: 4055748947163792220}
   - component: {fileID: 1158684293549240942}
   - component: {fileID: 2609047338404598594}
-  m_Layer: 3
+  m_Layer: 9
   m_Name: foreground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -773,7 +773,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1848555166285800163}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: SpawnPoint3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -788,7 +788,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6534590004034842689}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.402, y: 2, z: 0.021}
+  m_LocalPosition: {x: -0.402, y: 0.2, z: 0.021}
   m_LocalScale: {x: 0.1, y: 2, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -804,7 +804,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6054242098316580383}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: SpawnPoint1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -835,7 +835,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1165588942849689555}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: SpawnPoint2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -867,6 +867,10 @@ PrefabInstance:
     - target: {fileID: 836683784093283753, guid: 237f7219ddf7c064e85f5158a48f6bbc, type: 3}
       propertyPath: m_Name
       value: Sand_B
+      objectReference: {fileID: 0}
+    - target: {fileID: 836683784093283753, guid: 237f7219ddf7c064e85f5158a48f6bbc, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 5213308526336197134, guid: 237f7219ddf7c064e85f5158a48f6bbc, type: 3}
       propertyPath: m_Enabled
@@ -1009,6 +1013,10 @@ PrefabInstance:
     - target: {fileID: 1014947926289230822, guid: efed880aec99a9f47a852f7b07ae4aac, type: 3}
       propertyPath: m_Name
       value: torture_device_013
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014947926289230822, guid: efed880aec99a9f47a852f7b07ae4aac, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: efed880aec99a9f47a852f7b07ae4aac, type: 3}

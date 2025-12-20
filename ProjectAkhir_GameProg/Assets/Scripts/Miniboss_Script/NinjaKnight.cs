@@ -41,24 +41,26 @@ public class NinjaKnight : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log("start");
         sr = GetComponent<SpriteRenderer>();
+        sr.enabled = false; 
         if (player == null)
         {
             GameObject playerObj = GameObject.FindWithTag("Player");
             if (playerObj != null)
                 player = playerObj.transform;
-            else
-                Debug.LogWarning("No GameObject with tag 'Player' found!");
         }
         StartCoroutine(EntrySequence());
     }
 
     private IEnumerator EntrySequence()
     {
+        sr.enabled = true; 
         Vector3 groundPos = new Vector3(transform.position.x, 0f, transform.position.z);
+        Vector3 finalPos = new Vector3(transform.position.x, transform.position.x, transform.position.z);
 
         // Start underground
-        transform.position = groundPos - Vector3.up * entryRiseHeight;
+        transform.position = finalPos - Vector3.up * entryRiseHeight;
 
         // Lock behavior
         isDashing = true;
@@ -92,14 +94,14 @@ public class NinjaKnight : MonoBehaviour
         {
             t += Time.deltaTime;
             transform.position = Vector3.Lerp(
-                groundPos - Vector3.up * entryRiseHeight,
-                groundPos,
+                finalPos - Vector3.up * entryRiseHeight,
+                finalPos,
                 t / entryDuration
             );
             yield return null;
         }
 
-        transform.position = groundPos;
+        transform.position = finalPos;
 
         if (circle != null)
             Destroy(circle, spawnVFXDuration);

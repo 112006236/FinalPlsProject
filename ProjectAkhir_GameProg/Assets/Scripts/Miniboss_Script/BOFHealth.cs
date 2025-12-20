@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class BOFHealth : MonoBehaviour
 {
@@ -15,6 +16,16 @@ public class BOFHealth : MonoBehaviour
     [Header("Effects")]
     public ParticleSystem swordImpactVFX;
 
+    [Header("Knockback Settings")]
+    public float knockbackForce = 3f;
+    public float knockbackDuration = 0.15f;
+
+    private bool isKnockedback;
+
+    private Transform player;
+
+
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -26,6 +37,7 @@ public class BOFHealth : MonoBehaviour
             GameObject playerObj = GameObject.FindWithTag("Player");
             if (playerObj != null)
                 playerCombat = playerObj.GetComponent<PlayerCombat>();
+                player = playerObj.transform;
         }
 
         playerDamage = playerCombat.attackDamage;
@@ -56,6 +68,26 @@ public class BOFHealth : MonoBehaviour
 
         if (currentHealth <= 0)
             Die();
+    }
+
+    public IEnumerator KnockbackRoutine()
+    {
+        Debug.Log("knocked");
+        if (isKnockedback || player == null) yield break;
+
+        isKnockedback = true;
+
+        Vector3 dir = (transform.position - player.position).normalized;
+        float timer = 0f;
+
+        while (timer < knockbackDuration)
+        {
+            transform.position += dir * knockbackForce * Time.deltaTime;
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        isKnockedback = false;
     }
 
 

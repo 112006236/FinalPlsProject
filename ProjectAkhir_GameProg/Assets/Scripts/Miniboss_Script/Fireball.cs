@@ -88,6 +88,7 @@ public class Fireball : MonoBehaviour
         if (other.CompareTag("Enemy")) return;
         if (other.CompareTag("Sword")) return;
         if (other.CompareTag("Shrine")) return;
+        if (other.CompareTag("Princess")) return;
 
         Debug.Log("Fireball hit: " + other.name);
 

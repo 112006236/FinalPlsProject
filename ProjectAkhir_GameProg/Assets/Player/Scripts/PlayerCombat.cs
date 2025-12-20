@@ -508,20 +508,21 @@ public class PlayerCombat : MonoBehaviour
                     // Apply damage
                     BOF.TakeDamage(sm2Damage);
                     Instantiate(sm2EnemyHitVFX, BOF.transform.position, Quaternion.identity);
+                    StartCoroutine(BOF.KnockbackRoutine());
                 }
                 if (N != null)
                 {
                     // Apply damage
                     N.TakeDamage(sm2Damage);
                     Instantiate(sm2EnemyHitVFX, N.transform.position, Quaternion.identity);
-
+                    StartCoroutine(N.KnockbackRoutine());
                 }
                 if (NK != null)
                 {
                     // Apply damage
                     NK.TakeDamage(sm2Damage);
                     Instantiate(sm2EnemyHitVFX, NK.transform.position, Quaternion.identity);
-
+                    StartCoroutine(NK.KnockbackRoutine());
                 }
             }
 

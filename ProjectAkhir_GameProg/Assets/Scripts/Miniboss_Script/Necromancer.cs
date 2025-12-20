@@ -40,6 +40,7 @@ public class Necromancer : MonoBehaviour
     private void Start()
     {
         sr = GetComponent<SpriteRenderer>();
+        sr.enabled = false; 
         if (player == null)
             player = GameObject.FindWithTag("Player").transform;
         StartCoroutine(EntrySequence());
@@ -47,6 +48,7 @@ public class Necromancer : MonoBehaviour
 
     private IEnumerator EntrySequence()
     {
+        sr.enabled = true; 
         Vector3 groundPos = new Vector3(transform.position.x, 0f, transform.position.z);
         Vector3 finalPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
 

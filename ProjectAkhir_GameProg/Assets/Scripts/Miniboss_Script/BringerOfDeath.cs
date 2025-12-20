@@ -50,6 +50,7 @@ public class BringerOfDeath : MonoBehaviour
     {
         health = GetComponent<BOFHealth>();
         sr = GetComponent<SpriteRenderer>();
+        sr.enabled = false; 
 
         if (player == null)
         {
@@ -63,10 +64,12 @@ public class BringerOfDeath : MonoBehaviour
 
     private IEnumerator EntrySequence()
     {
+        sr.enabled = true; 
         Vector3 groundPos = new Vector3(transform.position.x, 0f, transform.position.z);
+        Vector3 finalPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
 
         // Start underground
-        transform.position = groundPos - Vector3.up * entryRiseHeight;
+        transform.position = finalPos - Vector3.up * entryRiseHeight;
 
         // Lock animation & state
         animator.Play("BringerOfDeath_idle");
@@ -101,14 +104,14 @@ public class BringerOfDeath : MonoBehaviour
             t += Time.deltaTime;
             float lerp = t / entryDuration;
             transform.position = Vector3.Lerp(
-                groundPos - Vector3.up * entryRiseHeight,
-                groundPos,
+                finalPos - Vector3.up * entryRiseHeight,
+                finalPos,
                 lerp
             );
             yield return null;
         }
 
-        transform.position = groundPos;
+        transform.position = finalPos;
 
         // Cleanup VFX
         if (circle != null)
@@ -119,8 +122,6 @@ public class BringerOfDeath : MonoBehaviour
         isHealing = false;
         hasEntered = true;
     }
-
-
 
     private void Update()
     {
