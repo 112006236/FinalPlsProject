@@ -13,6 +13,13 @@ public class ShrineEnemySpawner : MonoBehaviour
     public float spawnInterval = 2f;
     public int maxAliveEnemies = 5;
 
+    [Header("Miniboss Settings")]
+    public GameObject miniBossPrefab;
+    public Transform miniBossSpawnPoint;
+    public float miniBossDelay = 25f;
+
+    private bool miniBossTimerStarted = false;
+
     private bool isSpawning = false;
 
     private void Start()
@@ -38,6 +45,11 @@ public class ShrineEnemySpawner : MonoBehaviour
     {
         if (other.CompareTag("Player") && !isSpawning)
         {
+            if (!miniBossTimerStarted)
+            {
+                miniBossTimerStarted = true;
+                StartCoroutine(SpawnMiniBoss());
+            }
             StartCoroutine(SpawnLoop());
         }
     }
@@ -94,6 +106,15 @@ public class ShrineEnemySpawner : MonoBehaviour
         Transform point = spawnPoints[Random.Range(0, spawnPoints.Count)];
 
         Instantiate(prefab, point.position, point.rotation);
+    }
+
+    private IEnumerator SpawnMiniBoss()
+    {
+        yield return new WaitForSeconds(miniBossDelay);
+
+        Instantiate(miniBossPrefab,
+            miniBossSpawnPoint.position,
+            miniBossSpawnPoint.rotation);
     }
 
     private int CountAliveEnemies()

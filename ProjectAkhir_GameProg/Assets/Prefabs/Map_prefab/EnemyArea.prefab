@@ -62,7 +62,7 @@ GameObject:
   - component: {fileID: 2822242669963516821}
   - component: {fileID: 2822242669963516818}
   - component: {fileID: 2822242669963516819}
-  - component: {fileID: 6314583556506707321}
+  - component: {fileID: 3927717963645204313}
   m_Layer: 0
   m_Name: EnemyArea
   m_TagString: Untagged
@@ -78,14 +78,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2822242669963516816}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5, y: -1, z: 107.9}
+  m_LocalPosition: {x: -5, y: 0, z: 107.9}
   m_LocalScale: {x: 10, y: 0.5, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2822242669088979204}
   - {fileID: 8938977384296419300}
-  - {fileID: 3163607147124398224}
   - {fileID: 3237083855735154634}
+  - {fileID: 3163607147124398224}
   - {fileID: 395363338679096151}
   - {fileID: 40573205172730892}
   - {fileID: 2822242668831195004}
@@ -158,7 +158,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6314583556506707321
+--- !u!114 &3927717963645204313
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -171,16 +171,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyGroups:
-  - enemyPrefab: {fileID: 256267932062529321, guid: 192be96ad9f734090a93c8edf500b5de, type: 3}
-    count: 5
-    spawnInterval: 2
+  - enemyPrefabs: []
+    count: 0
+    spawnInterval: 0
     spawnPointIndex: 0
     spawnedCount: 0
     deadCount: 0
-    minibossPrefab: {fileID: 6345112742430492243, guid: e02bcad7d85eda94089326742e74d7fe, type: 3}
-    minibossSpawned: 0
   spawnPoints:
   - {fileID: 762642541841303093}
+  miniBossPrefab: {fileID: 5702214197256175478, guid: 45eff4baf2e5fe14fbdb0eab9486a927, type: 3}
+  miniBossSpawnPoint: {fileID: 762642541841303093}
+  miniBossDelay: 5
   spawnEffectPrefab: {fileID: 5642766282230003982, guid: b5c8ca7ed10b61e499cce8ec3b6e2e4c, type: 3}
 --- !u!1 &8555229165918645266
 GameObject:
@@ -534,7 +535,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 922671887464563809, guid: a1834b6441f5f964186d094e8fd881e5, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 922671887464563809, guid: a1834b6441f5f964186d094e8fd881e5, type: 3}
       propertyPath: m_LocalScale.x
@@ -958,7 +959,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 848629861117131794, guid: 2908a19ef1a7b3a49bfc9a55bf645e69, type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 848629861117131794, guid: 2908a19ef1a7b3a49bfc9a55bf645e69, type: 3}
       propertyPath: m_LocalScale.x

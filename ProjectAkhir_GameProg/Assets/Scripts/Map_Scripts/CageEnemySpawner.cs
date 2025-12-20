@@ -15,6 +15,13 @@ public class CageEnemySpawner : MonoBehaviour
     public float spawnInterval = 2f;
     public int maxAliveEnemies = 5;
 
+    [Header("Miniboss Settings")]
+    public GameObject miniBossPrefab;
+    public Transform miniBossSpawnPoint;
+    public float miniBossDelay = 160f;
+
+    private bool miniBossTimerStarted = false;
+
     [Header("Trigger Settings")]
     public Collider triggerArea;    // Set a BoxCollider (IsTrigger = true)
 
@@ -37,6 +44,11 @@ public class CageEnemySpawner : MonoBehaviour
         {
             Debug.Log("KONTOOLLLLL");
             playerInside = true;
+            if (!miniBossTimerStarted)
+            {
+                miniBossTimerStarted = true;
+                StartCoroutine(SpawnMiniBoss());
+            }
             StartCoroutine(SpawnLoop());
         }
     }
@@ -97,5 +109,14 @@ public class CageEnemySpawner : MonoBehaviour
     private int CountAliveEnemies()
     {
         return GameObject.FindGameObjectsWithTag("Enemy").Length;
+    }
+
+    private IEnumerator SpawnMiniBoss()
+    {
+        yield return new WaitForSeconds(miniBossDelay);
+
+        Instantiate(miniBossPrefab,
+            miniBossSpawnPoint.position,
+            miniBossSpawnPoint.rotation);
     }
 }

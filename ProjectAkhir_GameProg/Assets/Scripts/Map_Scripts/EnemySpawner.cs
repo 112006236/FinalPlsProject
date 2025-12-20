@@ -20,6 +20,13 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private List<EnemyGroup> enemyGroups = new List<EnemyGroup>();
     [SerializeField] private List<Transform> spawnPoints = new List<Transform>();
 
+    [Header("Miniboss Settings")]
+    public GameObject miniBossPrefab;
+    public Transform miniBossSpawnPoint;
+    public float miniBossDelay = 25f;
+
+    private bool miniBossTimerStarted = false;
+
     [Header("Effects")]
     [SerializeField] private GameObject spawnEffectPrefab;
 
@@ -43,6 +50,14 @@ public class EnemySpawner : MonoBehaviour
         {
             Debug.Log($"Player entered enemy area: {gameObject.name}");
             playerInside = true;
+            Debug.Log(miniBossPrefab);
+            Debug.Log(miniBossSpawnPoint);
+            if (miniBossPrefab != null && miniBossSpawnPoint != null && !miniBossTimerStarted)
+            {
+                miniBossTimerStarted = true;
+                StartCoroutine(SpawnMiniBoss());
+            }
+
             StartCoroutine(SpawnEnemies());
         }
     }
@@ -55,6 +70,22 @@ public class EnemySpawner : MonoBehaviour
             playerInside = false;
         }
     }
+
+    private IEnumerator SpawnMiniBoss()
+    {
+        // If miniboss not configured → do nothing
+        if (miniBossPrefab == null || miniBossSpawnPoint == null)
+            yield break;
+        Debug.Log("waitt");
+        yield return new WaitForSeconds(miniBossDelay);
+        Debug.Log("spawning");
+        Instantiate(
+            miniBossPrefab,
+            miniBossSpawnPoint.position,
+            miniBossSpawnPoint.rotation
+        );
+    }
+
 
     private IEnumerator SpawnEnemies()
     {

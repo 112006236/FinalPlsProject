@@ -319,7 +319,7 @@ GameObject:
   - component: {fileID: 8663804494472685205}
   m_Layer: 0
   m_Name: Collider
-  m_TagString: Untagged
+  m_TagString: Shrine
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -450,6 +450,9 @@ MonoBehaviour:
   - {fileID: 7731615332583515604}
   spawnInterval: 2
   maxAliveEnemies: 6
+  miniBossPrefab: {fileID: 4085875991462680225, guid: bc1f50370b926e7479cb1759c24347a6, type: 3}
+  miniBossSpawnPoint: {fileID: 132397400733143077}
+  miniBossDelay: 5
 --- !u!1 &4519034576136958710
 GameObject:
   m_ObjectHideFlags: 0
