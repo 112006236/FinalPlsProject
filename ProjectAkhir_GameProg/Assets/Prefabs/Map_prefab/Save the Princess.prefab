@@ -54,7 +54,7 @@ MonoBehaviour:
   - {fileID: 1165588942849689555}
   spawnInterval: 2
   maxAliveEnemies: 5
-  miniBossPrefab: {fileID: 7954629663870594251, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
+  miniBossPrefab: {fileID: 4709327270710612020, guid: 39d4c90d4a0028e429e370556c90badb, type: 3}
   miniBossSpawnPoint: {fileID: 1848555166285800163}
   miniBossDelay: 5
   triggerArea: {fileID: 5795679699427375922}

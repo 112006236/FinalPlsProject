@@ -35,19 +35,90 @@ public class BringerOfDeath : MonoBehaviour
     private bool firsttime = true;
     public bool isHealing = false;          // NEW: prevent multiple coroutines
 
+    [Header("Spawn / Entry")]
+    [SerializeField] private GameObject spawnCircleEffect;
+    [SerializeField] private float spawnCircleRadius = 5f;
+    [SerializeField] private float entryRiseHeight = 500000f;
+    [SerializeField] private float entryDuration = 1.2f;
+    [SerializeField] private float spawnVFXDuration = 1.2f;
+
+    private bool hasEntered = false;
+
     private void Start()
     {
         health = GetComponent<BOFHealth>();
         sr = GetComponent<SpriteRenderer>();
+
         if (player == null)
         {
             GameObject playerObj = GameObject.FindWithTag("Player");
             if (playerObj != null)
                 player = playerObj.transform;
-            else
-                Debug.LogWarning("No GameObject with tag 'Player' found!");
         }
+
+        StartCoroutine(EntrySequence());
     }
+
+    private IEnumerator EntrySequence()
+    {
+        Vector3 finalPos = transform.position;
+
+        // Move boss below ground
+        transform.position = new Vector3(finalPos.x,0f,finalPos.z);
+
+        // Lock animation & state
+        animator.Play("BringerOfDeath_idle");
+        isAttacking = true;
+        isHealing = true;
+
+        // --- Spawn circle FIRST ---
+        GameObject circle = null;
+        if (spawnCircleEffect != null)
+        {
+            Quaternion rot = Quaternion.Euler(90f, 0f, 0f);
+            circle = Instantiate(spawnCircleEffect, finalPos, rot);
+
+            // Scale circle correctly
+            SpriteRenderer srFx = circle.GetComponentInChildren<SpriteRenderer>();
+            if (srFx != null)
+            {
+                float spriteDiameter = srFx.bounds.size.x;
+                float desiredDiameter = spawnCircleRadius * 2f;
+                float scaleFactor = desiredDiameter / spriteDiameter;
+                circle.transform.localScale = Vector3.one * scaleFactor;
+            }
+        }
+
+        // Small delay like player spawn
+        yield return new WaitForSeconds(0.25f);
+
+        // --- Rise animation ---
+        float t = 0f;
+        while (t < entryDuration)
+        {
+            t += Time.deltaTime;
+            float lerp = t / entryDuration;
+            transform.position = Vector3.Lerp(
+                finalPos - Vector3.up * entryRiseHeight,
+                finalPos,
+                lerp
+            );
+            yield return null;
+        }
+
+        transform.position = finalPos;
+
+        // Cleanup VFX
+        if (circle != null)
+            Destroy(circle, spawnVFXDuration);
+
+        // Unlock AI
+        isAttacking = false;
+        isHealing = false;
+        hasEntered = true;
+    }
+
+
 
     private void Update()
     {
