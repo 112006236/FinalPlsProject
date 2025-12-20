@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2835,12 +2835,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isBoss: 1
-  maxHealth: 200
+  maxHealth: 2000
   moveSpeed: 4
   attackDamage: 400
   healthBar: {fileID: 1349724410}
   hurtVFX: {fileID: 0}
   swordImpactVFX: {fileID: 1429954232896169632, guid: 83036083a4ebcd34f98131bd3cf6f4d2, type: 3}
+  hitSound: {fileID: 0}
   knockbackForce: 0
   knockbackDuration: 0
   stunVFXAnimator: {fileID: 0}
@@ -3024,6 +3025,10 @@ PrefabInstance:
       value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+      propertyPath: initHP
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
       propertyPath: deathUI
       value: 
       objectReference: {fileID: 1960943020}
@@ -3037,7 +3042,7 @@ PrefabInstance:
       objectReference: {fileID: 1937840661}
     - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
       propertyPath: attackDamage
-      value: 20000
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
       propertyPath: healthBarFill
