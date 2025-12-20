@@ -1,13 +1,22 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class ButtonManager : MonoBehaviour
 {
     [SerializeField] private string sceneName;
+    [SerializeField] private Animator fadeAnimator;
 
     // Call this to load a scene by name
     public void LoadScene()
     {
+        StartCoroutine(FadeLoadScene());
+    }
+
+    IEnumerator FadeLoadScene()
+    {
+        fadeAnimator.SetTrigger("FadeOut");
+        yield return new WaitForSeconds(1f);
         SceneManager.LoadScene(sceneName);
     }
 
