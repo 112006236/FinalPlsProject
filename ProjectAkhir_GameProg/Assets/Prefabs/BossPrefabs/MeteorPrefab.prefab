@@ -219,7 +219,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 4815525585342939160, guid: 67fc1f5d6e6cfdf45aa1e5231e5fbc81, type: 3}
   isScatter: 0
   no: 0
-  damage: 10
+  damage: 20
   bulletCount: 8
   bulletSpeed: 15
   warningMarker: {fileID: 0}

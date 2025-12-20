@@ -17,6 +17,8 @@ public class bossWalk : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        if (!player) return;
+
         rb = animator.GetComponentInParent<Rigidbody>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
         bossManager = animator.GetComponentInParent<BossManager>();
@@ -27,6 +29,7 @@ public class bossWalk : StateMachineBehaviour
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        if (!player) return;
         //if (rb.IsSleeping()) rb.WakeUp(); 
         // Vector3 target = new Vector3(player.position.x, rb.position.y, player.position.z);
         // Vector3 newPos = Vector3.MoveTowards(rb.position, target, speed*Time.deltaTime);
