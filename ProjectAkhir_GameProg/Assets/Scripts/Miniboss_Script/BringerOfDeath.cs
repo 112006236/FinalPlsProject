@@ -146,7 +146,7 @@ public class BringerOfDeath : MonoBehaviour
             return;
         }
 
-        if (dist > attackRange && !isAttacking)
+        else if (dist > attackRange && !isAttacking)
             FollowPlayer();
         else if (dist <= attackRange)
             TryAttack();
