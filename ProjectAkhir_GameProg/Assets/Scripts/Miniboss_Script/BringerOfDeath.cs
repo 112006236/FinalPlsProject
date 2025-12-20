@@ -48,6 +48,8 @@ public class BringerOfDeath : MonoBehaviour
 
     private void Start()
     {
+        animator.Rebind();
+        animator.Update(0f);
         health = GetComponent<BOFHealth>();
         sr = GetComponent<SpriteRenderer>();
         sr.enabled = false; 
@@ -136,11 +138,11 @@ public class BringerOfDeath : MonoBehaviour
             StartCoroutine(HealNearbyEnemies());
         }
 
-        if (dist > followRange)
-        {
-            animator.Play("BringerOfDeath_idle");
-            return;
-        }
+        // if (dist > followRange)
+        // {
+        //     animator.Play("BringerOfDeath_idle");
+        //     return;
+        // }
 
         if (dist > attackRange && !isAttacking)
             FollowPlayer();
