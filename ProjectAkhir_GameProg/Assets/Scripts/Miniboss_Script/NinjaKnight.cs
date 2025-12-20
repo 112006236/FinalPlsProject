@@ -57,7 +57,7 @@ public class NinjaKnight : MonoBehaviour
     {
         sr.enabled = true; 
         Vector3 groundPos = new Vector3(transform.position.x, 0f, transform.position.z);
-        Vector3 finalPos = new Vector3(transform.position.x, transform.position.x, transform.position.z);
+        Vector3 finalPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
 
         // Start underground
         transform.position = finalPos - Vector3.up * entryRiseHeight;
