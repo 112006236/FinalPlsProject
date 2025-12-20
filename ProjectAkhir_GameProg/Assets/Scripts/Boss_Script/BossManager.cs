@@ -78,8 +78,33 @@ public class BossManager : MonoBehaviour
 
     private float meteorCooldownTimer = 0f;
 
+    private AudioSource audioSource;
+
+    [SerializeField] private AudioClip slashClip;
+
+    
+    private void Awake()
+    {
+        // Get the AudioSource component - this is CRITICAL
+        audioSource = GetComponent<AudioSource>();
+        
+        // If there's no AudioSource, add one automatically
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            //Debug.LogWarning("Added AudioSource component to Player");
+        }
+    }
+    
     void Start()
     {
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            //Debug.LogWarning("Added AudioSource component to Player");
+        }
+        
+        
         animator = GetComponentInChildren<Animator>();
         if (sprite != null) initialScale = sprite.localScale;
         spriteRenderer = sprite.GetComponent<SpriteRenderer>();
@@ -351,6 +376,10 @@ public class BossManager : MonoBehaviour
         yield return new WaitForSeconds(AreaAttackDelay);
 
         animator.SetTrigger("IdletoAttack");
+        if (slashClip != null)
+        {
+            AudioSource.PlayClipAtPoint(slashClip, transform.position, 0.8f);
+        }
 
         yield return new WaitForSeconds(0.2f);
 

@@ -223,6 +223,7 @@ MonoBehaviour:
   bulletCount: 8
   bulletSpeed: 15
   warningMarker: {fileID: 0}
+  explosionClip: {fileID: 8300000, guid: e80a6fc36f2c0214f87e5ac4aaeb2f31, type: 3}
   rotationSpeed: 100
   rotationAxis: {x: 0, y: 0, z: 1}
 --- !u!114 &7608130319490449744
