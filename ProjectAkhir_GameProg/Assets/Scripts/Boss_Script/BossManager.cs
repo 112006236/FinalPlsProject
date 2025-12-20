@@ -292,6 +292,27 @@ public class BossManager : MonoBehaviour
         {
             t += Time.deltaTime;
             transform.position = Vector3.Lerp(startPos, endPos, t / dashDuration);
+
+              if (!hasHitPlayerThisCharge)
+            {
+                // 2.0f is the radius. Increase this if the boss is large.
+                Collider[] hitColliders = Physics.OverlapSphere(transform.position, 2.0f);
+                foreach (var hit in hitColliders)
+                {
+                    if (hit.CompareTag("Player"))
+                    {
+                        PlayerCombat health = hit.GetComponent<PlayerCombat>();
+                        if (health != null)
+                        {
+                            health.TakeDamage(chargeDamage);
+                            hasHitPlayerThisCharge = true; // Set to true so we don't hit 60 times a second
+                            Debug.Log("Dash Hit via Manual Overlap Check!");
+                        }
+                    }
+                }
+
+            }
+          
             yield return null;
         }
 
