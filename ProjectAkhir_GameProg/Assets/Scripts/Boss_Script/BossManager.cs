@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class BossManager : MonoBehaviour
 {
+    private bool isDead = false;
+    public GameObject winUI;
     public Animator animator;   // Reference to the boss's Animator
     private EnemyStats stats;
     private float maxHealth;
@@ -84,6 +86,7 @@ public class BossManager : MonoBehaviour
         stats = GetComponent<EnemyStats>();
         bossMeteorAttack = GetComponent<BossMeteorAttack>();
         maxHealth = stats.GetCurrentHealth();
+        
     }
 
     void Update()
@@ -97,7 +100,12 @@ public class BossManager : MonoBehaviour
         Debug.Log(maxHealth*(70.0/100.0));
         //OnDrawGizmos();
         HandleSpriteFlip();
+        if (isDead) return;
 
+        if (stats.GetCurrentHealth() <= 0 && !isDead)
+        {
+            Dead();
+        }
         if (!isPhase3 && stats.GetCurrentHealth() < maxHealth*(70.0/100.0))
         {
             setPhase3();
@@ -394,6 +402,15 @@ public class BossManager : MonoBehaviour
         {
             slash.transform.localScale = new Vector3(slashScale, slashScale, slashScale);
         }
+    }
+
+    private void Dead()
+    {
+        Debug.Log("DEAD");
+
+        isDead = true;
+        animator.SetTrigger("death");
+        winUI.SetActive(true);
     }
 
     private void OnCollisionEnter(Collision collision)
