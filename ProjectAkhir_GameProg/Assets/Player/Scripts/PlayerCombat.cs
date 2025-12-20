@@ -8,7 +8,6 @@ public class PlayerCombat : MonoBehaviour
 {
     [Header("Player Stats")]
     public float initHP = 100.0f;
-
     public float attackDamage = 25f;    // Damage per hit
     [System.NonSerialized] public float HP;
     [System.NonSerialized] public bool isDead;
@@ -18,7 +17,6 @@ public class PlayerCombat : MonoBehaviour
     private float hpFullFill = .43f;
     private float smoothTime = 0.25f;
     private float currVelocity;
-    private float hpTargetAngle;
 
     [Header("Combo System")]
     public List<AttackSO> combo;
@@ -34,18 +32,19 @@ public class PlayerCombat : MonoBehaviour
     [Header("Utility Power Ups")]
     public bool lifestealEnabled = false;
     public float lifestealPercent = 0.1f;
-
     public bool damageReductionWhileAttacking = false;
     public float attackDamageReduction = 0.3f;
-
     public bool cooldownRefundOnKillEnabled = false;
     public float cooldownRefundAmount = 0.5f;
     //U POWER UP ENDS HERE
 
     [HideInInspector] public int extraSM2Waves = 0; // Extra waves added by power-ups
 
-
-    
+    [Header("Audio")]
+    [SerializeField] private AudioClip swingClip;     // Player swing sound
+    [SerializeField] private AudioClip hurtClip; 
+    [SerializeField] private AudioClip hitSound;    // Player hurt sound
+    private AudioSource audioSource;                  // Single audio source component
 
     public float timeBetweenCombo = 0.5f;
     public float timeBetweenAttacks = 0.2f;
@@ -65,7 +64,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private int projectilePerWave = 6;
     [SerializeField] private int waveCount = 2;
     [SerializeField] private float waveDuration = 0.5f;
-    [SerializeField] private float waveDetaTime = 0.8f;
+    [SerializeField] private float waveDeltaTime = 0.8f;  // FIXED: Changed from waveDetaTime
     [SerializeField] private float waveDeltaAngle = 15f;
     [SerializeField] private Image sm1Icon;
     [SerializeField] private Image sm1CooldownFill;
@@ -102,13 +101,22 @@ public class PlayerCombat : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject deathUI;
 
-    
     PlayerInputActions inputs;
     [HideInInspector] public bool inCombo;
     private PlayerMovement playerMovement;
 
     private void Awake()
     {
+        // Get the AudioSource component - this is CRITICAL
+        audioSource = GetComponent<AudioSource>();
+        
+        // If there's no AudioSource, add one automatically
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            Debug.LogWarning("Added AudioSource component to Player");
+        }
+
         playerMovement = GetComponent<PlayerMovement>();
 
         // Init player health
@@ -120,7 +128,7 @@ public class PlayerCombat : MonoBehaviour
         inCombo = false;
 
         // Init player special moves
-        sm1Duration = waveCount * (waveDetaTime + waveDuration);
+        sm1Duration = waveCount * (waveDeltaTime + waveDuration);  // FIXED: waveDetaTime -> waveDeltaTime
         sm1StartTime = Time.time - sm1Duration;
 
         sm2VFXScale = .84f * sm2Radius;
@@ -143,7 +151,7 @@ public class PlayerCombat : MonoBehaviour
         swordCollider.enabled = inCombo;
 
         // Update health bar fill        
-        float _fill = Mathf.SmoothDampAngle(healthBarFill.fillAmount, hpTargetFill, ref currVelocity, smoothTime);
+        float _fill = Mathf.SmoothDamp(healthBarFill.fillAmount, hpTargetFill, ref currVelocity, smoothTime);  // FIXED: SmoothDampAngle -> SmoothDamp
         healthBarFill.fillAmount = _fill;
 
         // Update SM cooldown fill
@@ -211,6 +219,12 @@ public class PlayerCombat : MonoBehaviour
             anim.runtimeAnimatorController = combo[comboCounter].animatorOV;
             anim.Play("Attack", 0, 0);
 
+            // Play swing sound
+            if (swingClip != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(swingClip);
+            }
+
             // Correct VFX flipping
             if (playerMovement.facingRight)
             {
@@ -224,7 +238,7 @@ public class PlayerCombat : MonoBehaviour
             slashVFXs[comboCounter].Play();
 
             // Deal damage in front of player
-            // DealDamage();
+            // DealDamage();  // Uncomment when ready to implement
 
             comboCounter++;
             lastClickedTime = Time.time;
@@ -261,7 +275,7 @@ public class PlayerCombat : MonoBehaviour
 
             StartCoroutine(FireProjectiles(forwards));
 
-            yield return new WaitForSeconds(waveDetaTime);
+            yield return new WaitForSeconds(waveDeltaTime);  // FIXED: waveDetaTime -> waveDeltaTime
         }
     }
 
@@ -276,7 +290,18 @@ public class PlayerCombat : MonoBehaviour
 
             GameObject proj = Instantiate(sm1Projectile, spawnPoint, Quaternion.Euler(0, 0, 0));
             proj.transform.up = forwards[i];
-            proj.GetComponent<SwordProjectile>().attackDamage = sm1Damage;
+            
+            // Check if SwordProjectile component exists
+            SwordProjectile swordProj = proj.GetComponent<SwordProjectile>();
+            if (swordProj != null)
+            {
+                swordProj.attackDamage = sm1Damage;
+            }
+            else
+            {
+                Debug.LogWarning("SwordProjectile component not found on SM1 projectile!");
+            }
+            
             // Add delay between projectiles
             yield return new WaitForSeconds(waveDuration / projectilePerWave);
         }   
@@ -291,38 +316,6 @@ public class PlayerCombat : MonoBehaviour
             StartCoroutine(SM2Waves(totalWaves, sm2WaveDelay));
         }
     }
-
-
-//    void DealDamage()
-//     {
-//         float radius = attackRange;
-//         Vector3 origin = attackPoint.position;
-
-    //         Collider[] enemiesHit = Physics.OverlapSphere(origin, radius, LayerMask.GetMask("Enemy"));
-
-    //         foreach (Collider enemy in enemiesHit)
-    //         {
-    //             Vector3 toEnemy = enemy.transform.position - transform.position;
-    //             if (Vector3.Dot(toEnemy.normalized, transform.forward) > 0)
-    //             {
-    //                 // Check for different health scripts
-    //                 GolemHealth golemHealth = enemy.GetComponent<GolemHealth>();
-    //                 TreeHealth treeHealth = enemy.GetComponent<TreeHealth>();
-    //                 BatHealth batHealth = enemy.GetComponent<BatHealth>();
-    //                 MushroomHealth mushroomHealth = enemy.GetComponent<MushroomHealth>();
-    //                 SkeletonHealth skeletonHealth = enemy.GetComponent<SkeletonHealth>();
-
-    //                 if (golemHealth != null) golemHealth.TakeDamage(attackDamage);
-    //                 if (treeHealth != null) treeHealth.TakeDamage(attackDamage);
-    //                 if (batHealth != null) batHealth.TakeDamage(attackDamage);
-    //                 if (mushroomHealth != null) mushroomHealth.TakeDamage(attackDamage);
-    //                 if (skeletonHealth != null) skeletonHealth.TakeDamage(attackDamage);
-
-    //                 // Debug.Log("Hit " + enemy.name);
-    //             }
-    //         }
-    //     }
-
 
     void ExitAttack()
     {
@@ -342,7 +335,6 @@ public class PlayerCombat : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        // if (attackPoint == null) return;
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, sm2Radius);
     }
@@ -366,8 +358,15 @@ public class PlayerCombat : MonoBehaviour
             isDead = true;
             anim.SetLayerWeight(1, 0);
             StartCoroutine(DieCoroutine());
-        } else
+        }
+        else
         {
+            // Play hurt sound
+            if (hurtClip != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(hurtClip);
+            }
+            
             anim.SetTrigger("Hurt");
         }
     }
@@ -418,6 +417,7 @@ public class PlayerCombat : MonoBehaviour
         sm1Cooldown = Mathf.Max(1f, sm1Cooldown);
         sm2Cooldown = Mathf.Max(1f, sm2Cooldown);
     }
+    
     public void OnEnemyKilled()
     {
         if (!cooldownRefundOnKillEnabled) return;
@@ -427,11 +427,12 @@ public class PlayerCombat : MonoBehaviour
 
         Debug.Log("Cooldown refunded on kill!");
     }
+    
     //THIS IS FOR THE EXTRA WAVE SKILLS
     public void AddSM1Waves(int extra)
     {
         waveCount += extra;
-        sm1Duration = waveCount * (waveDetaTime + waveDuration); // Update duration
+        sm1Duration = waveCount * (waveDeltaTime + waveDuration); // Update duration - FIXED: waveDetaTime -> waveDeltaTime
         Debug.Log($"SM1 wave count increased to {waveCount}");
     }
 
@@ -449,7 +450,13 @@ public class PlayerCombat : MonoBehaviour
                 {
                     // Apply damage
                     enemy.TakeDamage(sm2Damage);
-                    Instantiate(sm2EnemyHitVFX, enemy.transform.position, Quaternion.identity);
+                    
+                    // Instantiate hit VFX if assigned
+                    if (sm2EnemyHitVFX != null)
+                    {
+                        ParticleSystem hitVFX = Instantiate(sm2EnemyHitVFX, enemy.transform.position, Quaternion.identity);
+                        Destroy(hitVFX.gameObject, 2f); // Clean up after 2 seconds
+                    }
 
                     // Apply stun if enabled
                     if (sm2StunEnabled)
@@ -461,10 +468,19 @@ public class PlayerCombat : MonoBehaviour
             }
 
             // Optional: VFX per wave
-            ParticleSystem waveVFX = Instantiate(sm2WaveVFX, transform.position + randomOffset, Quaternion.Euler(90, 0, 0));
-            ParticleSystem impactVFX = Instantiate(sm2ImpactVFX, transform.position + randomOffset, Quaternion.Euler(-90, 0, 0));
-            waveVFX.transform.localScale = sm2VFXScale * Vector3.one;
-            impactVFX.transform.localScale = sm2VFXScale * new Vector3(1f, 1f, 1f);
+            if (sm2WaveVFX != null)
+            {
+                ParticleSystem waveVFX = Instantiate(sm2WaveVFX, transform.position + randomOffset, Quaternion.Euler(90, 0, 0));
+                waveVFX.transform.localScale = sm2VFXScale * Vector3.one;
+                Destroy(waveVFX.gameObject, 3f); // Clean up
+            }
+            
+            if (sm2ImpactVFX != null)
+            {
+                ParticleSystem impactVFX = Instantiate(sm2ImpactVFX, transform.position + randomOffset, Quaternion.Euler(-90, 0, 0));
+                impactVFX.transform.localScale = sm2VFXScale * new Vector3(1f, 1f, 1f);
+                Destroy(impactVFX.gameObject, 3f); // Clean up
+            }
 
             yield return new WaitForSeconds(waveDelay);
         }
@@ -484,7 +500,22 @@ public class PlayerCombat : MonoBehaviour
         if (deathUI != null)
             deathUI.SetActive(true);
         yield return new WaitForSeconds(2.0f);
-        Instantiate(deathParticles, transform.position, Quaternion.Euler(0, 0, 0));
+        
+        if (deathParticles != null)
+            Instantiate(deathParticles, transform.position, Quaternion.Euler(0, 0, 0));
+            
         Destroy(gameObject);
+    }
+
+    // Clean up input system when object is destroyed
+    private void OnDestroy()
+    {
+        if (inputs != null)
+        {
+            inputs.Player.Attack.performed -= Attack;
+            inputs.Player.SM1.performed -= SM1;
+            inputs.Player.SM2.performed -= SM2;
+            inputs.Player.Disable();
+        }
     }
 }

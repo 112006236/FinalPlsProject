@@ -20,6 +20,10 @@ public class EnemyStats : MonoBehaviour
     public GameObject hurtVFX;
     public ParticleSystem swordImpactVFX;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip hitSound; // Sound when enemy is hit by sword
+    private AudioSource audioSource; // Audio source component
+
     [Header("Knockback Settings")]
     public float knockbackForce = 3f;
     public float knockbackDuration = 0.15f;
@@ -56,6 +60,15 @@ public class EnemyStats : MonoBehaviour
         enemyCollider = GetComponent<Collider>();
         if (enemyCollider == null)
             enemyCollider = gameObject.AddComponent<CapsuleCollider>();
+
+        // Initialize audio source
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.spatialBlend = 0.7f; // 3D audio effect
+            audioSource.volume = 0.5f; // Adjust volume as needed
+        }
     }
 
     // ---------------- DAMAGE -----------------
@@ -69,14 +82,15 @@ public class EnemyStats : MonoBehaviour
         if (healthBar != null)
             healthBar.UpdateHealth(currentHealth);
 
-        if (dmg - playerCombat.attackDamage > 0.1f)
+        // Determine if it's a critical hit and spawn appropriate VFX
+        if (playerCombat != null && Mathf.Abs(dmg - playerCombat.attackDamage) > 0.1f)
         {
             Instantiate(critVFX, transform.position, Quaternion.identity);
-        } else
+        }
+        else if (swordImpactVFX != null)
         {
             Instantiate(swordImpactVFX, transform.position, Quaternion.identity);
         }
-        
 
         if (currentHealth <= 0)
         {
@@ -115,6 +129,14 @@ public class EnemyStats : MonoBehaviour
         if (other.CompareTag("Sword"))
         {
             Vector3 impactPoint = other.ClosestPoint(transform.position);
+            
+            // Play hit sound
+            if (hitSound != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(hitSound);
+            }
+
+            // Spawn impact VFX
             if (swordImpactVFX != null)
                 Instantiate(swordImpactVFX, impactPoint, Quaternion.identity);
 
@@ -139,10 +161,26 @@ public class EnemyStats : MonoBehaviour
 
             TakeDamage(dmg);
 
+            // Play hit sound for projectile too
+            if (hitSound != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(hitSound);
+            }
+
+            // Spawn impact VFX
             if (swordImpactVFX != null)
                 Instantiate(swordImpactVFX, transform.position, Quaternion.identity);
 
             Destroy(other.gameObject);
+        }
+    }
+
+    // Alternative method that can be called directly
+    public void PlayHitSound()
+    {
+        if (hitSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(hitSound);
         }
     }
 
