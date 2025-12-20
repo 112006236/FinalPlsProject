@@ -19,6 +19,10 @@ public class Meteor : MonoBehaviour
 
     [HideInInspector] public GameObject warningMarker; // assigned by spawner
 
+    private AudioSource audioSource;
+
+    [SerializeField] private AudioClip explosionClip;
+
     private bool hasLanded = false;
 
     public float rotationSpeed = 100f;
@@ -27,9 +31,26 @@ public class Meteor : MonoBehaviour
     public Vector3 rotationAxis = new Vector3(0, 0, 1);
 
 
+    private void Awake()
+    {
+        // Get the AudioSource component - this is CRITICAL
+        audioSource = GetComponent<AudioSource>();
+        
+        // If there's no AudioSource, add one automatically
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            //Debug.LogWarning("Added AudioSource component to Player");
+        }
+    }
     void Start()
     {
         GetComponent<Rigidbody>().AddForce(Vector3.down * 1200f);
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            //Debug.LogWarning("Added AudioSource component to Player");
+        }
     }
     void Update()
     {
@@ -54,8 +75,16 @@ public class Meteor : MonoBehaviour
         //UnityEngine.Debug.Log("Hit: " + collision.gameObject.name);
         // Spawn explosion effect
         if (impactEffect != null)
-            Instantiate(impactEffect, transform.position, Quaternion.identity);
+        {
+             Instantiate(impactEffect, transform.position, Quaternion.identity);
+             
 
+        }
+           
+        if (explosionClip != null)
+        {
+            AudioSource.PlayClipAtPoint(explosionClip, transform.position, 0.5f);
+        }
 
         if (bulletPrefab != null)
         {
