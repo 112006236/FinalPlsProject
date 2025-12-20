@@ -341,6 +341,8 @@ public class PlayerCombat : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        Debug.Log("OUCH!!! " + damage);
+
         if (isDead) return;
 
         // FOR DAMAGE REDUCTION WHILE ATTACKING

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class AreaAttackEffect : MonoBehaviour
 {
-    public float damageAmount = 15f;
+    public float damageAmount = 400f;
     public LayerMask playerLayer;
 
     // This matches your 20x, 0.05y, 20z prefab dimensions
@@ -27,6 +27,7 @@ public class AreaAttackEffect : MonoBehaviour
             // CharacterController counts as a collider, so this should work
             if (hit.TryGetComponent(out PlayerCombat combat))
             {
+                Debug.Log("HAHAHAHAH!!! " + damageAmount);
                 combat.TakeDamage(damageAmount);
                 Debug.Log("Damage Applied to Player!");
             }
