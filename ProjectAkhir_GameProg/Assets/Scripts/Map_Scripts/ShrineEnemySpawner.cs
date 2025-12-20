@@ -24,6 +24,7 @@ public class ShrineEnemySpawner : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log("start shrine spawner");
         if (shrine == null)
         {
             Debug.LogError("ShrineEnemySpawner: Shrine reference missing!");
@@ -47,6 +48,7 @@ public class ShrineEnemySpawner : MonoBehaviour
         {
             if (!miniBossTimerStarted)
             {
+                Debug.Log("start timer");
                 miniBossTimerStarted = true;
                 StartCoroutine(SpawnMiniBoss());
             }
@@ -111,6 +113,7 @@ public class ShrineEnemySpawner : MonoBehaviour
     private IEnumerator SpawnMiniBoss()
     {
         yield return new WaitForSeconds(miniBossDelay);
+        Debug.Log("start miniboss");
 
         Instantiate(miniBossPrefab,
             miniBossSpawnPoint.position,
