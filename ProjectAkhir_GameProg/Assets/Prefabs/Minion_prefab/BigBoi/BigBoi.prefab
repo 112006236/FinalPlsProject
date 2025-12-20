@@ -557,6 +557,7 @@ MonoBehaviour:
   healthBar: {fileID: 3999863011955743044}
   hurtVFX: {fileID: 7083232288471508579}
   swordImpactVFX: {fileID: 1429954232896169632, guid: 83036083a4ebcd34f98131bd3cf6f4d2, type: 3}
+  hitSound: {fileID: 8300000, guid: 0d81f2826e4fa4ce39d4ba9e4f42aed1, type: 3}
   knockbackForce: 3
   knockbackDuration: 0.15
   stunVFXAnimator: {fileID: 8226356628433036056}

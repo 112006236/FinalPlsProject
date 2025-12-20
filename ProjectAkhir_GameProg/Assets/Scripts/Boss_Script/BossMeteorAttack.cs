@@ -25,6 +25,8 @@ public class BossMeteorAttack : MonoBehaviour
     {
         for (int i = 0; i < meteorCount; i++)
         {
+            if (!player) break;
+
             // Pick random position near player
             Vector2 offset = Random.insideUnitCircle * spawnRadius;
             Vector3 groundPos = new Vector3(

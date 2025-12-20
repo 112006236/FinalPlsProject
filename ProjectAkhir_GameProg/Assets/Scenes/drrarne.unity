@@ -901,9 +901,21 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+      propertyPath: hitSFX
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
       propertyPath: deathUI
       value: 
       objectReference: {fileID: 1121748052}
+    - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+      propertyPath: hitClip
+      value: 
+      objectReference: {fileID: 8300000, guid: a84382bcc1f694524a881a8a85cbf231, type: 3}
+    - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+      propertyPath: hurtSFX
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
       propertyPath: sm1Icon
       value: 
@@ -913,9 +925,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1420760402}
     - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+      propertyPath: hurtClip
+      value: 
+      objectReference: {fileID: 8300000, guid: b0ad9be2c14da46c8b51250589c5a437, type: 3}
+    - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
       propertyPath: sm2Radius
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
+      propertyPath: swingClip
+      value: 
+      objectReference: {fileID: 8300000, guid: a84382bcc1f694524a881a8a85cbf231, type: 3}
     - target: {fileID: 5766828216632494506, guid: ae39a1939cad50a41b028a06fa03fb68, type: 3}
       propertyPath: sm2WaveDelay
       value: 0.2

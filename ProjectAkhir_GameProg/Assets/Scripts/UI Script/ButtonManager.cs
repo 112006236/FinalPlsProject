@@ -15,7 +15,7 @@ public class ButtonManager : MonoBehaviour
     public void ReloadScene()
     {
         Scene currentScene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(currentScene.name);
+        SceneManager.LoadScene(0);
     }
 
     // Call this to quit the game

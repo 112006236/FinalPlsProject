@@ -91,6 +91,8 @@ public class BossManager : MonoBehaviour
 
     void Update()
     {
+        if (!player) return;
+
         // Keep counting up time
         timer += Time.deltaTime;
         chargeCooldownTimer += Time.deltaTime;
