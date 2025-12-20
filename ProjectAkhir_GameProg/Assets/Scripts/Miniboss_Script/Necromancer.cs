@@ -26,16 +26,85 @@ public class Necromancer : MonoBehaviour
     private bool isAttacking = false;
     private bool facingLeft = true;
 
+    [Header("Spawn / Entry")]
+    [SerializeField] private GameObject spawnCircleEffect;
+    [SerializeField] private float spawnCircleRadius = 3f;
+    [SerializeField] private float entryRiseHeight = 1f;
+    [SerializeField] private float entryDuration = 1f;
+    [SerializeField] private float spawnVFXDuration = 1.2f;
+
+    private bool hasEntered = false;
+
+
 
     private void Start()
     {
         sr = GetComponent<SpriteRenderer>();
         if (player == null)
             player = GameObject.FindWithTag("Player").transform;
+        StartCoroutine(EntrySequence());
     }
+
+    private IEnumerator EntrySequence()
+    {
+        Vector3 groundPos = new Vector3(transform.position.x, 0f, transform.position.z);
+        Vector3 finalPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+
+        // Start underground
+        transform.position = finalPos - Vector3.up * entryRiseHeight;
+
+        // Lock behavior
+        isAttacking = true;
+
+        animator.Play("idle");
+
+        // Spawn circle first
+        GameObject circle = null;
+        if (spawnCircleEffect != null)
+        {
+            Quaternion rot = Quaternion.Euler(90f, 0f, 0f);
+            circle = Instantiate(spawnCircleEffect, groundPos, rot);
+
+            SpriteRenderer fxSr = circle.GetComponentInChildren<SpriteRenderer>();
+            if (fxSr != null)
+            {
+                float spriteDiameter = fxSr.bounds.size.x;
+                float desiredDiameter = spawnCircleRadius * 2f;
+                float scaleFactor = desiredDiameter / spriteDiameter;
+                circle.transform.localScale = Vector3.one * scaleFactor;
+            }
+        }
+
+        yield return new WaitForSeconds(0.25f);
+
+        // Rise to ground
+        float t = 0f;
+        while (t < entryDuration)
+        {
+            t += Time.deltaTime;
+            transform.position = Vector3.Lerp(
+                finalPos - Vector3.up * entryRiseHeight,
+                finalPos,
+                t / entryDuration
+            );
+            yield return null;
+        }
+
+        transform.position = finalPos;
+
+        // Destroy circle VFX
+        if (circle != null)
+            Destroy(circle, spawnVFXDuration);
+
+        // Unlock behavior
+        isAttacking = false;
+        hasEntered = true;
+    }
+
 
     private void Update()
     {
+        if (!hasEntered) return;
         if (player == null) return;
 
         float dist = Vector3.Distance(transform.position, player.position);

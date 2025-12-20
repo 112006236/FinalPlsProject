@@ -29,6 +29,16 @@ public class NinjaKnight : MonoBehaviour
     private string currentAnimation = "";
     private float dashtolerance=3.2f;
 
+    [Header("Spawn / Entry")]
+    [SerializeField] private GameObject spawnCircleEffect;
+    [SerializeField] private float spawnCircleRadius = 3f;
+    [SerializeField] private float entryRiseHeight = 3f;
+    [SerializeField] private float entryDuration = 1.0f;
+    [SerializeField] private float spawnVFXDuration = 1.2f;
+
+    private bool hasEntered = false;
+
+
     private void Start()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -40,10 +50,72 @@ public class NinjaKnight : MonoBehaviour
             else
                 Debug.LogWarning("No GameObject with tag 'Player' found!");
         }
+        StartCoroutine(EntrySequence());
     }
+
+    private IEnumerator EntrySequence()
+    {
+        Vector3 groundPos = new Vector3(transform.position.x, 0f, transform.position.z);
+
+        // Start underground
+        transform.position = groundPos - Vector3.up * entryRiseHeight;
+
+        // Lock behavior
+        isDashing = true;
+        canNormalAttack = false;
+        canDashAttack = false;
+
+        PlayAnimOnce("idle");
+
+        // Spawn circle FIRST
+        GameObject circle = null;
+        if (spawnCircleEffect != null)
+        {
+            Quaternion rot = Quaternion.Euler(90f, 0f, 0f);
+            circle = Instantiate(spawnCircleEffect, groundPos, rot);
+
+            SpriteRenderer fxSr = circle.GetComponentInChildren<SpriteRenderer>();
+            if (fxSr != null)
+            {
+                float spriteDiameter = fxSr.bounds.size.x;
+                float desiredDiameter = spawnCircleRadius * 2f;
+                float scaleFactor = desiredDiameter / spriteDiameter;
+                circle.transform.localScale = Vector3.one * scaleFactor;
+            }
+        }
+
+        yield return new WaitForSeconds(0.25f);
+
+        // Rise up
+        float t = 0f;
+        while (t < entryDuration)
+        {
+            t += Time.deltaTime;
+            transform.position = Vector3.Lerp(
+                groundPos - Vector3.up * entryRiseHeight,
+                groundPos,
+                t / entryDuration
+            );
+            yield return null;
+        }
+
+        transform.position = groundPos;
+
+        if (circle != null)
+            Destroy(circle, spawnVFXDuration);
+
+        // Unlock behavior
+        isDashing = false;
+        canNormalAttack = true;
+        canDashAttack = true;
+        hasEntered = true;
+    }
+
 
     private void Update()
     {
+        if (!hasEntered) return;
+
         if (!player) return;
 
         FlipSprite();

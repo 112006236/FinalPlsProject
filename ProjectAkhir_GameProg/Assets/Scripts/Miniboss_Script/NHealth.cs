@@ -12,6 +12,9 @@ public class NHealth : MonoBehaviour
     [SerializeField] private PlayerCombat playerCombat;
     private float playerDamage;
 
+    [Header("Effects")]
+    public ParticleSystem swordImpactVFX;
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -67,6 +70,24 @@ public class NHealth : MonoBehaviour
         if (other.CompareTag("Sword"))
         {
             TakeDamage(playerDamage);
+        }
+        SwordProjectile projectile = other.GetComponent<SwordProjectile>();
+        if (projectile != null)
+        {
+            float dmg = projectile.attackDamage;
+
+            if (playerCombat != null)
+            {
+                dmg = playerCombat.CalculateDamage(projectile.attackDamage, this);
+                playerCombat.ApplyLifesteal(dmg);
+            }
+
+            TakeDamage(dmg);
+
+            if (swordImpactVFX != null)
+                Instantiate(swordImpactVFX, transform.position, Quaternion.identity);
+
+            Destroy(other.gameObject);
         }
     }
 }

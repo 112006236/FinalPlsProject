@@ -17,7 +17,6 @@ public class bossWalk : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (!player) return;
 
         rb = animator.GetComponentInParent<Rigidbody>();
         player = GameObject.FindGameObjectWithTag("Player").transform;

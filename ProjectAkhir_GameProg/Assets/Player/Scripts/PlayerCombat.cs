@@ -409,6 +409,36 @@ public class PlayerCombat : MonoBehaviour
         return finalDamage;
     }
 
+    public float CalculateDamage(float baseDamage, BOFHealth boss)
+    {
+        float finalDamage = baseDamage;
+
+        if (Random.value < critChance)
+            finalDamage *= critMultiplier;
+
+        return finalDamage;
+    }
+
+    public float CalculateDamage(float baseDamage, NKHealth boss)
+    {
+        float finalDamage = baseDamage;
+
+        if (Random.value < critChance)
+            finalDamage *= critMultiplier;
+
+        return finalDamage;
+    }
+
+    public float CalculateDamage(float baseDamage, NHealth boss)
+    {
+        float finalDamage = baseDamage;
+
+        if (Random.value < critChance)
+            finalDamage *= critMultiplier;
+
+        return finalDamage;
+    }
+
     //THIS IS FOR THE CD SKILLS
     public void ReduceCooldowns(float multiplier)
     {
@@ -444,12 +474,17 @@ public class PlayerCombat : MonoBehaviour
         {
             Vector3 randomOffset = sm2OffsetScale * new Vector3(Random.value - .5f, 0, Random.value - .5f);
             Collider[] enemies = Physics.OverlapSphere(transform.position + randomOffset, sm2Radius, enemyLayer);
-
+            
             foreach (Collider enemyCol in enemies)
             {
+                Debug.Log("Detected enemy collider: " + enemyCol.name);
                 EnemyStats enemy = enemyCol.GetComponent<EnemyStats>();
+                BOFHealth BOF = enemyCol.GetComponent<BOFHealth>();
+                NHealth N = enemyCol.GetComponent<NHealth>();
+                NKHealth NK = enemyCol.GetComponent<NKHealth>();
                 if (enemy != null)
                 {
+                    Debug.Log("kenaki");
                     // Apply damage
                     enemy.TakeDamage(sm2Damage);
                     
@@ -466,6 +501,27 @@ public class PlayerCombat : MonoBehaviour
 
                     // Apply stagger
                     enemy.ApplyStagger(sm2StaggerMultiplier);
+                }
+                if (BOF != null)
+                {
+                    Debug.Log("kenak");
+                    // Apply damage
+                    BOF.TakeDamage(sm2Damage);
+                    Instantiate(sm2EnemyHitVFX, BOF.transform.position, Quaternion.identity);
+                }
+                if (N != null)
+                {
+                    // Apply damage
+                    N.TakeDamage(sm2Damage);
+                    Instantiate(sm2EnemyHitVFX, N.transform.position, Quaternion.identity);
+
+                }
+                if (NK != null)
+                {
+                    // Apply damage
+                    NK.TakeDamage(sm2Damage);
+                    Instantiate(sm2EnemyHitVFX, NK.transform.position, Quaternion.identity);
+
                 }
             }
 
