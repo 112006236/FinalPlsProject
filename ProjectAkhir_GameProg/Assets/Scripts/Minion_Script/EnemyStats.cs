@@ -31,6 +31,7 @@ public class EnemyStats : MonoBehaviour
     private Collider enemyCollider;
 
     private bool isStunned = false;
+    [SerializeField] private Animator stunVFXAnimator;
 
     // 🔥 NEW: cache PlayerCombat
     private PlayerCombat playerCombat;
@@ -156,10 +157,14 @@ public class EnemyStats : MonoBehaviour
     {
         isStunned = true;
         NavMeshAgent agent = GetComponent<NavMeshAgent>();
-        if (agent != null) agent.isStopped = true;
+        stunVFXAnimator.SetTrigger("Enter");
+        // if (agent != null) agent.isStopped = true;
+        if (agent != null) agent.speed = 0f;
         yield return new WaitForSeconds(duration);
-        if (agent != null) agent.isStopped = false;
+        // if (agent != null) agent.isStopped = false;
+        if (agent != null) agent.speed = moveSpeed;
         isStunned = false;
+        stunVFXAnimator.SetTrigger("Exit");
     }
 
     public void ApplyStagger(float multiplier)

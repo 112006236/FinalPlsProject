@@ -49,6 +49,22 @@ public class ArenaControl : MonoBehaviour
         DebugObjectives();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            NotifyObjectiveCompleted(ObjectiveType.Cage);
+        } 
+        else if (Input.GetKeyDown(KeyCode.O))
+        {
+            NotifyObjectiveCompleted(ObjectiveType.EnemyArea);
+        }
+        else if (Input.GetKeyDown(KeyCode.P))
+        {
+            NotifyObjectiveCompleted(ObjectiveType.Shrine);
+        }
+    }
+
     #region Assignment
     private void AssignRandomObjectives()
     {
@@ -118,7 +134,10 @@ public class ArenaControl : MonoBehaviour
         if (completedByType[type] == maxCount && !powerUpGrantedFor.Contains(type))
         {
             powerUpGrantedFor.Add(type);
-            PowerUpManager.Instance.ShowChoices();
+
+            bool levelWin = completedByType[ObjectiveType.Cage] + completedByType[ObjectiveType.EnemyArea] + completedByType[ObjectiveType.Shrine] == 6;
+
+            PowerUpManager.Instance.ShowChoices(levelWin);
         }
 
         if (totalCompleted >= totalObjectives)
@@ -129,10 +148,10 @@ public class ArenaControl : MonoBehaviour
     {
         Debug.Log("✅ All objectives completed! Arena cleared!");
 
-        if (youWinUI != null)
-            youWinUI.SetActive(true);
+        // if (youWinUI != null)
+           // youWinUI.SetActive(true);
 
-        PowerUpManager.Instance.ShowChoices();
+        // PowerUpManager.Instance.ShowChoices();
     }
     #endregion
 

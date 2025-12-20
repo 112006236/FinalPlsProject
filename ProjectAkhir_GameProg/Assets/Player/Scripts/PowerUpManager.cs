@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class PowerUpManager : MonoBehaviour
@@ -32,7 +33,7 @@ public class PowerUpManager : MonoBehaviour
         playerCombat = FindObjectOfType<PlayerCombat>();
     }
 
-    public void ShowChoices()
+    public void ShowChoices(bool levelWin)
     {
         Time.timeScale = 0f;
 
@@ -70,12 +71,12 @@ public class PowerUpManager : MonoBehaviour
 
             int btnIndex = i;
             buttons[i].onClick.RemoveAllListeners();
-            buttons[i].onClick.AddListener(() => SelectPowerUp(btnIndex));
+            buttons[i].onClick.AddListener(() => SelectPowerUp(btnIndex, levelWin));
         }
     }
 
 
-    public void SelectPowerUp(int index)
+    public void SelectPowerUp(int index, bool levelWin)
     {
         Debug.Log(currentChoices.Count);
         for (int i = 0; i < currentChoices.Count; i++)
@@ -84,6 +85,11 @@ public class PowerUpManager : MonoBehaviour
         }
         ApplyPowerUp(currentChoices[index]);
         Close();
+
+        if (levelWin)
+        {
+            SceneManager.LoadScene("Boss_Jor");
+        }
     }
 
     void Close()
