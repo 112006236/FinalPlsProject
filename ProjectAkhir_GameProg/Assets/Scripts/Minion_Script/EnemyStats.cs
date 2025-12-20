@@ -7,7 +7,8 @@ using UnityEngine.AI;
 public class EnemyStats : MonoBehaviour
 {
     public event Action<EnemyStats> OnDeath;
-    
+    [Header("Settings")]
+    public bool isBoss = false;
     [Header("Base Stats")]
     public float maxHealth = 50f;
     public float moveSpeed = 3f;
@@ -81,6 +82,7 @@ public class EnemyStats : MonoBehaviour
 
         if (currentHealth <= 0)
         {
+            if (isBoss) return;
             Die();
             return;
         }
