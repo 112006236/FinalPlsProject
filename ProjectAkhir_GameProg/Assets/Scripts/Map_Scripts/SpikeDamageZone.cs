@@ -32,27 +32,26 @@ public class SpikeDamageZone : MonoBehaviour
 
     private IEnumerator DoDamage(Collider target)
     {
-        // Cache components once
         PlayerCombat player = target.GetComponentInParent<PlayerCombat>();
-        //why the hell does enemy doesnt get damagede
-        EnemyStats enemy = target.GetComponent<EnemyStats>();
-        if (enemy == null)
-            enemy = target.GetComponentInParent<EnemyStats>();
-        if (enemy == null)
-            enemy = target.GetComponentInChildren<EnemyStats>();
+        EnemyStats enemy = target.GetComponentInParent<EnemyStats>();
 
-        while (true)
+        if (player == null && enemy == null)
         {
-            if (target == null || (!player && !enemy)) // target destroyed or components gone
-                yield break;
+            Debug.Log("Spike touched non-damageable object: " + target.name);
+            yield break;
+        }
 
+        while (target != null)
+        {
             if (player != null)
                 player.TakeDamage(damagePerSecond);
 
-            if (enemy != null || target.CompareTag("Enemy"))
+            if (enemy != null)
                 enemy.TakeDamage(damagePerSecond);
 
             yield return new WaitForSeconds(1f);
         }
     }
+
+
 }

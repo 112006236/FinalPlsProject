@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 using System.Collections;
 
 public class Necromancer : MonoBehaviour
@@ -9,6 +10,7 @@ public class Necromancer : MonoBehaviour
     public Transform sprite; // child sprite object for flipping
 
     private SpriteRenderer sr;
+    private NavMeshAgent agent; // NEW: NavMeshAgent
 
     [Header("Movement")]
     public float moveSpeed = 3f;
@@ -24,7 +26,6 @@ public class Necromancer : MonoBehaviour
 
     private float lastFireballTime = -100f;
     private bool isAttacking = false;
-    private bool facingLeft = true;
 
     [Header("Spawn / Entry")]
     [SerializeField] private GameObject spawnCircleEffect;
@@ -35,32 +36,35 @@ public class Necromancer : MonoBehaviour
 
     private bool hasEntered = false;
 
-
-
     private void Start()
     {
         sr = GetComponent<SpriteRenderer>();
-        sr.enabled = false; 
+        sr.enabled = false;
+
+        agent = GetComponent<NavMeshAgent>();
+        if (agent == null) agent = gameObject.AddComponent<NavMeshAgent>();
+        agent.speed = moveSpeed;
+        agent.stoppingDistance = stopDistance;
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
+
         if (player == null)
             player = GameObject.FindWithTag("Player").transform;
+
         StartCoroutine(EntrySequence());
     }
 
     private IEnumerator EntrySequence()
     {
-        sr.enabled = true; 
+        sr.enabled = true;
         Vector3 groundPos = new Vector3(transform.position.x, 0f, transform.position.z);
-        Vector3 finalPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        Vector3 finalPos = new Vector3(transform.position.x, 1.093f, transform.position.z);
 
-        // Start underground
         transform.position = finalPos - Vector3.up * entryRiseHeight;
 
-        // Lock behavior
         isAttacking = true;
-
         animator.Play("idle");
 
-        // Spawn circle first
         GameObject circle = null;
         if (spawnCircleEffect != null)
         {
@@ -79,50 +83,53 @@ public class Necromancer : MonoBehaviour
 
         yield return new WaitForSeconds(0.25f);
 
-        // Rise to ground
         float t = 0f;
         while (t < entryDuration)
         {
             t += Time.deltaTime;
-            transform.position = Vector3.Lerp(
-                finalPos - Vector3.up * entryRiseHeight,
-                finalPos,
-                t / entryDuration
-            );
+            transform.position = Vector3.Lerp(finalPos - Vector3.up * entryRiseHeight, finalPos, t / entryDuration);
             yield return null;
         }
 
         transform.position = finalPos;
+        if (circle != null) Destroy(circle, spawnVFXDuration);
 
-        // Destroy circle VFX
-        if (circle != null)
-            Destroy(circle, spawnVFXDuration);
-
-        // Unlock behavior
         isAttacking = false;
         hasEntered = true;
     }
 
-
     private void Update()
     {
-        if (!hasEntered) return;
-        if (player == null) return;
+        if (!hasEntered || player == null) return;
 
         float dist = Vector3.Distance(transform.position, player.position);
 
-        // Handle movement
+        // Movement logic
         if (!isAttacking)
         {
             if (dist > stopDistance)
-                MoveTowardsPlayer();
+            {
+                agent.isStopped = false;
+                agent.speed = moveSpeed;
+                agent.SetDestination(player.position);
+                animator.Play("idle"); // could use walk animation if you have one
+            }
             else if (dist < retreatDistance)
-                RetreatFromPlayer();
-            else
+            {
+                agent.isStopped = false;
+                agent.speed = moveSpeed;
+                Vector3 retreatDir = (transform.position - player.position).normalized;
+                agent.SetDestination(transform.position + retreatDir * 2f); // move backward
                 animator.Play("idle");
+            }
+            else
+            {
+                agent.isStopped = true;
+                animator.Play("idle");
+            }
         }
 
-        // Handle fireball attack
+        // Fireball attack
         if (dist <= attackRange && Time.time - lastFireballTime >= fireballCooldown && !isAttacking)
         {
             StartCoroutine(PerformAttack1());
@@ -131,29 +138,12 @@ public class Necromancer : MonoBehaviour
         FlipSprite();
     }
 
-    // ---------------- MOVEMENT ----------------
-    private void MoveTowardsPlayer()
-    {
-        animator.Play("idle");
-        Vector3 dir = (player.position - transform.position).normalized;
-        dir.y = 0;
-        transform.position += dir * moveSpeed * Time.deltaTime;
-        animator.Play("idle"); // or walk if you add walk animation
-    }
-
-    private void RetreatFromPlayer()
-    {
-        Vector3 dir = (transform.position - player.position).normalized;
-        dir.y = 0;
-        transform.position += dir * moveSpeed * Time.deltaTime;
-        animator.Play("idle"); // or walk animation backward
-    }
-
-    // ---------------- FIREBALL ATTACK ----------------
     private IEnumerator PerformAttack1()
     {
         isAttacking = true;
-        lastFireballTime= Time.time;
+        agent.isStopped = true; // stop movement during attack
+        lastFireballTime = Time.time;
+
         animator.Play("attack1", -1, 0f);
         animator.Update(0f);
 
@@ -165,8 +155,8 @@ public class Necromancer : MonoBehaviour
             Fireball fb = go.GetComponent<Fireball>();
             if (fb != null)
             {
-                fb.speed = 6f;        // ensure it's fast enough
-                fb.maxLifetime = 6f;  // ensure it doesn't disappear immediately
+                fb.speed = 6f;
+                fb.maxLifetime = 6f;
                 fb.Launch(player.position);
             }
         }
@@ -175,8 +165,6 @@ public class Necromancer : MonoBehaviour
         isAttacking = false;
     }
 
-
-    // ---------------- FLIP SPRITE ----------------
     private void FlipSprite()
     {
         if (player == null || sr == null) return;

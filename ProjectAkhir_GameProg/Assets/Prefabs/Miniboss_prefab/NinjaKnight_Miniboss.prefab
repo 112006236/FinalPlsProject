@@ -242,6 +242,7 @@ GameObject:
   - component: {fileID: 8735850076387710650}
   - component: {fileID: 8735850076387710653}
   - component: {fileID: 8735850076387710652}
+  - component: {fileID: 7724912220079751164}
   m_Layer: 3
   m_Name: NinjaKnight_Miniboss
   m_TagString: Enemy
@@ -431,6 +432,28 @@ MonoBehaviour:
   swordImpactVFX: {fileID: 1429954232896169632, guid: 83036083a4ebcd34f98131bd3cf6f4d2, type: 3}
   knockbackForce: 15
   knockbackDuration: 0.15
+--- !u!195 &7724912220079751164
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8735850076387710655}
+  m_Enabled: 0
+  m_AgentTypeID: 0
+  m_Radius: 0.185
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1.04
+  m_BaseOffset: 0.52
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &8735850076544208005
 GameObject:
   m_ObjectHideFlags: 0

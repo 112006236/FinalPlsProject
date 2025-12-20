@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.AI;
 
 public class BringerOfDeath : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class BringerOfDeath : MonoBehaviour
     public Transform sprite; // reference to child sprite object ONLY
 
     private SpriteRenderer sr;
+    private NavMeshAgent agent; // NEW: NavMeshAgent for movement
 
     [Header("Combat")]
     public float attackRange = 2f;
@@ -44,15 +46,29 @@ public class BringerOfDeath : MonoBehaviour
 
     private bool hasEntered = false;
 
+    // -----------------------------
+    private enum BossState { Idle, Walking, Attacking, Healing }
+    private BossState currentState = BossState.Idle;
 
-
+    // -----------------------------
     private void Start()
     {
         animator.Rebind();
         animator.Update(0f);
         health = GetComponent<BOFHealth>();
         sr = GetComponent<SpriteRenderer>();
-        sr.enabled = false; 
+        sr.enabled = false;
+
+        // Init NavMeshAgent
+        agent = GetComponent<NavMeshAgent>();
+        if (agent == null)
+        {
+            agent = gameObject.AddComponent<NavMeshAgent>();
+        }
+        agent.speed = moveSpeed;
+        agent.stoppingDistance = attackRange;
+        agent.updateRotation = false; // We'll handle rotation manually
+        agent.updateUpAxis = false;
 
         if (player == null)
         {
@@ -66,17 +82,17 @@ public class BringerOfDeath : MonoBehaviour
 
     private IEnumerator EntrySequence()
     {
-        sr.enabled = true; 
+        sr.enabled = true;
         float groundY = transform.position.y;
 
         Vector3 groundPos = new Vector3(transform.position.x, groundY, transform.position.z);
-        Vector3 finalPos = new Vector3(transform.position.x, 1.139f, transform.position.z);
+        Vector3 finalPos = new Vector3(transform.position.x, 1.140f, transform.position.z);
 
         // Start underground
         transform.position = finalPos - Vector3.up * entryRiseHeight;
 
         // Lock animation & state
-        animator.Play("BringerOfDeath_idle");
+        SetState(BossState.Idle);
         isAttacking = true;
         isHealing = true;
 
@@ -98,7 +114,6 @@ public class BringerOfDeath : MonoBehaviour
             }
         }
 
-        // Small delay like player spawn
         yield return new WaitForSeconds(0.25f);
 
         // --- Rise animation ---
@@ -117,7 +132,6 @@ public class BringerOfDeath : MonoBehaviour
 
         transform.position = finalPos;
 
-        // Cleanup VFX
         if (circle != null)
             Destroy(circle, spawnVFXDuration);
 
@@ -125,40 +139,67 @@ public class BringerOfDeath : MonoBehaviour
         isAttacking = false;
         isHealing = false;
         hasEntered = true;
+        SetState(BossState.Idle);
     }
 
     private void Update()
     {
-        if (health == null || player == null) return;
-        if (health.enabled == false) return; // dead
+        if (health == null || player == null || !health.enabled)
+            return;
 
         float dist = Vector3.Distance(transform.position, player.position);
 
-        // Periodic healing
-        if (Time.time - lastHealTime >= healCooldown && !isHealing){
-            animator.Play("BringerOfDeath_idle");
-            StartCoroutine(HealNearbyEnemies());
-        }
-
-        if (dist > followRange)
+        // -----------------------------
+        // Priority 1: Healing
+        if (isHealing)
         {
-            animator.Play("BringerOfDeath_idle");
+            SetState(BossState.Healing);
+            agent.isStopped = true; // stop movement while healing
             return;
         }
 
-        else if (dist > attackRange && !isAttacking)
-            FollowPlayer();
-        else if (dist <= attackRange)
+        // Priority 2: Attacking
+        if (isAttacking)
+        {
+            SetState(BossState.Attacking);
+            agent.isStopped = true; // stop movement while attacking
+            return;
+        }
+
+        // -----------------------------
+        // Periodic healing check
+        if (Time.time - lastHealTime >= healCooldown && !isHealing)
+        {
+            StartCoroutine(HealNearbyEnemies());
+        }
+
+        // -----------------------------
+        // Movement / AI decisions
+        if (dist > followRange)
+        {
+            SetState(BossState.Idle);
+            agent.isStopped = true;
+        }
+        else if (dist > attackRange)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(player.position);
+            SetState(BossState.Walking);
+        }
+        else
+        {
+            agent.isStopped = true;
             TryAttack();
+        }
 
         FlipSprite();
     }
 
     private IEnumerator HealNearbyEnemies()
     {
-        isHealing = true; // prevent multiple coroutines
+        isHealing = true;
+        SetState(BossState.Healing);
 
-        // Find all enemies in range
         Collider[] hits = Physics.OverlapSphere(transform.position, healRange);
         bool hasHealableEnemy = false;
 
@@ -175,7 +216,8 @@ public class BringerOfDeath : MonoBehaviour
         if (!hasHealableEnemy)
         {
             isHealing = false;
-            yield break; // No one to heal, exit coroutine
+            SetState(BossState.Idle);
+            yield break;
         }
 
         lastHealTime = Time.time;
@@ -184,26 +226,22 @@ public class BringerOfDeath : MonoBehaviour
         {
             firsttime = false;
             isHealing = false;
+            SetState(BossState.Idle);
             yield break;
         }
 
-        isAttacking = true; // prevent movement/attacks
+        isAttacking = true;
 
-        // Play cast animation
-        animator.Play("BringerOfDeath_cast", 0, 0f);
-
-        // Wait for cast animation duration (adjust to match your animation length)
+        animator.CrossFade("BringerOfDeath_cast", 0.1f, 0, 0f);
         yield return new WaitForSeconds(1f);
 
-        // Spawn healing circle
         if (healEffectPrefab != null)
         {
-            Vector3 pos = transform.position;// slightly above ground
+            Vector3 pos = transform.position;
             Quaternion rotation = Quaternion.Euler(90f, 0f, 0f);
 
             GameObject effect = Instantiate(healEffectPrefab, pos, rotation);
 
-            // Scale the circle based on its sprite size
             SpriteRenderer srFx = effect.GetComponentInChildren<SpriteRenderer>();
             if (srFx != null)
             {
@@ -213,17 +251,14 @@ public class BringerOfDeath : MonoBehaviour
                 effect.transform.localScale = Vector3.one * scaleFactor;
             }
 
-            // Play healing circle animation
             Animator fxAnim = effect.GetComponent<Animator>();
             if (fxAnim != null)
                 fxAnim.Play("healarea", 0, 0f);
 
-            // Wait for animation to finish before destroying
             yield return new WaitForSeconds(0.7f);
             Destroy(effect);
         }
 
-        // Heal all enemies in range
         hits = Physics.OverlapSphere(transform.position, healRange);
         foreach (Collider hit in hits)
         {
@@ -235,34 +270,15 @@ public class BringerOfDeath : MonoBehaviour
         }
 
         isAttacking = false;
-        isHealing = false; // reset flag
+        isHealing = false;
+        SetState(BossState.Idle);
     }
 
-    private void OnDrawGizmos()
-    {
-        // Draw actual heal range
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, healRange);
-
-        // Optional: Draw intended circle sprite size for comparison
-        Gizmos.color = Color.cyan;
-        float diameter = healRange * 2f;
-        Vector3 pos = transform.position;
-        pos.y += 0.05f;
-        Gizmos.DrawWireSphere(pos, diameter / 2f);
-    }
-
-
-    // -----------------------------
     private void FollowPlayer()
     {
-        animator.Play("BringerOfDeath_walk");
-        Vector3 dir = (player.position - transform.position).normalized;
-        dir.y = 0;
-        transform.position += dir * moveSpeed * Time.deltaTime;
+        // No longer used — NavMeshAgent handles this
     }
 
-    // -----------------------------
     private void TryAttack()
     {
         if (isAttacking || isHealing) return;
@@ -275,8 +291,9 @@ public class BringerOfDeath : MonoBehaviour
     {
         isAttacking = true;
         lastAttack = Time.time;
+        SetState(BossState.Attacking);
 
-        animator.Play("BringerOfDeath_attack", 0, 0f);
+        animator.CrossFade("BringerOfDeath_attack", 0.1f, 0, 0f);
 
         yield return new WaitForSeconds(0.45f);
         if (Vector3.Distance(transform.position, player.position) <= (attackRange + attacktolerance))
@@ -288,9 +305,9 @@ public class BringerOfDeath : MonoBehaviour
 
         yield return new WaitForSeconds(0.4f);
         isAttacking = false;
+        SetState(BossState.Idle);
     }
 
-    // -----------------------------
     private void FlipSprite()
     {
         if (player == null || sr == null) return;
@@ -302,5 +319,27 @@ public class BringerOfDeath : MonoBehaviour
         Vector3 camRight = cam.transform.right;
         float dot = Vector3.Dot(toPlayer, camRight);
         sr.flipX = dot > 0f;
+    }
+
+    private void SetState(BossState newState)
+    {
+        if (currentState == newState) return;
+
+        currentState = newState;
+        switch (currentState)
+        {
+            case BossState.Idle:
+                animator.CrossFade("BringerOfDeath_idle", 0.1f);
+                break;
+            case BossState.Walking:
+                animator.CrossFade("BringerOfDeath_walk", 0.1f);
+                break;
+            case BossState.Attacking:
+                animator.CrossFade("BringerOfDeath_attack", 0.1f);
+                break;
+            case BossState.Healing:
+                animator.CrossFade("BringerOfDeath_cast", 0.1f);
+                break;
+        }
     }
 }

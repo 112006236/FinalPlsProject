@@ -162,6 +162,10 @@ public class PlayerCombat : MonoBehaviour
         {
             TakeDamage(40.0f);
         }
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            Heal(initHP); // Full restore
+        }
     }
 
     private void UpdateSMCooldownUI()
