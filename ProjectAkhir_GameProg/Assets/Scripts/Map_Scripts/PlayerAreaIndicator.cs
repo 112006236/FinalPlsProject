@@ -43,7 +43,7 @@ public class PlayerAreaIndicator : MonoBehaviour
 
             float newY = Mathf.LerpAngle(
                 transform.eulerAngles.y,
-                targetY,
+                targetY - 90f,
                 Time.deltaTime * rotateSpeed
             );
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -20,6 +21,8 @@ public class PowerUpManager : MonoBehaviour
 
     private PlayerCombat playerCombat;
     private List<PowerUpSO> currentChoices = new();
+
+    [SerializeField] private Animator fadeAnimator;
 
     private void Awake()
     {
@@ -88,8 +91,15 @@ public class PowerUpManager : MonoBehaviour
 
         if (levelWin)
         {
-            SceneManager.LoadScene("Boss_Jor");
+            StartCoroutine(LoadBossScene());
         }
+    }
+
+    IEnumerator LoadBossScene()
+    {
+        fadeAnimator.SetTrigger("FadeOut");
+        yield return new WaitForSeconds(1f);
+        SceneManager.LoadScene("Boss_Jor");
     }
 
     void Close()
