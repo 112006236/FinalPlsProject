@@ -29,7 +29,7 @@ public class Necromancer : MonoBehaviour
     [Header("Spawn / Entry")]
     [SerializeField] private GameObject spawnCircleEffect;
     [SerializeField] private float spawnCircleRadius = 3f;
-    [SerializeField] private float entryRiseHeight = 3f;
+    [SerializeField] private float entryRiseHeight = 1f;
     [SerializeField] private float entryDuration = 1f;
     [SerializeField] private float spawnVFXDuration = 1.2f;
 
@@ -47,10 +47,11 @@ public class Necromancer : MonoBehaviour
 
     private IEnumerator EntrySequence()
     {
-        Vector3 groundPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        Vector3 groundPos = new Vector3(transform.position.x, 0f, transform.position.z);
+        Vector3 finalPos = new Vector3(transform.position.x, transform.position.y, transform.position.z);
 
         // Start underground
-        transform.position = groundPos - Vector3.up * entryRiseHeight;
+        transform.position = finalPos - Vector3.up * entryRiseHeight;
 
         // Lock behavior
         isAttacking = true;
@@ -82,14 +83,14 @@ public class Necromancer : MonoBehaviour
         {
             t += Time.deltaTime;
             transform.position = Vector3.Lerp(
-                groundPos - Vector3.up * entryRiseHeight,
-                groundPos,
+                finalPos - Vector3.up * entryRiseHeight,
+                finalPos,
                 t / entryDuration
             );
             yield return null;
         }
 
-        transform.position = groundPos;
+        transform.position = finalPos;
 
         // Destroy circle VFX
         if (circle != null)

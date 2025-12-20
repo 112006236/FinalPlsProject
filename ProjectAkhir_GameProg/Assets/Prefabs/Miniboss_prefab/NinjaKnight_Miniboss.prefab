@@ -242,7 +242,7 @@ GameObject:
   - component: {fileID: 8735850076387710650}
   - component: {fileID: 8735850076387710653}
   - component: {fileID: 8735850076387710652}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: NinjaKnight_Miniboss
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -428,6 +428,7 @@ MonoBehaviour:
   isDead: 0
   healthBar: {fileID: 8735850076195256449}
   playerCombat: {fileID: 0}
+  swordImpactVFX: {fileID: 1429954232896169632, guid: 83036083a4ebcd34f98131bd3cf6f4d2, type: 3}
 --- !u!1 &8735850076544208005
 GameObject:
   m_ObjectHideFlags: 0

@@ -38,11 +38,13 @@ public class BringerOfDeath : MonoBehaviour
     [Header("Spawn / Entry")]
     [SerializeField] private GameObject spawnCircleEffect;
     [SerializeField] private float spawnCircleRadius = 5f;
-    [SerializeField] private float entryRiseHeight = 500000f;
+    [SerializeField] private float entryRiseHeight = 1f;
     [SerializeField] private float entryDuration = 1.2f;
     [SerializeField] private float spawnVFXDuration = 1.2f;
 
     private bool hasEntered = false;
+
+
 
     private void Start()
     {
@@ -61,10 +63,10 @@ public class BringerOfDeath : MonoBehaviour
 
     private IEnumerator EntrySequence()
     {
-        Vector3 finalPos = transform.position;
+        Vector3 groundPos = new Vector3(transform.position.x, 0f, transform.position.z);
 
-        // Move boss below ground
-        transform.position = new Vector3(finalPos.x,0f,finalPos.z);
+        // Start underground
+        transform.position = groundPos - Vector3.up * entryRiseHeight;
 
         // Lock animation & state
         animator.Play("BringerOfDeath_idle");
@@ -76,7 +78,7 @@ public class BringerOfDeath : MonoBehaviour
         if (spawnCircleEffect != null)
         {
             Quaternion rot = Quaternion.Euler(90f, 0f, 0f);
-            circle = Instantiate(spawnCircleEffect, finalPos, rot);
+            circle = Instantiate(spawnCircleEffect, groundPos, rot);
 
             // Scale circle correctly
             SpriteRenderer srFx = circle.GetComponentInChildren<SpriteRenderer>();
@@ -99,14 +101,14 @@ public class BringerOfDeath : MonoBehaviour
             t += Time.deltaTime;
             float lerp = t / entryDuration;
             transform.position = Vector3.Lerp(
-                finalPos - Vector3.up * entryRiseHeight,
-                finalPos,
+                groundPos - Vector3.up * entryRiseHeight,
+                groundPos,
                 lerp
             );
             yield return null;
         }
 
-        transform.position = finalPos;
+        transform.position = groundPos;
 
         // Cleanup VFX
         if (circle != null)

@@ -243,7 +243,7 @@ GameObject:
   - component: {fileID: 7623811792226906587}
   - component: {fileID: 7623811792226906586}
   - component: {fileID: 7623811792226906585}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: BringerOfDeath_MiniBoss
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -452,6 +452,7 @@ MonoBehaviour:
   isDead: 0
   healthBar: {fileID: 7623811791862642776}
   playerCombat: {fileID: 0}
+  swordImpactVFX: {fileID: 1429954232896169632, guid: 83036083a4ebcd34f98131bd3cf6f4d2, type: 3}
 --- !u!1 &7623811792798580099
 GameObject:
   m_ObjectHideFlags: 0

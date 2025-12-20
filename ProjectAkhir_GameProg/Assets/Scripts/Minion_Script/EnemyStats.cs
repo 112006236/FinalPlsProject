@@ -139,6 +139,7 @@ public class EnemyStats : MonoBehaviour
                 dmg = playerCombat.CalculateDamage(projectile.attackDamage, this);
                 playerCombat.ApplyLifesteal(dmg);
             }
+            Debug.Log("projecte");
 
             TakeDamage(dmg);
 

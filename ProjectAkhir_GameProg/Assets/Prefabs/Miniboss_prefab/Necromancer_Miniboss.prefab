@@ -166,7 +166,7 @@ GameObject:
   - component: {fileID: 4709327270710612023}
   - component: {fileID: 4709327270710612022}
   - component: {fileID: 4709327270710612021}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Necromancer_Miniboss
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -350,6 +350,7 @@ MonoBehaviour:
   isDead: 0
   healthBar: {fileID: 4709327270262309289}
   playerCombat: {fileID: 0}
+  swordImpactVFX: {fileID: 1429954232896169632, guid: 83036083a4ebcd34f98131bd3cf6f4d2, type: 3}
 --- !u!1 &4709327270923992234
 GameObject:
   m_ObjectHideFlags: 0
@@ -362,7 +363,7 @@ GameObject:
   - component: {fileID: 4709327270923992238}
   - component: {fileID: 4709327270923992237}
   - component: {fileID: 4709327270923992236}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: spawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
