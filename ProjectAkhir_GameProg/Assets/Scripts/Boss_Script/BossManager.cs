@@ -378,7 +378,7 @@ public class BossManager : MonoBehaviour
         animator.SetTrigger("IdletoAttack");
         if (slashClip != null)
         {
-            AudioSource.PlayClipAtPoint(slashClip, transform.position, 0.8f);
+            AudioSource.PlayClipAtPoint(slashClip, transform.position, 1f);
         }
 
         yield return new WaitForSeconds(0.2f);

@@ -1328,7 +1328,7 @@ MonoBehaviour:
   BossMusic: {fileID: 8300000, guid: df6db5aa2d1904366a09349c6d02fc72, type: 3}
   DeathMusic: {fileID: 8300000, guid: 218387a8d17c5465d8ac5cf58aa49824, type: 3}
   WinMusic: {fileID: 8300000, guid: 0817e64205ee94d26a920c429f62865c, type: 3}
-  musicVolume: 0.5
+  musicVolume: 0.2
   fadeDuration: 1
 --- !u!4 &1754531174
 Transform:

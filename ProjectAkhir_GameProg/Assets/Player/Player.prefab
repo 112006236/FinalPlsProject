@@ -162,6 +162,7 @@ GameObject:
   - component: {fileID: 5766828216632494508}
   - component: {fileID: 5766828216632494506}
   - component: {fileID: 1803526221}
+  - component: {fileID: 375583587}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -257,8 +258,8 @@ MonoBehaviour:
   cooldownRefundOnKillEnabled: 0
   cooldownRefundAmount: 0.5
   extraSM2Waves: 0
-  swingClip: {fileID: 0}
-  hurtClip: {fileID: 0}
+  swingClip: {fileID: 8300000, guid: a84382bcc1f694524a881a8a85cbf231, type: 3}
+  hurtClip: {fileID: 8300000, guid: b0ad9be2c14da46c8b51250589c5a437, type: 3}
   hitSound: {fileID: 0}
   timeBetweenCombo: 0.2
   timeBetweenAttacks: 0.5
@@ -280,10 +281,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   sm2Cooldown: 5
-  sm2Radius: 5
+  sm2Radius: 3
   sm2Damage: 10
-  sm2WaveDelay: 0.5
-  sm2OffsetScale: 1
+  sm2WaveDelay: 0.2
+  sm2OffsetScale: 10
   sm2ImpactVFX: {fileID: 4271093393614929224, guid: 87ee7299dd44ed747af24dbb91bcd33b, type: 3}
   sm2WaveVFX: {fileID: 5291275307717659108, guid: 5a8d99fb95262ea458a7b580f2a1611c, type: 3}
   sm2EnemyHitVFX: {fileID: 1429954232896169632, guid: 83036083a4ebcd34f98131bd3cf6f4d2, type: 3}
@@ -323,6 +324,27 @@ MonoBehaviour:
   anim: {fileID: 5766828217849564429}
   sprites: {fileID: 5766828217849564428}
   cooldownVFX: {fileID: 1831137033118660553}
+--- !u!114 &375583587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5766828216632494510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc31f6cf5120f40b18b65ab58fb9b3c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  critChanceIncrease: 0.1
+  attackSpeedMultiplier: 0.85
+  extraWaves: 1
+  damageReductionPercent: 0.3
+  cooldownRefundOnKill: 0.5
+  lifestealAmount: 0.5
+  sm2StunDuration: 1
+  sm2StaggerMultiplier: 1
+  sm2ExtraWaves: 1
 --- !u!1 &5766828216941255849
 GameObject:
   m_ObjectHideFlags: 0

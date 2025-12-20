@@ -83,7 +83,7 @@ public class Meteor : MonoBehaviour
            
         if (explosionClip != null)
         {
-            AudioSource.PlayClipAtPoint(explosionClip, transform.position, 0.5f);
+            AudioSource.PlayClipAtPoint(explosionClip, transform.position, 3f);
         }
 
         if (bulletPrefab != null)
